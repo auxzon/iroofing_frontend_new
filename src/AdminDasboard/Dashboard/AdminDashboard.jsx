@@ -7,116 +7,48 @@ import addestimate from "../assets/icons/addestimate.png";
 import SideNav from "../components/SideNav";
 import { useNavigate } from "react-router-dom";
 import { getEmployee } from "../../api/admin/employee/getEmployee";
+import { getProjectStatus } from "../../api/admin/projects/projectstatus";
 
 const AdminDashboard = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [selectedItems, setSelectedItems] = useState([]);
+  const [filteredData]
+
 
   const toggleSidebar = () => {
     setIsSidebarOpen((prev) => !prev);
   };
 
-  const OngoingProject = [
-    {
-      id: 1,
-      name: "Kevin",
-      phone: "+91 9867 5433 33",
-      location: "Kochi",
-      roof: "Car Porch",
-      status: "On-going",
-    },
-    {
-      id: 2,
-      name: "Marley",
-      phone: "+91 8990 3444 89",
-      location: "Kollam",
-      roof: "Warehouse",
-      status: "On-going",
-    },
-    {
-      id: 3,
-      name: "Gustavo",
-      phone: "+91 9867 5433 33",
-      location: "Thrissur",
-      roof: "Car Porch",
-      status: "On-going",
-    },
-    {
-      id: 4,
-      name: "Chance",
-      phone: "+91 8843 8943 32",
-      location: "Palakkad",
-      roof: "Car Porch",
-      status: "Pending",
-    },
-    {
-      id: 5,
-      name: "Marley",
-      phone: "+91 9867 5433 33",
-      location: "Aluva",
-      roof: "Auditorium",
-      status: "Pending",
-    },
-    {
-      id: 6,
-      name: "Miracle",
-      phone: "+91 7887 6464 55",
-      location: "Kochi",
-      roof: "Auditorium",
-      status: "Pending",
-    },
-    {
-      id: 7,
-      name: "Ashlynn",
-      phone: "+91 9876 6789 23",
-      location: "Kochi",
-      roof: "Car Porch",
-      status: "Pending",
-    },
-    {
-      id: 8,
-      name: "James",
-      phone: "+91 9867 5433 33",
-      location: "Kochi",
-      roof: "Auditorium",
-      status: "Pending",
-    },
-    {
-      id: 9,
-      name: "george",
-      phone: "+91 9867 5433 33",
-      location: "Kochi",
-      roof: "Auditorium",
-      status: "Pending",
-    },
-    {
-      id: 10,
-      name: "xavi",
-      phone: "+91 9867 5433 33",
-      location: "Kochi",
-      roof: "Auditorium",
-      status: "Pending",
-    },
-    {
-      id: 11,
-      name: "pedri",
-      phone: "+91 9867 5433 33",
-      location: "Kochi",
-      roof: "Auditorium",
-      status: "Pending",
-    },
-    {
-      id: 12,
-      name: "rodrigo",
-      phone: "+91 9867 5433 33",
-      location: "Kochi",
-      roof: "Auditorium",
-      status: "Pending",
-    },
-  ];
+  
+  const fetchProjectStatus = async () => {
+    try {
+        setLoading(true);
+        const response = await getProjectStatus();
+
+        if (!response || !response.data) {
+            throw new Error("Invalid response format");
+        }
+
+        console.log("Client Response:", response.data);
+        const clients = response.data || [];
+
+        // Filter only "On-going" tasks
+        const filtered = clients.filter((project) => project.status === "On-going");
+
+        setData(clients);
+        setFilteredData(filtered); // Only "On-going" tasks will be displayed
+        setError(null);
+    } catch (err) {
+        console.error("Error fetching client data:", err.message || err);
+        setError(err.response?.data?.message || "Failed to fetch client data");
+    } finally {
+        setLoading(false);
+    }
+};
+
   // --------------------------------------------------
 
-  // ------------------------------------------------
+  // --------------------------------------------------
 
   const CompletedProjects = [
     {
@@ -251,7 +183,7 @@ const AdminDashboard = () => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isExpanded2, setIsExpanded2] = useState(false);
   const [isExpanded3, setIsExpanded3] = useState(false);
-  const [data, setData] = useState(OngoingProject);
+  const [data, setData] = useState([]);
   const [data2, setData2] = useState(CompletedProjects);
   const [data3, setData3] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -433,58 +365,53 @@ const AdminDashboard = () => {
                 </div>
               </div>
               <table className="w-full border-collapse border-t border-b border-gray-300 text-left">
-                <thead>
-                  <tr>
-                    <th className="p-2 border-b border-gray-300"></th>
-                    <th className="p-2 border-b border-gray-300">SL No</th>
-                    <th className="p-2 border-b border-gray-300">
-                      Client Name
-                    </th>
-                    <th className="p-2 border-b border-gray-300">
-                      Phone Number
-                    </th>
-                    <th className="p-2 border-b border-gray-300">Location</th>
-                    <th className="p-2 border-b border-gray-300">Work Type</th>
-                    <th className="p-2 border-b border-gray-300">Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {(isExpanded ? filteredData : filteredData.slice(0, 2)).map(
-                    (item, index) => (
-                      <tr key={item.id} className="border-b border-gray-300">
-                        <td className="p-2">
-                          <input
-                            type="checkbox"
-                            checked={selectedItems.includes(item.id)}
-                            onChange={() => handleCheckboxChange(item.id)}
-                          />
-                        </td>
-                        <td className="p-2">
-                          {index + 1 + (currentPage - 1) * itemsPerPage}
-                        </td>
-                        <td className="p-2">{item.name}</td>
-                        <td className="p-2">{item.phone}</td>
-                        <td className="p-2">{item.location}</td>
-                        <td className="p-2">{item.roof}</td>
-                        <td
-                          className={`p-2 ${
-                            item.status === "On-going"
-                              ? "text-green-500"
-                              : "text-yellow-500"
-                          }`}
-                        >
-                          {item.status}
-                        </td>
-                        <td className="p-2">
-                          <button className="bg-blue-500 text-white px-3 py-1 rounded">
-                            See Details
-                          </button>
-                        </td>
-                      </tr>
-                    )
-                  )}
-                </tbody>
-              </table>
+  <thead className="bg-gray-100">
+    <tr>
+      <th className="p-2 border-b border-gray-300"></th>
+      <th className="p-2 border-b border-gray-300">SL No</th>
+      <th className="p-2 border-b border-gray-300">Client Name</th>
+      <th className="p-2 border-b border-gray-300">Phone Number</th>
+      <th className="p-2 border-b border-gray-300">Location</th>
+      <th className="p-2 border-b border-gray-300">Work Type</th>
+      <th className="p-2 border-b border-gray-300">Status</th>
+      <th className="p-2 border-b border-gray-300">Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    {(isExpanded ? filteredData : filteredData.slice(0, 2)).map((item, index) => (
+      <tr key={item.id} className="border-b border-gray-300 hover:bg-gray-50">
+        <td className="p-2">
+          <input
+            type="checkbox"
+            checked={selectedItems.includes(item.id)}
+            onChange={() => handleCheckboxChange(item.id)}
+          />
+        </td>
+        <td className="p-2">{index + 1 + (currentPage - 1) * itemsPerPage}</td>
+        <td className="p-2">{item.name}</td>
+        <td className="p-2">{item.phone}</td>
+        <td className="p-2">{item.location}</td>
+        <td className="p-2">{item.roof}</td>
+        <td
+          className={`p-2 ${
+            item.status === "On-going"
+              ? "text-green-500 font-semibold"
+              : "text-yellow-500"
+          }`}
+        >
+          {item.status}
+        </td>
+        <td className="p-2">
+          <button className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">
+            See Details
+          </button>
+        </td>
+      </tr>
+    ))}
+  </tbody>
+</table>
+
+
               <button
                 onClick={handleToggleExpand}
                 className="mt-2 text-blue-500 underline"

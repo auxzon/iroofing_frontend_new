@@ -1,278 +1,58 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Sidebar from "../components/SideNav";
 import Header from "../components/Header";
 import plussquare from "../assets/icons/plussquare.png";
+import { getProjectStatus } from "../../api/admin/projects/projectstatus";
 
 const Projects = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState("Completed"); // Set default tab to "Completed"
+  const [activeTab, setActiveTab] = useState("Finished"); // Default tab
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [data, setData] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+
   const itemsPerPage = 8;
 
-  const CompletedProject = [
-    {
-      id: 1,
-      name: "Kevin",
-      date: "22-10-2024",
-      location: "Kochi",
-      roof: "Car Porch",
-      amount: "14500",
-      payment: "On-going",
-    },
-    {
-      id: 2,
-      name: "Sophia",
-      date: "15-11-2024",
-      location: "Delhi",
-      roof: "Terrace",
-      amount: "12500",
-      payment: "On-going",
-    },
-    {
-      id: 3,
-      name: "Ethan",
-      date: "10-09-2024",
-      location: "Mumbai",
-      roof: "Balcony",
-      amount: "18200",
-      payment: "On-going",
-    },
-    {
-      id: 4,
-      name: "Olivia",
-      date: "18-08-2024",
-      location: "Chennai",
-      roof: "Shed",
-      amount: "10200",
+  useEffect(() => {
+    fetchProjectStatus();
+}, [activeTab]); // Fetch data when the tab changes
 
-      payment: "On-going",
-    },
-    {
-      id: 5,
-      name: "Liam",
-      date: "02-12-2024",
-      location: "Pune",
-      roof: "Car Porch",
-      amount: "20200",
-      payment: "On-going",
-    },
-    {
-      id: 6,
-      name: "Emma",
-      date: "26-10-2024",
-      location: "Bangalore",
-      roof: "Terrace",
-      amount: "19200",
-      payment: "On-going",
-    },
-    {
-      id: 7,
-      name: "James",
-      date: "14-09-2024",
-      location: "Hyderabad",
-      roof: "Balcony",
-      amount: "30000",
-      payment: "On-going",
-    },
-    {
-      id: 8,
-      name: "Isabella",
-      date: "22-07-2024",
-      location: "Kolkata",
-      roof: "Shed",
-      amount: "13200",
-      payment: "On-going",
-    },
-    {
-      id: 9,
-      name: "Mason",
-      date: "05-06-2024",
-      location: "Jaipur",
-      roof: "Car Porch",
-      amount: "17200",
-      payment: "On-going",
-    },
-    {
-      id: 10,
-      name: "Ava",
-      date: "12-05-2024",
-      location: "Lucknow",
-      roof: "Terrace",
-      amount: "12330",
-      payment: "On-going",
-    },
-    {
-      id: 11,
-      name: "Alexander",
-      date: "19-04-2024",
-      location: "Surat",
-      roof: "Balcony",
-      amount: "12200",
-      payment: "On-going",
-    },
-    {
-      id: 12,
-      name: "Mia",
-      date: "08-03-2024",
-      location: "Kanpur",
-      roof: "Shed",
-      amount: "11200",
-      payment: "On-going",
-    },
-    {
-      id: 13,
-      name: "Noah",
-      date: "17-02-2024",
-      location: "Nagpur",
-      roof: "Car Porch",
-      amount: "18200",
-      payment: "On-going",
-    },
-    {
-      id: 14,
-      name: "Ella",
-      date: "24-01-2024",
-      location: "Patna",
-      roof: "Terrace",
-      amount: "432232",
-      payment: "On-going",
-    },
-  ];
+const fetchProjectStatus = async () => {
+    try {
+        setLoading(true);
+        const response = await getProjectStatus();
 
-  const OngoingProject = [
-    {
-      id: 1,
-      name: "Mia",
-      phone: "+91 8876 5433 21",
-      location: "Thrissur",
-      roof: "Auditorium",
-      assignto: "Manu",
-      status: "ongoing",
-    },
-    {
-      id: 2,
-      name: "Sophia",
-      phone: "+91 9876 5432 10",
-      location: "Kochi",
-      roof: "Library",
-      assignto: "Amit",
-      status: "pending",
-    },
-    {
-      id: 3,
-      name: "Liam",
-      phone: "+91 9123 4567 89",
-      location: "Kottayam",
-      roof: "Terrace",
-      assignto: "Arun",
-      status: "ongoing",
-    },
-    {
-      id: 4,
-      name: "James",
-      phone: "+91 9845 3210 67",
-      location: "Calicut",
-      roof: "Conference Room",
-      assignto: "Ravi",
-      status: "pending",
-    },
-    {
-      id: 5,
-      name: "Emma",
-      phone: "+91 9998 7654 32",
-      location: "Trivandrum",
-      roof: "Car Porch",
-      assignto: "Naveen",
-      status: "ongoing",
-    },
-    {
-      id: 6,
-      name: "Isabella",
-      phone: "+91 9556 8776 45",
-      location: "Malappuram",
-      roof: "Shed",
-      assignto: "Suresh",
-      status: "pending",
-    },
-    {
-      id: 7,
-      name: "Ethan",
-      phone: "+91 9056 4321 23",
-      location: "Ernakulam",
-      roof: "Balcony",
-      assignto: "Vijay",
-      status: "ongoing",
-    },
-    {
-      id: 8,
-      name: "Ava",
-      phone: "+91 8732 6789 12",
-      location: "Alappuzha",
-      roof: "Gym",
-      assignto: "Shyam",
-      status: "pending",
-    },
-    {
-      id: 9,
-      name: "Noah",
-      phone: "+91 8345 2345 56",
-      location: "Palakkad",
-      roof: "Storage Room",
-      assignto: "Manoj",
-      status: "ongoing",
-    },
-    {
-      id: 10,
-      name: "Olivia",
-      phone: "+91 8657 3421 78",
-      location: "Wayanad",
-      roof: "Workshop",
-      assignto: "Hari",
-      status: "pending",
-    },
-    {
-      id: 11,
-      name: "Mason",
-      phone: "+91 8432 9876 90",
-      location: "Idukki",
-      roof: "Classroom",
-      assignto: "Sanjay",
-      status: "ongoing",
-    },
-    {
-      id: 12,
-      name: "Alexander",
-      phone: "+91 9123 8765 43",
-      location: "Kollam",
-      roof: "Office",
-      assignto: "Pradeep",
-      status: "pending",
-    },
-    {
-      id: 13,
-      name: "Amelia",
-      phone: "+91 9678 2345 56",
-      location: "Pathanamthitta",
-      roof: "Warehouse",
-      assignto: "Rajesh",
-      status: "ongoing",
-    },
-    {
-      id: 14,
-      name: "Harper",
-      phone: "+91 9876 3456 78",
-      location: "Kozhikode",
-      roof: "Reception",
-      assignto: "Biju",
-      status: "pending",
-    },
-  ];
+        if (!response || !response.data) {
+            throw new Error("Invalid response format");
+        }
 
-  const data = activeTab === "Completed" ? CompletedProject : OngoingProject;
+        console.log("Client Response:", response.data);
+
+        const clients = response.data || [];
+
+        // Filter data based on the active tab
+        const filteredData =
+            activeTab === "Completed"
+                ? clients.filter((project) => project.status === "Finished")
+                : clients.filter((project) => project.status !== "Finished"); // Fixed this line
+
+        setData(filteredData);
+        setError(null);
+    } catch (err) {
+        console.error("Error fetching client data:", err.message || err);
+        setError(err.response?.data?.message || "Failed to fetch client data");
+    } finally {
+        setLoading(false);
+    }
+};
+
 
   const filteredData = data.filter((item) =>
-    item.name.toLowerCase().includes(search.toLowerCase())
+    item.clientId.name.toLowerCase().includes(search.toLowerCase())
   );
 
   const paginatedData = filteredData.slice(
@@ -294,18 +74,9 @@ const Projects = () => {
     setData(data.filter((item) => item.id !== id));
   };
 
-  // -------------pop up--------------------
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalData, setModalData] = useState(null);
-
   const handleSeeDetails = (item) => {
-    setModalData(item); // Set the data for the modal
-    setIsModalOpen(true); // Open the modal
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false); // Close the modal
-    setModalData(null); // Clear the modal data
+    console.log("See details for:", item);
+    // Implement navigation or modal logic
   };
 
   return (
@@ -314,67 +85,70 @@ const Projects = () => {
         isOpen={isSidebarOpen}
         toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
       />
-      <div className="flex-1 flex flex-col">
-        <Header toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
+     <div className="flex-1 flex flex-col">
+      <Header toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
 
-        <div className="p-6 space-y-8 bg-gray-100 overflow-auto">
-          <h1 className="text-3xl font-bold text-[#4c48a5]">Projects</h1>
+      <div className="p-6 space-y-8 bg-gray-100 overflow-auto">
+        <h1 className="text-3xl font-bold text-[#4c48a5]">Projects</h1>
 
-          <div className="flex gap-4 mb-4">
-            <button
-              className={`text-lg font-semibold ${
-                activeTab === "Completed"
-                  ? "text-[#4c48a5] border-b-2 border-[#4c48a5]"
-                  : "text-gray-500"
-              }`}
-              onClick={() => setActiveTab("Completed")}
-            >
-              Completed Projects
-            </button>
-            <button
-              className={`text-lg font-semibold ${
-                activeTab === "Ongoing"
-                  ? "text-[#4c48a5] border-b-2 border-[#4c48a5]"
-                  : "text-gray-500"
-              }`}
-              onClick={() => setActiveTab("Ongoing")}
-            >
-              Ongoing Projects
-            </button>
-          </div>
+        {/* Tab Navigation */}
+        <div className="flex gap-4 mb-4">
+          <button
+            className={`text-lg font-semibold ${
+              activeTab === "Completed"
+                ? "text-[#4c48a5] border-b-2 border-[#4c48a5]"
+                : "text-gray-500"
+            }`}
+            onClick={() => setActiveTab("Completed")}
+          >
+            Completed Projects
+          </button>
+          <button
+            className={`text-lg font-semibold ${
+              activeTab === "Ongoing"
+                ? "text-[#4c48a5] border-b-2 border-[#4c48a5]"
+                : "text-gray-500"
+            }`}
+            onClick={() => setActiveTab("Ongoing")}
+          >
+            Ongoing Projects
+          </button>
+        </div>
 
-          <div className="bg-white rounded-xl shadow-md p-4">
-            <div className="mb-4">
-              <div className="">
-                <div className="flex justify-between">
-                  <div>
-                    <input
-                      type="text"
-                      placeholder="Search..."
-                      value={search}
-                      onChange={handleSearch}
-                      className="border border-gray-300 rounded px-2 py-1"
-                    />
-                  </div>
-                  <div>
-                    <button
-                      onClick={() => handleDelete(item.id)}
-                      className="bg-red-500 text-white px-3 py-1 rounded mr-2"
-                    >
-                      Delete
-                    </button>
-                    <button className="bg-gray-200 text-gray-700 px-3 py-1 rounded">
-                      Filter
-                    </button>
-
-                    <button className="bg-gray-200 text-gray-700 px-3 py-1 rounded">
-                      Export
-                    </button>
-                  </div>
-                </div>
+        {/* Search and Actions */}
+        <div className="bg-white rounded-xl shadow-md p-4">
+          <div className="mb-4">
+            <div className="flex justify-between">
+              <input
+                type="text"
+                placeholder="Search..."
+                value={search}
+                onChange={handleSearch}
+                className="border border-gray-300 rounded px-2 py-1"
+              />
+              <div>
+                <button
+                  className="bg-red-500 text-white px-3 py-1 rounded mr-2"
+                  onClick={() => handleDelete(item.id)}
+                >
+                  Delete
+                </button>
+                <button className="bg-gray-200 text-gray-700 px-3 py-1 rounded">
+                  Filter
+                </button>
+                <button className="bg-gray-200 text-gray-700 px-3 py-1 rounded">
+                  Export
+                </button>
               </div>
             </div>
+          </div>
 
+          {/* Table */}
+          {loading ? (
+            <p>Loading...</p>
+          ) : error ? (
+            <p className="text-red-500">{error}</p>
+          ) : (
             <table className="w-full border-collapse border-t border-b border-gray-300 text-left">
               <thead>
                 <tr>
@@ -384,9 +158,7 @@ const Projects = () => {
                     <>
                       <th className="p-2 border-b border-gray-300">Date</th>
                       <th className="p-2 border-b border-gray-300">Location</th>
-                      <th className="p-2 border-b border-gray-300">
-                        Work Type
-                      </th>
+                      <th className="p-2 border-b border-gray-300">Work Type</th>
                       <th className="p-2 border-b border-gray-300">Amount</th>
                       <th className="p-2 border-b border-gray-300">Payment</th>
                     </>
@@ -394,12 +166,8 @@ const Projects = () => {
                     <>
                       <th className="p-2 border-b border-gray-300">Phone</th>
                       <th className="p-2 border-b border-gray-300">Location</th>
-                      <th className="p-2 border-b border-gray-300">
-                        Work Type
-                      </th>
-                      <th className="p-2 border-b border-gray-300">
-                        Assign To
-                      </th>
+                      <th className="p-2 border-b border-gray-300">Work Type</th>
+                      <th className="p-2 border-b border-gray-300">Assign To</th>
                       <th className="p-2 border-b border-gray-300">Status</th>
                     </>
                   )}
@@ -407,72 +175,64 @@ const Projects = () => {
                 </tr>
               </thead>
               <tbody>
-                {paginatedData.map((item, index) => (
-                  <tr key={item.id} className="border-b border-gray-300">
-                    <td className="p-2">
-                      {index + 1 + (currentPage - 1) * itemsPerPage}
-                    </td>
-                    <td className="p-2">{item.name}</td>
-                    {activeTab === "Completed" ? (
-                      <>
-                        <td className="p-2">{item.date}</td>
-                        <td className="p-2">{item.location}</td>
-                        <td className="p-2">{item.roof}</td>
-                        <td className="p-2">{item.amount}</td>
-                        <td className="p-2">{item.payment}</td>
-                      </>
-                    ) : (
-                      <>
-                        <td className="p-2">{item.phone}</td>
-                        <td className="p-2">{item.location}</td>
-                        <td className="p-2">{item.roof}</td>
-                        <td className="p-2">{item.assignto}</td>
-                        <td
-                          className={`p-2 ${
-                            item.status === "ongoing"
-                              ? "text-green-500"
-                              : "text-red-500"
-                          }`}
-                        >
-                          {item.status}
-                        </td>
-                      </>
-                    )}
-                    <td className="p-2">
-                      <button
-                        className="bg-blue-500 text-white px-3 py-1 rounded"
-                        onClick={() => handleSeeDetails(item)}
-                      >
-                        See Details
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
+  {paginatedData.map((item, index) => (
+    <tr key={item._id} className="border-b border-gray-300">
+      <td className="p-2">{index + 1 + (currentPage - 1) * itemsPerPage}</td>
+      <td className="p-2">{item.clientId.name}</td>
+      {activeTab === "Completed" ? (
+        <>
+          <td className="p-2">{new Date(item.createdAt).toLocaleDateString()}</td>
+          <td className="p-2">{item.district}</td>
+          <td className="p-2">{item.comments}</td>
+          <td className="p-2">{item.finalRate}</td>
+          <td className="p-2">{item.payment || "Pending"}</td>
+        </>
+      ) : (
+        <>
+          <td className="p-2">{item.clientId.phoneNo}</td>
+          <td className="p-2">{item.clientId.district}</td>
+          <td className="p-2">{item.comments}</td>
+          <td className="p-2">{item.siteVisitorId.name}</td>
+          <td className={`p-2 ${item.status === "Site Visit" ? "text-green-500" : "text-red-500"}`}>
+            {item.status}
+          </td>
+        </>
+      )}
+      <td className="p-2">
+        <button
+          className="bg-blue-500 text-white px-3 py-1 rounded"
+          onClick={() => handleSeeDetails(item)}
+        >
+          See Details
+        </button>
+      </td>
+    </tr>
+  ))}
+</tbody>
+
             </table>
-            <div className="flex justify-between items-center mt-4">
-              <div>
-                Page {currentPage} of {totalPages}
-              </div>
-              <div className="flex space-x-2">
-                {[...Array(totalPages)].map((_, pageIndex) => (
-                  <button
-                    key={pageIndex}
-                    onClick={() => handlePageChange(pageIndex + 1)}
-                    className={`px-3 py-1 rounded ${
-                      currentPage === pageIndex + 1
-                        ? "bg-blue-500 text-white"
-                        : "bg-gray-200 text-gray-700"
-                    }`}
-                  >
-                    {pageIndex + 1}
-                  </button>
-                ))}
-              </div>
+          )}
+
+          {/* Pagination */}
+          <div className="flex justify-between items-center mt-4">
+            <div>Page {currentPage} of {totalPages}</div>
+            <div className="flex space-x-2">
+              {[...Array(totalPages)].map((_, pageIndex) => (
+                <button
+                  key={pageIndex}
+                  onClick={() => handlePageChange(pageIndex + 1)}
+                  className={`px-3 py-1 rounded ${
+                    currentPage === pageIndex + 1 ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-700"
+                  }`}
+                >
+                  {pageIndex + 1}
+                </button>
+              ))}
             </div>
           </div>
         </div>
       </div>
+    </div>
       {isModalOpen && (
         <div className="fixed inset-0 z-50  flex items-center justify-center bg-black bg-opacity-50">
           <div className=" w-full max-w-6xl p-6 rounded-lg relative  ">

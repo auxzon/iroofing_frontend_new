@@ -4,6 +4,7 @@ import { product } from "../api/admin/labour/gst";
 import { welding } from "../api/admin/labour/welding";
 import { getAllProjectTypes } from "../api/admin/product/getAllCategories";
 
+
 // admin endpoints
 export const adminEndponits = {
     addEmployee:"admin/employee",
@@ -20,5 +21,6 @@ export const adminEndponits = {
     gst:"admin/gst",
      addCategory:"admin/createCategory",
      getAllCategories:"admin/getAllCategories",
-     getAllProjectTypes:"admin/getAllProjectType"
+     getAllProjectTypes:"admin/getAllProjectType",
+     getProjectStatus:"estimate/getAllEstimates ", 
 }

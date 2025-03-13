@@ -17,7 +17,7 @@ import {getAllCategories} from "../../api/sales/project/project"
 import { toast } from "react-toastify";
 
 
-const AddnewClients = () => {
+const CustomMeasurement = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const toggleSidebar = () => setIsSidebarOpen((prev) => !prev);
 
@@ -284,8 +284,7 @@ useEffect(() => {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedItems, setSelectedItems] = useState([]);
   const itemsPerPage = 8;
-  const [squareFeet, setSquareFeet] = useState("");
-  const [totalCost, setTotalCost] = useState("");
+ 
  
  
   const handleSearch = (event) => setSearch(event.target.value);
@@ -587,20 +586,7 @@ useEffect(() => {
                 </div>
               </div>
  
-              <div className="grid grid-cols-4 gap-4 mt-4">
-                <select className="border p-2 rounded-md w-full">
-                  <option>Materials</option>
-                </select>
-                <select className="border p-2 rounded-md w-full">
-                  <option>Materials</option>
-                </select>
-                <select className="border p-2 rounded-md w-full">
-                  <option>Materials</option>
-                </select>
-                <select className="border p-2 rounded-md w-full">
-                  <option>Materials</option>
-                </select>
-              </div>
+   
               <div className="grid grid-cols-1 md:grid-cols-3 gap-2 mb-4 md:py-5">
   {/* Roof Type */}
   <div className="flex items-center">
@@ -774,31 +760,54 @@ useEffect(() => {
  
   {/* First Row - Two Fields (Total sq. ft & Total Cost) */}
   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-      {/* Total Square Feet */}
-      <div className="flex items-center gap-2">
-        <label className="text-sm text-gray-600 w-28">Total sq. ft:</label>
-        <input
-          type="text"
-          value={squareFeet}
-          onChange={(e) => setSquareFeet(e.target.value)}
-          className="flex-1 bg-gray-200 text-gray-800 p-2 rounded-md text-center"
-        />
-      </div>
-
-      {/* Total Cost */}
-      <div className="flex items-center gap-2">
-        <label className="text-sm text-gray-600 w-28">Total Cost:</label>
-        <input
-          type="text"
-          value={totalCost}
-          onChange={(e) => setTotalCost(e.target.value)}
-          className="flex-1 bg-gray-200 text-gray-800 p-2 rounded-md text-center"
-        />
-      </div>
+    {/* Total Square Feet */}
+    <div className="flex items-center gap-2">
+      <label className="text-sm text-gray-600 w-28">Total sq. ft:</label>
+      <input
+        type="text"
+        value="1023.54"
+        readOnly
+        className="flex-1 bg-gray-200 text-gray-800 p-2 rounded-md text-center"
+      />
     </div>
  
+    {/* Total Cost */}
+    <div className="flex items-center gap-2">
+      <label className="text-sm text-gray-600 w-28">Total Cost:</label>
+      <input
+        type="text"
+        value="₹57800/-"
+        readOnly
+        className="flex-1 bg-gray-200 text-gray-800 p-2 rounded-md text-center"
+      />
+    </div>
+  </div>
+ 
   {/* Second Row - Three Fields (Comments, Status, Other Info) */}
-  
+  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+    {/* Comments */}
+    <div className="flex items-center gap-2">
+      <label className="text-sm text-gray-600 w-28">Comments:</label>
+      <input
+        type="text"
+        placeholder="Enter comments"
+        className="flex-1 border border-gray-300 p-2 rounded-md focus:outline-indigo-500"
+      />
+    </div>
+ 
+    {/* Status Dropdown */}
+    <div className="flex items-center gap-2">
+      <label className="text-sm text-gray-600 w-28">Status:</label>
+      <select className="flex-1 border border-gray-300 p-2 rounded-md bg-white">
+        <option>Site Visit</option>
+        <option>Approved</option>
+        <option>Rejected</option>
+      </select>
+    </div>
+ 
+    {/* Additional Field (if needed) */}
+ 
+  </div>
 </div>
             {/* New Layout Based on the Image */}
             <div className="p-6">
@@ -844,14 +853,14 @@ useEffect(() => {
   {/* Second Row - Comments & Assign To */}
   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
     {/* Comments */}
-    {/* <div className="flex items-center gap-2">
+    <div className="flex items-center gap-2">
       <label className="text-sm text-gray-600 w-28">Comments:</label>
       <input
         type="text"
         placeholder="Enter comments"
         className="w-full border border-gray-300 p-2 rounded-md focus:outline-indigo-500"
       />
-    </div> */}
+    </div>
  
     {/* Assign To */}
     <div className="flex items-center gap-2">
@@ -1025,5 +1034,7 @@ useEffect(() => {
   );
 };
  
-export default AddnewClients;
+export default CustomMeasurement;
  
+
+
