@@ -12,7 +12,7 @@ import { getProjectStatus } from "../../api/admin/projects/projectstatus";
 const AdminDashboard = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [selectedItems, setSelectedItems] = useState([]);
-  const [filteredData]
+ 
 
 
   const toggleSidebar = () => {
@@ -160,7 +160,8 @@ const AdminDashboard = () => {
       payment: "paid",
     },
   ];
-  // ---------------------------------------------
+
+  // ------------------------------------------------------
 
   const fetchEmployees = async () => {
     try {
