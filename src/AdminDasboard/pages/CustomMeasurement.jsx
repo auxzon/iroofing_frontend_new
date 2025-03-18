@@ -31,7 +31,6 @@ const CustomMeasurement = () => {
   const addNewMaterial = () => {
   setMaterials([...materials, { material: "", quantity: "" }]);
   };
-  // Function to add a new area
   const addNewArea = () => {
     const newArea = {
       id: areas.length + 1,
@@ -39,13 +38,11 @@ const CustomMeasurement = () => {
     };
     setAreas([...areas, newArea]);
   };
- 
-  // Function to remove an area
+
+  // Function to remove an area (excluding the first one)
   const removeArea = (id) => {
-    const updatedAreas = areas.filter((area) => area.id !== id);
-    setAreas(updatedAreas);
+    setAreas(areas.filter((area) => area.id !== id));
   };
- 
 
 const [name,setName] = useState ("")
 const  [phoneNo,setPhoneNo] = useState("")
@@ -136,7 +133,6 @@ useEffect(() => {
     setFilteredClients([]);
   }
 }, [searchTerm, clientList]);
-
 
 // -------------------------------------------------------
 
@@ -284,8 +280,7 @@ useEffect(() => {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedItems, setSelectedItems] = useState([]);
   const itemsPerPage = 8;
- 
- 
+
  
   const handleSearch = (event) => setSearch(event.target.value);
  
@@ -479,26 +474,27 @@ useEffect(() => {
         </button>
       </div>
  
-           <div className="pt-5">
- 
-           {areas.map((area) => (
-  <div key={area.id} className="p-6 ">
-    <h2 className="text-lg font-semibold text-indigo-900 mb-6">{area.name}</h2>
-    <div className="flex items-center gap-2 justify-end">
-    {/* Export Button */}
-    <button className="flex items-center gap-1 border border-gray-300 px-3 py-1 rounded-md text-gray-700 hover:bg-gray-100 transition">
-      <Upload size={16} />
-      Export
-    </button>
- 
-    {/* Delete Button */}
-    <button className="flex items-center gap-1 text-gray-600 hover:text-red-600 transition">
-      <Trash2 size={18} />
-      Delete
-    </button>
-  </div>
-              <div className="flex items-center justify-between gap-2 py-5">
-              <div className="relative flex gap-2 justify-center items-center">
+
+
+
+      <div className="pt-5">
+      {areas.map((area, index) => (
+        <div key={area.id} className="p-6 border rounded-lg shadow-md mb-4 relative">
+          {/* Area Title & Remove Button (Only show remove for additional areas) */}
+          <div className="flex justify-between items-center">
+            <h2 className="text-lg font-semibold text-indigo-900 mb-6">{area.name}</h2>
+            {index !== 0 && (
+              <button
+                onClick={() => removeArea(area.id)}
+                className="bg-red-500 text-white py-1 px-3 rounded-md text-sm hover:bg-red-700"
+              >
+                Remove
+              </button>
+            )}
+          </div>
+
+          {/* Client Name */}
+          <div className="mt-5">
   <label className="text-sm text-gray-600">Client Name:</label>
   <input
     type="text"
@@ -513,7 +509,7 @@ useEffect(() => {
     <ul className="absolute top-full left-0 w-full bg-white border border-gray-300 rounded-md mt-1 max-h-48 overflow-y-auto shadow-lg">
       {filteredClients.map((client) => (
         <li
-          key={client.id}
+        key={client._id}
           onClick={() => {
             setSearchTerm(client.name); // Set input value when clicked
             setFilteredClients([]); // Hide dropdown after selection
@@ -527,233 +523,102 @@ useEffect(() => {
   )}
 </div>
 
-               
-      {/* Measurement Button */}
-      {/* <h1
-  className="text-decoration underline cursor-pointer text-lg"
-  onClick={() => setShowMeasurements(!showMeasurements)}
->
-  Custom Measurements
-</h1> */}
- <div>
 
- 
- <h1
-      className="text-decoration underline cursor-pointer text-lg"
-      onClick={() => navigate("/admin/custommeasurement")}
-    >
-      Custom Measurements
-    </h1>
-    </div>
-</div>
- <br />
- 
- 
-<div className="grid grid-cols-1 md:grid-cols-3 gap-2 mb-4">
-<div className="flex items-center">
-      <label className="text-sm text-gray-600 w-24">Project Type:</label>
-      <select className="w-[200px] border border-gray-300 p-2 rounded-md focus:outline-indigo-500 bg-white">
-  <option value="">Select a type</option>
-  {projectTypes.map((type, index) => (
-    <option key={type._id} value={type.projectType}>
-      {type.projectType}
-    </option>
-  ))}
-</select>
-
-    </div>
-                <div className="flex items-center gap-2">
-                <label className="text-sm text-gray-600 w-24">Roof Model:</label>
-      <select className="w-[200px] border border-gray-300 p-2 rounded-md focus:outline-indigo-500 bg-white text-black">
-        <option value="">Select a category</option>
-        {categories.map((category) => (
-          <option key={category._id} value={category._id}>
-            {category.roofModel}
-          </option>
-        ))}
-      </select>
-                </div>
-                <div className="flex items-center gap-2 md:pl-10">
-               
-                <select className="w-100 border border-gray-300 p-2 rounded-md focus:outline-indigo-500 bg-white ">
-    <option value="" >
-    double car parking
-    </option>
-    <option value="car porch">car porch</option>
-    <option value="auditorium">auditorium</option>
- 
-  </select>
-                </div>
-              </div>
- 
-   
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-2 mb-4 md:py-5">
-  {/* Roof Type */}
-  <div className="flex items-center">
-    <label className="text-sm text-gray-600 w-24">Span:</label>
-    <input
-      type="text"
-      placeholder="250m"
-      className="w-[200px] border border-gray-300 p-2 rounded-md focus:outline-indigo-500 bg-white"
-    />
-  </div>
- 
-  {/* Roof Model */}
-  <div className="flex items-center gap-2">
-    <label className="text-sm text-gray-600 w-24">Length:</label>
-    <input
-      type="text"
-      placeholder="200m"
-      className="w-[200px] border border-gray-300 p-2 rounded-md focus:outline-indigo-500 bg-white"
-    />
-  </div>
- 
-  {/* Custom Field */}
-  <div className="flex items-center gap-2 md:pl-10">
-    <label className="text-sm text-gray-600 w-24">Height:</label>
-    <input
-      type="text"
-      placeholder="250m"
-      className="w-[200px] border border-gray-300 p-2 rounded-md focus:outline-indigo-500 bg-white"
-    />
-  </div>
-</div>
- 
-{showMeasurements && (
-        <div className="mt-4">
-         
- 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="flex flex-col gap-2">
-                  <label className="text-sm font-medium text-[#15164A]">
-                   Material
-                  </label>
-                  <input
-                    type="text"
-                    className="p-2 border border-gray-300 rounded-md"
-                    placeholder="ISMb 150/ISM"
-                  />
-</div>
-                  <div className="flex flex-col gap-2">
-                  <label className="text-sm font-medium text-[#15164A]">
-                    Quantity
-                  </label>
-                  <input
-                    type="text"
-                    className="p-2 border border-gray-300 rounded-md"
-                    placeholder="Meter"
-                  />
-                </div>
-              </div> <br />
-             
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-      {materials.map((item, index) => (
-        <div key={index} className="grid grid-cols-2 gap-4 col-span-2">
-          <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium text-[#15164A]">Material</label>
-            <input
-              type="text"
-              className="p-2 border border-gray-300 rounded-md"
-              placeholder="ISMb 150/ISM"
-            />
+          {/* Roof Details */}
+          <div className="grid grid-cols-3 gap-4 mt-4">
+            <div>
+              <label className="text-sm">Roof Type:</label>
+              <select className="w-full border border-gray-300 p-2 rounded-md text-black">
+                <option>Car Porch</option>
+              </select>
+            </div>
+            <div>
+              <label className="text-sm">Roof Model:</label>
+              <select className="w-full border border-gray-300 p-2 rounded-md text-black">
+                <option>Normal Cantilever</option>
+              </select>
+            </div>
+            <div>
+              <label className="text-sm">Parking Type:</label>
+              <select className="w-full border border-gray-300 p-2 rounded-md text-black">
+                <option>Double Car Parking</option>
+              </select>
+            </div>
           </div>
-          <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium text-[#15164A]">Quantity</label>
-            <input
-              type="text"
-              className="p-2 border border-gray-300 rounded-md"
-              placeholder="Meter"
-            />
+
+          {/* Dimensions */}
+          <div className="grid grid-cols-3 gap-4 mt-4">
+            <div>
+              <label className="text-sm">Span:</label>
+              <input type="text" placeholder="200m" className="w-full border p-2 rounded-md text-black" />
+            </div>
+            <div>
+              <label className="text-sm">Length:</label>
+              <input type="text" placeholder="250m" className="w-full border p-2 rounded-md text-black" />
+            </div>
+            <div>
+              <label className="text-sm">Height:</label>
+              <input type="text" placeholder="300m" className="w-full border p-2 rounded-md text-black" />
+            </div>
+          </div>
+
+          {/* Materials Section */}
+          {materials.map((item) => (
+            <div key={item.id} className="grid grid-cols-2 gap-4 mt-4">
+              <div>
+                <label className="text-sm">Material:</label>
+                <input type="text" className="w-full border p-2 rounded-md text-black" placeholder="Material Name" />
+              </div>
+              <div>
+                <label className="text-sm">Quantity:</label>
+                <input type="text" className="w-full border p-2 rounded-md text-black" placeholder="Meter" />
+              </div>
+            </div>
+          ))}
+          <button onClick={addNewMaterial} className="mt-4 text-blue-400 underline">
+            Add New Material
+          </button>
+
+          {/* Additional Inputs */}
+          <div className="grid grid-cols-3 gap-4 mt-4">
+            <input type="text" placeholder="Type of Panel" className="border p-2 rounded-md text-black" />
+            <input type="text" placeholder="Off Set" className="border p-2 rounded-md text-black" />
+            <input type="text" placeholder="Sheet Thickness" className="border p-2 rounded-md text-black" />
+          </div>
+          <div className="grid grid-cols-3 gap-4 mt-4">
+            <input type="text" placeholder="Center Height" className="border p-2 rounded-md text-black" />
+            <input type="text" placeholder="Extra Panel" className="border p-2 rounded-md text-black" />
+            <input type="text" placeholder="No of Bay" className="border p-2 rounded-md text-black" />
+          </div>
+          <div className="grid grid-cols-3 gap-4 mt-4">
+            <input type="text" placeholder="Cutting Length" className="border p-2 rounded-md text-black" />
+            <input type="text" placeholder="Final Cutting" className="border p-2 rounded-md text-black" />
+          </div>
+
+          {/* File Upload */}
+          <div className="mt-4">
+            <input type="file" className="border p-2 rounded-md w-full text-black" />
           </div>
         </div>
       ))}
-      <div className="flex flex-col items-end gap-2 mt-5">
-        <h1
-          className="text-lg font-medium underline cursor-pointer text-black-600"
-          onClick={addNewMaterial}
-        >
-          Add New Material
-        </h1>
+
+      {/* Add New Area Button */}
+      <div className="mt-6">
+        <button onClick={addNewArea} className="bg-blue-500 text-white py-2 px-4 rounded-md">
+          Add New Area +
+        </button>
       </div>
     </div>
- 
-          <div className="grid grid-cols-3 gap-4 mt-4">
-            <div>
-              <label className="text-sm text-gray-600">Type of Panel:</label>
-              <input type="text" placeholder="00" className="border p-2 rounded-md w-full" />
-            </div>
-            <div>
-              <label className="text-sm text-gray-600">Off Set:</label>
-              <input type="text" placeholder="00" className="border p-2 rounded-md w-full" />
-            </div>
-            <div>
-              <label className="text-sm text-gray-600">Sheet Thickness:</label>
-              <input type="text" placeholder="00" className="border p-2 rounded-md w-full" />
-            </div>
-          </div>
- 
-          <div className="grid grid-cols-3 gap-4 mt-4">
-            <div>
-              <label className="text-sm text-gray-600">Center Height:</label>
-              <input type="text" placeholder="00" className="border p-2 rounded-md w-full" />
-            </div>
-            <div>
-              <label className="text-sm text-gray-600">Extra Panel:</label>
-              <input type="text" placeholder="00" className="border p-2 rounded-md w-full" />
-            </div>
-            <div>
-              <label className="text-sm text-gray-600">No of Bay:</label>
-              <input type="text" placeholder="00" className="border p-2 rounded-md w-full" />
-            </div>
-          </div>
- 
-          <div className="grid grid-cols-3 gap-4 mt-4">
-            <div>
-              <label className="text-sm text-gray-600">Cutting Length:</label>
-              <input type="text" placeholder="00" className="border p-2 rounded-md w-full" />
-            </div>
-            <div>
-              <label className="text-sm text-gray-600">Final Cutting:</label>
-              <input type="text" placeholder="00" className="border p-2 rounded-md w-full" />
-            </div>
-          </div>
-        </div>
-      )}    
- 
- 
-<div className="flex items-center gap-2  w-full">
-  <label className="text-sm text-gray-600 w-medium">Comments:</label>
-  <input
-    type="text"
-    placeholder="Enter comment"
-    className="w-5/6 border border-gray-300 p-2 rounded-md focus:outline-indigo-500 bg-white"
-  />
-</div>
- 
- 
-              <div className="mt-4">
-                <input type="file" className="border p-2 rounded-md w-small" />
-              </div>
- 
-              <div className="mt-4 text-right">
-              <button
-        onClick={addNewArea}
-        className="bg-blue-500 text-white py-2 px-4 rounded-md mb-4"
-      >
-        Add New Area +
-      </button>
-      <button
-      onClick={() => removeArea(area.id)}
-      className="bg-red-500 text-white py-2 px-4 rounded-md mt-4"
-    >
-      Remove Area
-    </button>
-              </div>
- 
- 
-</div>))}
-            </div>
- 
+
+
+
+
+
+
+
+
+
+
  
             <div className="p-6  ">
   <h2 className="text-lg font-semibold text-indigo-900 mb-4">Estimate</h2>

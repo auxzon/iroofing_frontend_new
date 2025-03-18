@@ -51,9 +51,11 @@ const fetchProjectStatus = async () => {
 };
 
 
-  const filteredData = data.filter((item) =>
-    item.clientId.name.toLowerCase().includes(search.toLowerCase())
-  );
+const filteredData = data.filter((itemss) =>
+  itemss.clientId && itemss.clientId.name &&
+  itemss.clientId.name.toLowerCase().includes(search.toLowerCase())
+);
+
 
   const paginatedData = filteredData.slice(
     (currentPage - 1) * itemsPerPage,

@@ -23,4 +23,5 @@ export const adminEndponits = {
      getAllCategories:"admin/getAllCategories",
      getAllProjectTypes:"admin/getAllProjectType",
      getProjectStatus:"estimate/getAllEstimates ", 
+     
 }

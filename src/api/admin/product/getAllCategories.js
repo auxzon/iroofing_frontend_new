@@ -20,3 +20,43 @@ export const getAllProjectTypes = async () => {
         return [];
     }
 };
+
+
+
+
+export const fetchAllProjectType = async () => {
+    try {
+     const response = await Api.get("/admin/getAllProjectType")
+       console.log(response);
+       
+      return response.data; // Return response data
+    } catch (error) {
+      throw error.response?.data?.message || "An error occurred while adding thickness.";
+    }
+  };
+   
+  export const  addProduct = async (payload) => {
+   
+      try {
+        console.log('payloadsss',payload);
+       
+       const response = await Api.post("/admin/addProduct",payload)
+         console.log('Api',response);
+         
+        return response.data; // Return response data
+      } catch (error) {
+        throw error
+      }
+    };
+   
+
+   
+    export const getAllMaterialItem = async () => {
+      try {
+        const response = await Api.get("/rates/getAllItems");
+        return response.data; // Ensure correct response structure
+      } catch (error) {
+        throw error.response?.data?.message || "Error fetching categories.";
+      }
+    };
+   

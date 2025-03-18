@@ -15,6 +15,7 @@ import ResetPassword from "../../common/ResetPassword"
 import CustomerDetailpage from '../../AdminDasboard/pages/CustomerDetailpage'
 import AdminExistingMaterial from '../../AdminDasboard/pages/AdminExistingMaterial'
 import CustomMeasurement from "../../AdminDasboard/pages/CustomMeasurement"
+import FindProductView from '../../AdminDasboard/pages/FindProductView'
 
 const AdminRoutes = () => {
     return (
@@ -34,6 +35,7 @@ const AdminRoutes = () => {
                 <Route path="customerDetailPage" element={<CustomerDetailpage />} />
                 <Route path="adminexistingMaterial" element={<AdminExistingMaterial />} />
                 <Route path="custommeasurement" element={<CustomMeasurement/>} />
+                <Route path="findproductview" element={<FindProductView/>} />
          
             </Routes>
 

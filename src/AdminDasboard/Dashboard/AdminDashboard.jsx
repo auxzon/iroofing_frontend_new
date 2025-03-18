@@ -14,152 +14,59 @@ const AdminDashboard = () => {
   const [selectedItems, setSelectedItems] = useState([]);
  
 
-
   const toggleSidebar = () => {
     setIsSidebarOpen((prev) => !prev);
   };
 
   
+  const [ongoingProjects, setongoingProjects] = useState([]);
+const [completedProjects, setCompletedProjects] = useState([]);
+
+console.log("ongoingProjects",ongoingProjects);
+console.log("completedProjects",completedProjects);
+
+  // --------------------------------------------------
+
+  useEffect(() => {
+    fetchProjectStatus();
+  }, []);
+
+  useEffect(() => {
+    console.log("Updated Ongoing Projects:", ongoingProjects);
+  }, [ongoingProjects]);
+  
+
   const fetchProjectStatus = async () => {
     try {
-        setLoading(true);
-        const response = await getProjectStatus();
+      setLoading(true);
+      const response = await getProjectStatus();
+      if (!response || !response.data) throw new Error("Invalid response format");
 
-        if (!response || !response.data) {
-            throw new Error("Invalid response format");
-        }
-
-        console.log("Client Response:", response.data);
-        const clients = response.data || [];
-
-        // Filter only "On-going" tasks
-        const filtered = clients.filter((project) => project.status === "On-going");
-
-        setData(clients);
-        setFilteredData(filtered); // Only "On-going" tasks will be displayed
-        setError(null);
+      console.log("Project Data:", response.data);
+      const projects = response.data || [];
+      setongoingProjects(projects.filter((p) => p.status !== "Finished"));
+      setCompletedProjects(projects.filter((p) => p.status === "Finished"));
+      setError(null);
     } catch (err) {
-        console.error("Error fetching client data:", err.message || err);
-        setError(err.response?.data?.message || "Failed to fetch client data");
+      console.error("Error fetching project data:", err);
+      setError(err.response?.data?.message || "Failed to fetch project data");
     } finally {
-        setLoading(false);
+      setLoading(false);
     }
-};
+  };
 
-  // --------------------------------------------------
+  // Filtered Projects
+  const filteredOngoing = ongoingProjects.filter((p) =>
+    p.name?.toLowerCase().includes(searchOngoing.toLowerCase())
+  );
+  const filteredCompleted = completedProjects.filter((p) =>
+    p.name?.toLowerCase().includes(searchCompleted.toLowerCase())
+  );
+  
+  const [isExpanded, setIsExpanded] = useState(false);
+  // Limit displayed projects if not expanded
+  const displayedProjects = isExpanded ? filteredOngoing : filteredOngoing.slice(0, 2);
 
-  // --------------------------------------------------
-
-  const CompletedProjects = [
-    {
-      id: 1,
-      name: "Kevin",
-      date: "9-10-22",
-      location: "Kochi",
-      roof: "Car Porch",
-      amount: "14,500",
-      payment: "paid",
-    },
-    {
-      id: 2,
-      name: "Marley",
-      date: "9-10-22",
-      location: "kollam",
-      roof: "ware Porch",
-      amount: "20,000",
-      payment: "paid",
-    },
-    {
-      id: 3,
-      name: "Gustavo",
-      date: "20-10-22",
-      location: "tsr",
-      roof: "car Porch",
-      amount: "10,000",
-      payment: "unpaid",
-    },
-    {
-      id: 4,
-      name: "Chance",
-      date: "12-10-22",
-      location: "kochi",
-      roof: "ware Porch",
-      amount: "20,000",
-      payment: "paid",
-    },
-    {
-      id: 5,
-      name: "Marley",
-      date: "9-10-22",
-      location: "kollam",
-      roof: "ware Porch",
-      amount: "20,000",
-      payment: "paid",
-    },
-    {
-      id: 6,
-      name: "Miracle",
-      date: "9-10-22",
-      location: "kollam",
-      roof: "ware Porch",
-      amount: "20,000",
-      payment: "paid",
-    },
-    {
-      id: 7,
-      name: "Ashlynn",
-      date: "9-10-22",
-      location: "kollam",
-      roof: "ware Porch",
-      amount: "20,000",
-      payment: "paid",
-    },
-    {
-      id: 8,
-      name: "James",
-      date: "9-10-22",
-      location: "kollam",
-      roof: "ware Porch",
-      amount: "20,000",
-      payment: "paid",
-    },
-    {
-      id: 9,
-      name: "george",
-      date: "9-10-22",
-      location: "kollam",
-      roof: "ware Porch",
-      amount: "20,000",
-      payment: "paid",
-    },
-    {
-      id: 10,
-      name: "xavi",
-      date: "9-10-22",
-      location: "kollam",
-      roof: "ware Porch",
-      amount: "20,000",
-      payment: "paid",
-    },
-    {
-      id: 11,
-      name: "pedri",
-      date: "9-10-22",
-      location: "kollam",
-      roof: "ware Porch",
-      amount: "20,000",
-      payment: "paid",
-    },
-    {
-      id: 12,
-      name: "rodrigo",
-      date: "9-10-22",
-      location: "kollam",
-      roof: "ware Porch",
-      amount: "20,000",
-      payment: "paid",
-    },
-  ];
 
   // ------------------------------------------------------
 
@@ -181,11 +88,11 @@ const AdminDashboard = () => {
     }
   };
   // ----------------------
-  const [isExpanded, setIsExpanded] = useState(false);
+
   const [isExpanded2, setIsExpanded2] = useState(false);
   const [isExpanded3, setIsExpanded3] = useState(false);
   const [data, setData] = useState([]);
-  const [data2, setData2] = useState(CompletedProjects);
+  const [data2, setData2] = useState([]);
   const [data3, setData3] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -283,6 +190,8 @@ const AdminDashboard = () => {
     setIsExpanded3(!isExpanded3);
   };
 
+
+
   return (
     <div className="h-screen flex bg-gray-100  ">
       {/* Sidebar */}
@@ -337,109 +246,88 @@ const AdminDashboard = () => {
           {/* Tables */}
           <div className="space-y-8">
             {/* Ongoing Projects */}
-            <div className="bg-white rounded-xl shadow-md p-4">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-bold text-[#4c48a5]">
-                  Ongoing Projects
-                </h2>
-                <div className="flex space-x-2">
-                  <input
-                    type="text"
-                    placeholder="Search..."
-                    value={searchOngoing}
-                    onChange={handleSearchOngoing}
-                    className="border border-gray-300 rounded px-2 py-1"
-                  />
-                  <button
-                    onClick={() => handleDelete(item.id)}
-                    className="bg-red-500 text-white px-3 py-1 rounded mr-2"
-                  >
-                    Delete
-                  </button>
-                  <button className="bg-gray-200 text-gray-700 px-3 py-1 rounded">
-                    Filter
-                  </button>
+            <div className="bg-white rounded-xl shadow-md p-4 mb-6">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-xl font-bold text-[#4c48a5]">Ongoing Projects</h2>
+        <div className="flex space-x-2">
+        <input
+  type="text"
+  placeholder="Search..."
+  value={searchOngoing}
+  onChange={handleSearchOngoing}
+  className="border border-gray-300 rounded px-2 py-1"
+/>
 
-                  <button className="bg-gray-200 text-gray-700 px-3 py-1 rounded">
-                    Export
-                  </button>
-                </div>
-              </div>
-              <table className="w-full border-collapse border-t border-b border-gray-300 text-left">
-  <thead className="bg-gray-100">
-    <tr>
-      <th className="p-2 border-b border-gray-300"></th>
-      <th className="p-2 border-b border-gray-300">SL No</th>
-      <th className="p-2 border-b border-gray-300">Client Name</th>
-      <th className="p-2 border-b border-gray-300">Phone Number</th>
-      <th className="p-2 border-b border-gray-300">Location</th>
-      <th className="p-2 border-b border-gray-300">Work Type</th>
-      <th className="p-2 border-b border-gray-300">Status</th>
-      <th className="p-2 border-b border-gray-300">Action</th>
-    </tr>
-  </thead>
-  <tbody>
-    {(isExpanded ? filteredData : filteredData.slice(0, 2)).map((item, index) => (
-      <tr key={item.id} className="border-b border-gray-300 hover:bg-gray-50">
-        <td className="p-2">
-          <input
-            type="checkbox"
-            checked={selectedItems.includes(item.id)}
-            onChange={() => handleCheckboxChange(item.id)}
-          />
-        </td>
-        <td className="p-2">{index + 1 + (currentPage - 1) * itemsPerPage}</td>
-        <td className="p-2">{item.name}</td>
-        <td className="p-2">{item.phone}</td>
-        <td className="p-2">{item.location}</td>
-        <td className="p-2">{item.roof}</td>
-        <td
-          className={`p-2 ${
-            item.status === "On-going"
-              ? "text-green-500 font-semibold"
-              : "text-yellow-500"
-          }`}
+          <button className="bg-gray-200 text-gray-700 px-3 py-1 rounded">Filter</button>
+          <button className="bg-gray-200 text-gray-700 px-3 py-1 rounded">Export</button>
+        </div>
+      </div>
+
+      <table className="w-full border-collapse border text-left">
+        <thead className="bg-gray-100">
+          <tr>
+            <th className="p-2 border">SL No</th>
+            <th className="p-2 border">Client Name</th>
+            <th className="p-2 border">Phone</th>
+            <th className="p-2 border">Location</th>
+            <th className="p-2 border">Work Type</th>
+            <th className="p-2 border">Status</th>
+            <th className="p-2 border">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+        {ongoingProjects.length > 0 ? (
+  ongoingProjects.map((p, index) => (
+    <tr key={p._id} className="border hover:bg-gray-50">
+      <td className="p-2 border">{index + 1}</td>
+      <td className="p-2 border">{p.clientId?.name || "N/A"}</td>
+      <td className="p-2 border">{p.clientId?.phoneNo || "N/A"}</td>
+      <td className="p-2 border">{p.district || "N/A"}</td>
+      <td className="p-2 border">{p.workType || "Not Specified"}</td>
+      <td className="p-2 border text-green-500">{p.status || "Pending"}</td>
+      <td className="p-2 border">
+        <button
+          onClick={() => handleDelete(p._id)}
+          className="bg-red-500 text-white px-3 py-1 rounded"
         >
-          {item.status}
-        </td>
-        <td className="p-2">
-          <button className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">
-            See Details
-          </button>
-        </td>
-      </tr>
-    ))}
-  </tbody>
-</table>
+          Delete
+        </button>
+      </td>
+    </tr>
+  ))
+) : (
+  <tr>
+    <td colSpan="7" className="p-2 text-center">No projects found</td>
+  </tr>
+)}
+
+        </tbody>
+      </table>
+
+      <button onClick={handleToggleExpand} className="mt-2 text-blue-500 underline">
+        {isExpanded ? "Show Less" : "Show More"}
+      </button>
+
+      <div className="flex justify-between items-center mt-4">
+        <div>Page {currentPage} of {totalPages}</div>
+        <div className="flex space-x-2">
+          {[...Array(totalPages)].map((_, pageIndex) => (
+            <button
+              key={pageIndex}
+              onClick={() => handlePageChange(pageIndex + 1)}
+              className={`px-3 py-1 rounded ${
+                currentPage === pageIndex + 1 ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-700"
+              }`}
+            >
+              {pageIndex + 1}
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
 
 
-              <button
-                onClick={handleToggleExpand}
-                className="mt-2 text-blue-500 underline"
-              >
-                {isExpanded ? "Show Less" : "Show More"}
-              </button>
-              <div className="flex justify-between items-center mt-4">
-                <div>
-                  Page {currentPage} of {totalPages}
-                </div>
-                <div className="flex space-x-2">
-                  {[...Array(totalPages)].map((_, pageIndex) => (
-                    <button
-                      key={pageIndex}
-                      onClick={() => handlePageChange(pageIndex + 1)}
-                      className={`px-3 py-1 rounded ${
-                        currentPage === pageIndex + 1
-                          ? "bg-blue-500 text-white"
-                          : "bg-gray-200 text-gray-700"
-                      }`}
-                    >
-                      {pageIndex + 1}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
+
             {/* -------------------------------------------------- */}
             {/* Completed Projects */}
             {/* Completed Projects */}
@@ -486,43 +374,43 @@ const AdminDashboard = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {(isExpanded2
-                    ? paginatedData2
-                    : paginatedData2.slice(0, 2)
-                  ).map((item, index) => (
-                    <tr key={item.id} className="border-b border-gray-300">
-                      <td className="p-2">
-                        <input
-                          type="checkbox"
-                          checked={selectedItems.includes(item.id)}
-                          onChange={() => handleCheckboxChange(item.id)}
-                        />
-                      </td>
-                      <td className="p-2">
-                        {index + 1 + (currentPage - 1) * itemsPerPage}
-                      </td>
-                      <td className="p-2">{item.name}</td>
-                      <td className="p-2">{item.date}</td>
-                      <td className="p-2">{item.location}</td>
-                      <td className="p-2">{item.roof}</td>
-                      <td className="p-2">{item.amount}</td>
-                      <td
-                        className={`p-2 ${
-                          item.payment === "paid"
-                            ? "text-green-500"
-                            : "text-yellow-500"
-                        }`}
-                      >
-                        {item.payment}
-                      </td>
-                      <td className="p-2">
-                        <button className="bg-blue-500 text-white px-3 py-1 rounded-full">
-                          See Details
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
+                {completedProjects.length > 0 ? (
+  completedProjects.map((p, index) => (
+    <tr key={p._id} className="border hover:bg-gray-50">
+      <td className="p-2">
+        <input
+          type="checkbox"
+          checked={selectedItems.includes(p._id)}
+          onChange={() => handleCheckboxChange(p._id)}
+        />
+      </td>
+      <td className="p-2">{index + 1 + (currentPage - 1) * itemsPerPage}</td>
+      <td className="p-2">{p.name}</td>
+      <td className="p-2">{p.date}</td>
+      <td className="p-2">{p.location}</td>
+      <td className="p-2">{p.roof}</td>
+      <td className="p-2">{p.amount}</td>
+      <td className={`p-2 ${p.payment === "paid" ? "text-green-500" : "text-yellow-500"}`}>
+        {p.payment}
+      </td>
+      <td className="p-2">
+        <button className="bg-blue-500 text-white px-3 py-1 rounded-full">See Details</button>
+        <button
+          onClick={() => handleDelete(p._id)}
+          className="bg-red-500 text-white px-3 py-1 rounded-full ml-2"
+        >
+          Delete
+        </button>
+      </td>
+    </tr>
+  ))
+) : (
+  <tr>
+    <td colSpan="9" className="p-2 text-center">No completed projects found</td>
+  </tr>
+)}
+
+        </tbody>
               </table>
               <button
                 onClick={handleToggleExpand2}

@@ -168,7 +168,7 @@ const Customers = () => {
                     <tr>
                       <th className="p-2 border-b border-gray-300"></th>
                       <th className="p-2 border-b border-gray-300">SL No</th>
-                      <th className="p-2 border-b border-gray-300">Client ID</th>
+                      {/* <th className="p-2 border-b border-gray-300">Client ID</th> */}
                       <th className="p-2 border-b border-gray-300">Client Name</th>
                       <th className="p-2 border-b border-gray-300">Phone Number</th>
                       <th className="p-2 border-b border-gray-300">Location</th>
@@ -189,7 +189,7 @@ const Customers = () => {
                         <td className="p-2">
                           {index + 1 + (currentPage - 1) * itemsPerPage}
                         </td>
-                        <td className="p-2">{item.clientId}</td>
+                        {/* <td className="p-2">{item.clientId}</td> */}
                         <td className="p-2">{item.name}</td>
                         <td className="p-2">{item.phoneNo}</td>
                         <td className="p-2">{item.place}</td>
