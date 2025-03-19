@@ -35,8 +35,6 @@ export const verifyotp =async(value)=>{
     }
 }
 
-
-
 export const resetpassword = async (value) => {
     try {
         const response = await Api.post(adminEndponits.resetpassword, value);
@@ -46,3 +44,13 @@ export const resetpassword = async (value) => {
         throw err;
     }
 };
+
+export const logout =async()=>{
+    try{
+        const response = await Api.post(adminEndponits.logout)
+        return response;
+    }catch(err){
+        console.log(err)
+        throw err;
+    }
+}
