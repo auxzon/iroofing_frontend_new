@@ -259,7 +259,7 @@ try {
 
  
                 <div
-                onClick={() => navigate("/admin/adminexistingmaterial")}
+                onClick={() => navigate("/rates/existingmaterial")}
                 className="cursor-pointer"
               >
 

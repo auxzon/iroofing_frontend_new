@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import Header from "../../RatesDashboard/components/Header";
+import Header from "../../AdminDasboard/components/Header";
 import Sidebar from "../../AdminDasboard/components/SideNav";
 import { useNavigate } from "react-router-dom";
 import { getAllMaterials } from "../../api/admin/materials/additem";
