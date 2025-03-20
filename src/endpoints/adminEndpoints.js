@@ -6,6 +6,7 @@ export const adminEndponits = {
     getClient:"admin/client",
     addNewclient:"admin/client",
     login:"auth/login",
+    logout:"auth/logout",
     forgotpassword:"auth/request-otp",
     getCustomers:"admin/customers",
     sheeting:"admin/labourcost",

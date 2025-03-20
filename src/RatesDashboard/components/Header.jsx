@@ -82,4 +82,3 @@ const Header = () => {
  
 export default Header;
  
- updated the ratesSettings
