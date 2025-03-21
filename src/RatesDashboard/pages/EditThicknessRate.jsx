@@ -4,8 +4,10 @@ import Sidebar from "../../RatesDashboard/components/Sidebar";
 import { Link } from "react-router-dom";
 
 const EditThicknessRate = () => {
+  
   const [activeTab, setActiveTab] = useState("Materials");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
 
   return (
     <div className="flex min-h-screen bg-gray-100">

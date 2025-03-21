@@ -98,7 +98,7 @@ console.log("completedProjects",completedProjects);
   const [error, setError] = useState("");
 
   const [searchOngoing, setSearchOngoing] = useState("");
-  const [searchCompleted, setSearchCompleted] = useState("");
+  
   const [searchEmployee, setSearchEmployee] = useState("");
   // const [search3, setSearch3] = useState("");
 
@@ -154,26 +154,27 @@ console.log("completedProjects",completedProjects);
   const totalPages2 = Math.ceil(filteredData2.length / itemsPerPage);
   const totalPages3 = Math.ceil(filteredData3.length / itemsPerPage);
 
-  const handleCheckboxChange = (id) => {
-    setSelectedItems((prevSelected) =>
-      prevSelected.includes(id)
-        ? prevSelected.filter((item) => item !== id)
-        : [...prevSelected, id]
-    );
-  };
+  // const handleCheckboxChange = (id) => {
+  //   setSelectedItems((prevSelected) => {
+  //     console.log("Current Selected Items:", prevSelected);
+  //     console.log("Toggled Item ID:", id);
+  //     return prevSelected.includes(id)
+  //       ? prevSelected.filter((item) => item !== id)
+  //       : [...prevSelected, id];
+  //   });
+  // };
+  
+  
+  
 
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
 
-  const handleSearchOngoing = (event) => {
-    setSearchOngoing(event.target.value);
-  };
 
-  const handleSearchCompleted = (event) => {
-    setSearchCompleted(event.target.value);
-  };
+
+
 
   const handleSearchEmployee = (e) => {
     setSearchEmployee(e.target.value);
@@ -190,6 +191,51 @@ console.log("completedProjects",completedProjects);
     setIsExpanded3(!isExpanded3);
   };
 
+
+
+
+
+  
+  const [filteredProjects, setFilteredProjects] = useState([]);
+  
+  useEffect(() => {
+    // Initially, show all projects
+    setFilteredProjects(ongoingProjects);
+  }, [ongoingProjects]);
+  
+  const handleSearchOngoing = (e) => {
+    const searchTerm = e.target.value;
+    setSearchOngoing(searchTerm);
+  
+    const filtered = ongoingProjects.filter((p) =>
+      p.clientId?.name?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  
+    setFilteredProjects(filtered);
+  };
+  
+
+  const [searchCompleted, setSearchCompleted] = useState("");
+  const [filteredCompletedProjects, setFilteredCompletedProjects] = useState([]);
+  
+  useEffect(() => {
+    // Show all projects initially
+    setFilteredCompletedProjects(completedProjects);
+  }, [completedProjects]);
+  
+  const handleSearchCompleted = (e) => {
+    const searchTerm = e.target.value;
+    setSearchCompleted(searchTerm);
+  
+    const filtered = completedProjects.filter((p) =>
+      p.name?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  
+    setFilteredCompletedProjects(filtered);
+  };
+
+
+  
 
 
   return (
@@ -224,7 +270,7 @@ console.log("completedProjects",completedProjects);
               <div className="text-green-500 text-3xl">
                 <img src={addclients} alt="" />
               </div>
-              <div>
+              <div onClick={() => navigate("/admin/customers")}>
                 <h2 className="text-lg font-normal">Existing Clients</h2>
                 <p className="text-gray-600">View existing clients</p>
               </div>
@@ -264,45 +310,44 @@ console.log("completedProjects",completedProjects);
       </div>
 
       <table className="w-full border-collapse border text-left">
-        <thead className="bg-gray-100">
-          <tr>
-            <th className="p-2 border">SL No</th>
-            <th className="p-2 border">Client Name</th>
-            <th className="p-2 border">Phone</th>
-            <th className="p-2 border">Location</th>
-            <th className="p-2 border">Work Type</th>
-            <th className="p-2 border">Status</th>
-            <th className="p-2 border">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-        {ongoingProjects.length > 0 ? (
-  ongoingProjects.map((p, index) => (
-    <tr key={p._id} className="border hover:bg-gray-50">
-      <td className="p-2 border">{index + 1}</td>
-      <td className="p-2 border">{p.clientId?.name || "N/A"}</td>
-      <td className="p-2 border">{p.clientId?.phoneNo || "N/A"}</td>
-      <td className="p-2 border">{p.district || "N/A"}</td>
-      <td className="p-2 border">{p.workType || "Not Specified"}</td>
-      <td className="p-2 border text-green-500">{p.status || "Pending"}</td>
-      <td className="p-2 border">
-        <button
-          onClick={() => handleDelete(p._id)}
-          className="bg-red-500 text-white px-3 py-1 rounded"
-        >
-          Delete
-        </button>
-      </td>
+  <thead className="bg-gray-100">
+    <tr>
+      <th className="p-2 border"></th> {/* Empty header for checkbox */}
+      <th className="p-2 border">SL No</th>
+      <th className="p-2 border">Client Name</th>
+      <th className="p-2 border">Phone</th>
+      <th className="p-2 border">Location</th>
+      <th className="p-2 border">Work Type</th>
+      <th className="p-2 border">Status</th>
     </tr>
-  ))
-) : (
-  <tr>
-    <td colSpan="7" className="p-2 text-center">No projects found</td>
-  </tr>
-)}
+  </thead>
+  <tbody>
+    {filteredProjects.length > 0 ? (
+      filteredProjects.map((p, index) => (
+        <tr key={p._id} className="border hover:bg-gray-50">
+          <td className="p-2 border">
+            <input type="checkbox" />
+          </td>
+          <td className="p-2 border">{index + 1}</td>
+          <td className="p-2 border">{p.clientId?.name || "N/A"}</td>
+          <td className="p-2 border">{p.clientId?.phoneNo || "N/A"}</td>
+          <td className="p-2 border">{p.clientId?.district || "N/A"}</td>
+          <td className="p-2 border">
+            {p.sheetingPrice?.roofModel || "Not Specified"}
+          </td>
+          <td className={`p-2 border ${p.status === "Pending" ? "text-yellow-500" : "text-green-500"}`}>
+            {p.status || "Pending"}
+          </td>
+        </tr>
+      ))
+    ) : (
+      <tr>
+        <td colSpan="7" className="p-2 text-center">No projects found</td>
+      </tr>
+    )}
+  </tbody>
+</table>
 
-        </tbody>
-      </table>
 
       <button onClick={handleToggleExpand} className="mt-2 text-blue-500 underline">
         {isExpanded ? "Show Less" : "Show More"}
@@ -359,58 +404,58 @@ console.log("completedProjects",completedProjects);
                 </div>
               </div>
               <table className="w-full border-collapse border-t border-b border-gray-300 text-left">
-                <thead>
-                  <tr>
-                    <th className="p-2 border-b border-gray-300"></th>
-                    <th className="p-2 border-b border-gray-300">SL No</th>
-                    <th className="p-2 border-b border-gray-300">
-                      Client Name
-                    </th>
-                    <th className="p-2 border-b border-gray-300">Date</th>
-                    <th className="p-2 border-b border-gray-300">Location</th>
-                    <th className="p-2 border-b border-gray-300">Work Type</th>
-                    <th className="p-2 border-b border-gray-300">Amount</th>
-                    <th className="p-2 border-b border-gray-300">Payment</th>
-                  </tr>
-                </thead>
-                <tbody>
-                {completedProjects.length > 0 ? (
-  completedProjects.map((p, index) => (
-    <tr key={p._id} className="border hover:bg-gray-50">
-      <td className="p-2">
-        <input
-          type="checkbox"
-          checked={selectedItems.includes(p._id)}
-          onChange={() => handleCheckboxChange(p._id)}
-        />
-      </td>
-      <td className="p-2">{index + 1 + (currentPage - 1) * itemsPerPage}</td>
-      <td className="p-2">{p.name}</td>
-      <td className="p-2">{p.date}</td>
-      <td className="p-2">{p.location}</td>
-      <td className="p-2">{p.roof}</td>
-      <td className="p-2">{p.amount}</td>
-      <td className={`p-2 ${p.payment === "paid" ? "text-green-500" : "text-yellow-500"}`}>
-        {p.payment}
-      </td>
-      <td className="p-2">
-        <button className="bg-blue-500 text-white px-3 py-1 rounded-full">See Details</button>
-        <button
-          onClick={() => handleDelete(p._id)}
-          className="bg-red-500 text-white px-3 py-1 rounded-full ml-2"
-        >
-          Delete
-        </button>
-      </td>
-    </tr>
-  ))
-) : (
+              
+              <thead>
   <tr>
-    <td colSpan="9" className="p-2 text-center">No completed projects found</td>
+    <th className="p-2 border-b border-gray-300"></th>
+    <th className="p-2 border-b border-gray-300">SL No</th>
+    <th className="p-2 border-b border-gray-300">Client Name</th>
+    <th className="p-2 border-b border-gray-300">Date</th>
+    <th className="p-2 border-b border-gray-300">Location</th>
+    <th className="p-2 border-b border-gray-300">Work Type</th>
+    <th className="p-2 border-b border-gray-300">Amount</th>
+    <th className="p-2 border-b border-gray-300">Payment</th>
+    <th className="p-2 border-b border-gray-300">Actions</th>
   </tr>
-)}
+</thead>
+<tbody>
+  {filteredCompletedProjects.length > 0 ? (
+    filteredCompletedProjects.map((p, index) => (
+      <tr key={p._id} className="border hover:bg-gray-50">
+        <td className="p-2">
+          <input
+            type="checkbox"
+           
+          />
+        </td>
+        <td className="p-2">{index + 1 + (currentPage - 1) * itemsPerPage}</td>
+        <td className="p-2">{p.name}</td>
+        <td className="p-2">{p.date}</td>
+        <td className="p-2">{p.location}</td>
+        <td className="p-2">{p.roof}</td>
+        <td className="p-2">{p.amount}</td>
+        <td className={`p-2 ${p.payment === "paid" ? "text-green-500" : "text-yellow-500"}`}>
+          {p.payment}
+        </td>
+        <td className="p-2">
+          <button className="bg-blue-500 text-white px-3 py-1 rounded-full">See Details</button>
+          <button
+            onClick={() => handleDelete(p._id)}
+            className="bg-red-500 text-white px-3 py-1 rounded-full ml-2"
+          >
+            Delete
+          </button>
+        </td>
+      </tr>
+    ))
+  ) : (
+    <tr>
+      <td colSpan="9" className="p-2 text-center">No completed projects found</td>
+    </tr>
+  )}
+</tbody>
 
-        </tbody>
+
               </table>
               <button
                 onClick={handleToggleExpand2}
@@ -487,36 +532,35 @@ console.log("completedProjects",completedProjects);
               </tr>
             </thead>
             <tbody>
-              {(isExpanded3 ? paginatedData3 : paginatedData3.slice(0, 2)).map(
-                (item, index) => (
-                  <tr key={item.id} className="border-b border-gray-300">
-                    <td className="p-2">
-                      <input
-                        type="checkbox"
-                        checked={selectedItems.includes(item.id)}
-                        onChange={() => handleCheckboxChange(item.id)}
-                      />
-                    </td>
-                    <td className="p-2">{index + 1}</td>
-                    <td className="p-2">{item.mailId}</td>
-                    <td className="p-2">{item.name}</td>
-                    <td className="p-2">{item.mobileNumber}</td>
-                    <td className="p-2">
-  {Array.isArray(item.designations) ? item.designations.join(", ") : item.designations || "N/A"}
+  {(isExpanded3 ? paginatedData3 : paginatedData3.slice(0, 2)).map((item, index) => (
+  <tr key={item.id || `row-${index}`} className="border-b border-gray-300">
+
+<td className="p-2">
+  <input
+    type="checkbox"
+ 
+  />
 </td>
-<td className={`p-2 ${item.isActive ? "text-green-500" : "text-yellow-500"
-                              }`}>
-                              {item.isActive ? "Active" : "Inactive"}
-                            </td>
-                    <td className="p-2">
-                      <button className="bg-blue-500 text-white px-3 py-1 rounded-full">
-                        See Details
-                      </button>
-                    </td>
-                  </tr>
-                )
-              )}
-            </tbody>
+
+      <td className="p-2">{(currentPage - 1) * itemsPerPage + index + 1}</td>
+      <td className="p-2">{item.mailId}</td>
+      <td className="p-2">{item.name}</td>
+      <td className="p-2">{item.mobileNumber}</td>
+      <td className="p-2">
+        {Array.isArray(item.designations) ? item.designations.join(", ") : item.designations || "N/A"}
+      </td>
+      <td className={`p-2 ${item.isActive ? "text-green-500" : "text-yellow-500"}`}>
+        {item.isActive ? "Active" : "Inactive"}
+      </td>
+      <td className="p-2">
+        <button className="bg-blue-500 text-white px-3 py-1 rounded-full">See Details</button>
+      </td>
+    </tr>
+  ))}
+</tbody>
+
+
+
           </table>
 
           <button

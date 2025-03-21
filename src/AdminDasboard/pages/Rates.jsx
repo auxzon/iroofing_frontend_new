@@ -318,7 +318,7 @@ const itemhandleSubmit = async (e) => {
                       Rate Per Meter
                     </label>
                     <input
-          type="text"
+          type="number"
           name="ratePerKg"
           className="flex-1 p-2 border border-gray-300 rounded-md w-80"
           placeholder="1"
@@ -331,7 +331,7 @@ const itemhandleSubmit = async (e) => {
                       Including Tax
                     </label>
                     <input
-          type="text"
+          type="number"
           name="includingTax"
           className="flex-1 p-2 border border-gray-300 rounded-md w-80"
           placeholder="1"
@@ -359,7 +359,7 @@ const itemhandleSubmit = async (e) => {
                       Bending Cost For C Channel Per Meter
                     </label>
                     <input
-          type="text"
+          type="number"
           name="bendingCostschannelPerMeter"
           className="flex-1 p-2 border border-gray-300 rounded-md w-[480px] mt-3"
           value={materialForm.bendingCostschannelPerMeter}
@@ -373,7 +373,7 @@ const itemhandleSubmit = async (e) => {
                       Bending Cost For Gutter Per Meter
                     </label>
                     <input
-          type="text"
+          type="number"
           name="bendingCostsgutterPerMeter"
           className="flex-1 p-2 border border-gray-300 rounded-md w-[480px]"
           value={materialForm.bendingCostsgutterPerMeter}
@@ -646,7 +646,7 @@ const itemhandleSubmit = async (e) => {
                   <option>0.7</option>
                 </select> */}
  
-<input type="text"  value={thickness}   onChange={(e) => setThicknessRate(e.target.value)}   className="w-full p-2 border border-gray-300 rounded-md" />
+<input type="number"  value={thickness}   onChange={(e) => setThicknessRate(e.target.value)}   className="w-full p-2 border border-gray-300 rounded-md" />
  
                     </div>
                     {/* <div className="">
@@ -666,7 +666,7 @@ const itemhandleSubmit = async (e) => {
                         Margin
                       </label>
                       <input
-                  type="text"
+                  type="number"
                   value={margin}
                   onChange={(e) => setMargin(e.target.value)}
                   className="w-full p-2 border border-gray-300 rounded-md"
@@ -678,7 +678,7 @@ const itemhandleSubmit = async (e) => {
                         Base Rate Per Weight
                       </label>
                       <input
-                  type="text"
+                  type="number"
                   value={baseRatePerWt}
                   onChange={(e) => setBaseRatePerWt(e.target.value)}
                   className="w-full p-2 border border-gray-300 rounded-md"
@@ -702,7 +702,7 @@ const itemhandleSubmit = async (e) => {
                         Transportation
                       </label>
                       <input
-                  type="text"
+                  type="number"
                   value={transportation}
                   onChange={(e) => setTransportation(e.target.value)}
                   className="w-full p-2 border border-gray-300 rounded-md"
@@ -714,7 +714,7 @@ const itemhandleSubmit = async (e) => {
                         Loading & Unloading
                       </label>
                       <input
-                  type="text"
+                  type="number"
                   value={loadingUnloading}
                   onChange={(e) => setLoadingUnloading(e.target.value)}
                   className="w-full p-2 border border-gray-300 rounded-md"
@@ -843,7 +843,7 @@ const itemhandleSubmit = async (e) => {
                   Minimum Charge
                 </label>
                 <input
-                  type="text"
+                  type="number"
                   name="minimumCharge"
                   value={formData.minimumCharge}
                   onChange={handleInputChange}
@@ -856,7 +856,7 @@ const itemhandleSubmit = async (e) => {
                   Minimum Km Covered
                 </label>
                 <input
-                  type="text"
+                  type="number"
                   name="minimumKm"
                   value={formData.minimumKm}
                   onChange={handleInputChange}
@@ -867,7 +867,7 @@ const itemhandleSubmit = async (e) => {
               <div>
                 <label className="text-sm font-medium text-gray-700">Per Km</label>
                 <input
-                  type="text"
+                  type="number"
                   name="perKm"
                   value={formData.perKm}
                   onChange={handleInputChange}
@@ -880,7 +880,7 @@ const itemhandleSubmit = async (e) => {
                   Petrol Charge
                 </label>
                 <input
-                  type="text"
+                  type="number"
                   name="petrolCharge"
                   value={formData.petrolCharge}
                   onChange={handleInputChange}

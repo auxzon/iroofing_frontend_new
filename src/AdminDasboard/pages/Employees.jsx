@@ -134,12 +134,12 @@ function Employees() {
                       Delete Selected
                     </button>
                   )}
-                  <button className="bg-gray-200 text-gray-700 px-3 py-1 rounded">
+                  {/* <button className="bg-gray-200 text-gray-700 px-3 py-1 rounded">
                     Filter
                   </button>
                   <button className="bg-gray-200 text-gray-700 px-3 py-1 rounded">
                     Export
-                  </button>
+                  </button> */}
                 </div>
               </div>
 

@@ -135,12 +135,12 @@ const filteredData = data.filter((itemss) =>
                 >
                   Delete
                 </button>
-                <button className="bg-gray-200 text-gray-700 px-3 py-1 rounded">
+                {/* <button className="bg-gray-200 text-gray-700 px-3 py-1 rounded">
                   Filter
-                </button>
-                <button className="bg-gray-200 text-gray-700 px-3 py-1 rounded">
+                </button> */}
+                {/* <button className="bg-gray-200 text-gray-700 px-3 py-1 rounded">
                   Export
-                </button>
+                </button> */}
               </div>
             </div>
           </div>
@@ -154,6 +154,7 @@ const filteredData = data.filter((itemss) =>
             <table className="w-full border-collapse border-t border-b border-gray-300 text-left">
               <thead>
                 <tr>
+                <th className="p-2 border-b border-gray-300"></th>
                   <th className="p-2 border-b border-gray-300">SL No</th>
                   <th className="p-2 border-b border-gray-300">Client Name</th>
                   {activeTab === "Completed" ? (
@@ -179,6 +180,12 @@ const filteredData = data.filter((itemss) =>
               <tbody>
   {paginatedData.map((item, index) => (
     <tr key={item._id} className="border-b border-gray-300">
+       <td className="p-2">
+          <input
+            type="checkbox"
+           
+          />
+        </td>
       <td className="p-2">{index + 1 + (currentPage - 1) * itemsPerPage}</td>
       <td className="p-2">{item.clientId.name}</td>
       {activeTab === "Completed" ? (

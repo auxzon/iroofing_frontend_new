@@ -185,7 +185,7 @@ const handleItemSaveClick = async () => {
     <div className="flex flex-col gap-3">
       <label className="text-sm font-medium text-[#15164A]">Including Tax</label>
       <input
-        type="text"
+        type="number"
         className="flex-1 p-2 border border-gray-300 rounded-md w-80"
         value={selectedMaterial?.includingTax || ""}
         onChange={handleInputChange}
@@ -196,7 +196,7 @@ const handleItemSaveClick = async () => {
     <div className="flex flex-col gap-3">
       <label className="text-sm font-medium text-[#15164A]">Last Updated Date</label>
       <input
-        type="text"
+        type="number"
         className="flex-1 p-2 border border-gray-300 rounded-md w-80"
         value={selectedMaterial?.lastUpdatedDate || ""}
         onChange={handleInputChange}
@@ -210,7 +210,7 @@ const handleItemSaveClick = async () => {
     <div className="flex flex-col">
       <label className="text-sm font-medium text-[#15164A]">Bending Cost For C Channel Per Meter</label>
       <input
-        type="text"
+        type="number"
         className="flex-1 p-2 border border-gray-300 rounded-md w-[480px] mt-3"
         value={selectedMaterial?.bendingCostschannelPerMeter || ""}
         onChange={handleInputChange}
@@ -222,7 +222,7 @@ const handleItemSaveClick = async () => {
     <div className="flex flex-col">
       <label className="text-sm font-medium text-[#15164A]">Bending Cost For Gutter Per Meter</label>
       <input
-        type="text"
+        type="number"
         className="flex-1 p-2 border border-gray-300 rounded-md w-[480px]"
         value={selectedMaterial?.bendingCostsgutterPerMeter || ""}
         onChange={handleInputChange}
@@ -275,7 +275,7 @@ const handleItemSaveClick = async () => {
       <div className="flex flex-col gap-3">
         <label className="text-sm font-medium text-[#15164A]">Std.Kg</label>
         <input
-          type="text"
+          type="number"
           name="stdKg"
           value={selectedItem?.stdKg || ""}
           onChange={handleItemInputChange}
@@ -290,7 +290,7 @@ const handleItemSaveClick = async () => {
           Painting cost/Zinc dipping cost
         </label>
         <input
-          type="text"
+          type="number"
           name="paintingCostOrZinkDippingCost"
           value={selectedItem?.paintingCostOrZincDippingCost || ""}
           onChange={handleItemInputChange}
@@ -329,7 +329,7 @@ const handleItemSaveClick = async () => {
       <div className="flex flex-col gap-3">
         <label className="text-sm font-medium text-gray-700">Rate per Meter</label>
         <input
-          type="text"
+          type="number"
           name="ratePerMeter"
           value={selectedItem?.ratePerMeter || ""}
           onChange={handleItemInputChange}
@@ -342,7 +342,7 @@ const handleItemSaveClick = async () => {
       <div className="flex flex-col gap-3">
         <label className="text-sm font-medium text-[#15164A]">Surface Area Per Meter</label>
         <input
-          type="text"
+          type="number"
           name="surfaceArea"
           value={selectedItem?.surfaceAreaPerMeter || ""}
           onChange={handleItemInputChange}
@@ -358,7 +358,7 @@ const handleItemSaveClick = async () => {
       <div className="flex flex-col gap-3">
         <label className="text-sm font-medium text-[#15164A]">Quantity</label>
         <input
-          type="text"
+          type="number"
           name="quantity"
           value={selectedItem?.quantity || ""}
           onChange={handleItemInputChange}
@@ -371,7 +371,7 @@ const handleItemSaveClick = async () => {
       <div className="flex flex-col gap-3">
         <label className="text-sm font-medium text-[#15164A]">Kg/Meter</label>
         <input
-          type="text"
+          type="number"
           name="kgPerMeter"
           value={selectedItem?.kgPerMeter || ""}
           onChange={handleItemInputChange}
@@ -384,7 +384,7 @@ const handleItemSaveClick = async () => {
       <div className="flex flex-col gap-3">
         <label className="text-sm font-medium text-[#15164A]">Final Meter</label>
         <input
-          type="text"
+          type="number"
           name="finalMeter"
           value={selectedItem?.finalPerMeter || ""}
           onChange={handleItemInputChange}
