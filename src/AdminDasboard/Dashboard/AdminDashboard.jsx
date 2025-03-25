@@ -1,4 +1,4 @@
-import { useState,useEffect } from "react";
+import { useState, useEffect } from "react";
 import Header from "../components/Header";
 import addnew from "../assets/icons/adduser.png";
 import addclients from "../assets/icons/addclients.png";
@@ -11,23 +11,23 @@ import { getProjectStatus } from "../../api/admin/projects/projectstatus";
 const AdminDashboard = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [selectedItems, setSelectedItems] = useState([]);
- 
+
 
   const toggleSidebar = () => {
     setIsSidebarOpen((prev) => !prev);
   };
 
-  
+
   const [ongoingProjects, setongoingProjects] = useState([]);
-const [completedProjects, setCompletedProjects] = useState([]);
+  const [completedProjects, setCompletedProjects] = useState([]);
 
-console.log("ongoingProjects",ongoingProjects);
-console.log("completedProjects",completedProjects);
-
-
+  console.log("ongoingProjects", ongoingProjects);
+  console.log("completedProjects", completedProjects);
 
 
-const [selectedProjects, setSelectedProjects] = useState([]);
+
+
+  const [selectedProjects, setSelectedProjects] = useState([]);
 
   const handleCheckboxChange = (projectId) => {
     setSelectedProjects((prevSelected) =>
@@ -44,12 +44,12 @@ const [selectedProjects, setSelectedProjects] = useState([]);
     }
 
     try {
-     const response= await deleteEstimate({ ids: selectedProjects });
+      const response = await deleteEstimate({ ids: selectedProjects });
       console.log(response);
-      
-     
-     alert("Deleted successfully!");
-          window.location.reload();
+
+
+      alert("Deleted successfully!");
+      window.location.reload();
       setSelectedProjects([]); // Clear selection after deletion
       // Refresh or fetch updated project list
     } catch (error) {
@@ -58,30 +58,6 @@ const [selectedProjects, setSelectedProjects] = useState([]);
     }
   };
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  // --------------------------------------------------
-
   useEffect(() => {
     fetchProjectStatus();
   }, []);
@@ -89,7 +65,7 @@ const [selectedProjects, setSelectedProjects] = useState([]);
   useEffect(() => {
     console.log("Updated Ongoing Projects:", ongoingProjects);
   }, [ongoingProjects]);
-  
+
 
   const fetchProjectStatus = async () => {
     try {
@@ -117,7 +93,7 @@ const [selectedProjects, setSelectedProjects] = useState([]);
   const filteredCompleted = completedProjects.filter((p) =>
     p.name?.toLowerCase().includes(searchCompleted.toLowerCase())
   );
-  
+
   const [isExpanded, setIsExpanded] = useState(false);
   // Limit displayed projects if not expanded
   const displayedProjects = isExpanded ? filteredOngoing : filteredOngoing.slice(0, 2);
@@ -153,7 +129,7 @@ const [selectedProjects, setSelectedProjects] = useState([]);
   const [error, setError] = useState("");
 
   const [searchOngoing, setSearchOngoing] = useState("");
-  
+
   const [searchEmployee, setSearchEmployee] = useState("");
   // const [search3, setSearch3] = useState("");
 
@@ -192,7 +168,7 @@ const [selectedProjects, setSelectedProjects] = useState([]);
 
   const navigate = useNavigate();
 
- 
+
 
   const handleDelete2 = (id) => {
     setData2(data.filter((item) => item.id !== id));
@@ -216,18 +192,14 @@ const [selectedProjects, setSelectedProjects] = useState([]);
   //       : [...prevSelected, id];
   //   });
   // };
-  
-  
-  
+
+
+
 
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
-
-
-
-
 
   const handleSearchEmployee = (e) => {
     setSearchEmployee(e.target.value);
@@ -244,71 +216,66 @@ const [selectedProjects, setSelectedProjects] = useState([]);
     setIsExpanded3(!isExpanded3);
   };
 
-
-
-
-
-  
   const [filteredProjects, setFilteredProjects] = useState([]);
-  
+
   useEffect(() => {
     // Initially, show all projects
     setFilteredProjects(ongoingProjects);
   }, [ongoingProjects]);
-  
+
   const handleSearchOngoing = (e) => {
     const searchTerm = e.target.value;
     setSearchOngoing(searchTerm);
-  
+
     const filtered = ongoingProjects.filter((p) =>
       p.clientId?.name?.toLowerCase().includes(searchTerm.toLowerCase())
     );
-  
+
     setFilteredProjects(filtered);
   };
-  
+
 
   const [searchCompleted, setSearchCompleted] = useState("");
   const [filteredCompletedProjects, setFilteredCompletedProjects] = useState([]);
-  
+
   useEffect(() => {
     // Show all projects initially
     setFilteredCompletedProjects(completedProjects);
   }, [completedProjects]);
-  
+
   const handleSearchCompleted = (e) => {
     const searchTerm = e.target.value;
     setSearchCompleted(searchTerm);
-  
+
     const filtered = completedProjects.filter((p) =>
       p.name?.toLowerCase().includes(searchTerm.toLowerCase())
     );
-  
+
     setFilteredCompletedProjects(filtered);
   };
 
 
-  
+
 
 
   return (
-    <div className="h-screen flex bg-gray-100  ">
+    <div className="flex h-screen bg-gray-100 ">
       {/* Sidebar */}
       <SideNav isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col  ">
+      <div className="flex flex-col flex-1 ">
         <Header toggleSidebar={toggleSidebar} />
 
         {/* Dashboard Content */}
-        <div className=" space-y-8 bg-gray-100 p-5 overflow-auto">
+        <div className="p-5 space-y-8 overflow-auto bg-gray-100 ">
           {/* Dashboard Header */}
           <h1 className="text-3xl font-bold text-[#4c48a5]">Dashboard</h1>
 
           {/* Action Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 ">
-            <div className="p-4 bg-white rounded-2xl shadow-md flex items-center space-x-4 py-5">
-              <div className="text-blue-500 text-3xl">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-3 ">
+            <div className="flex items-center p-4 py-5 space-x-4 bg-white shadow-md rounded-2xl">
+              <div className="text-3xl text-blue-500">
                 <img src={addnew} alt="" />
               </div>
               <div
@@ -319,8 +286,8 @@ const [selectedProjects, setSelectedProjects] = useState([]);
                 <p className="text-gray-600">To register new clients</p>
               </div>
             </div>
-            <div className="p-4 bg-white rounded-2xl shadow-md flex items-center space-x-4 py-5">
-              <div className="text-green-500 text-3xl">
+            <div className="flex items-center p-4 py-5 space-x-4 bg-white shadow-md rounded-2xl">
+              <div className="text-3xl text-green-500">
                 <img src={addclients} alt="" />
               </div>
               <div onClick={() => navigate("/admin/customers")}>
@@ -328,8 +295,8 @@ const [selectedProjects, setSelectedProjects] = useState([]);
                 <p className="text-gray-600">View existing clients</p>
               </div>
             </div>
-            <div className="p-4 bg-white rounded-2xl shadow-md flex items-center space-x-4 py-5">
-              <div className="text-orange-500 text-3xl">
+            <div className="flex items-center p-4 py-5 space-x-4 bg-white shadow-md rounded-2xl">
+              <div className="text-3xl text-orange-500">
                 <img src={addestimate} alt="" />
               </div>
               <div
@@ -345,73 +312,73 @@ const [selectedProjects, setSelectedProjects] = useState([]);
           {/* Tables */}
           <div className="space-y-8">
             {/* Ongoing Projects */}
-            <div className="bg-white rounded-xl shadow-md p-4 mb-6">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-bold text-[#4c48a5]">Ongoing Projects</h2>
-        <div className="flex space-x-2">
-     
-        <input
-            type="text"
-            placeholder="Search..."
-         value={searchOngoing}
-            onChange={handleSearchOngoing}
-            className="border border-gray-300 rounded px-2 py-1"
-          />
-          <button onClick={handleDelete} className="bg-red-500 text-white px-3 py-1 rounded">
-            Delete
-          </button>
-             </div>
-      </div>
+            <div className="p-4 mb-6 bg-white shadow-md rounded-xl">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-bold text-[#4c48a5]">Ongoing Projects</h2>
+                <div className="flex space-x-2">
 
-      <table className="w-full border-collapse border text-left">
-        <thead className="bg-gray-100">
-          <tr>
-            <th className="p-2 border"></th> {/* Checkbox header */}
-            <th className="p-2 border">SL No</th>
-            <th className="p-2 border">Client Name</th>
-            <th className="p-2 border">Phone</th>
-            <th className="p-2 border">Location</th>
-          
-            <th className="p-2 border">Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredProjects.length > 0 ? (
-            filteredProjects.map((p, index) => (
-              <tr key={p._id} className="border hover:bg-gray-50">
-                <td className="p-2 border">
                   <input
-                    type="checkbox"
-                    checked={selectedProjects.includes(p._id)}
-                    onChange={() => handleCheckboxChange(p._id)}
+                    type="text"
+                    placeholder="Search..."
+                    value={searchOngoing}
+                    onChange={handleSearchOngoing}
+                    className="px-2 py-1 border border-gray-300 rounded"
                   />
-                </td>
-                <td className="p-2 border">{index + 1}</td>
-                <td className="p-2 border">{p.clientId?.name || "N/A"}</td>
-                <td className="p-2 border">{p.clientId?.phoneNo || "N/A"}</td>
-                <td className="p-2 border">{p.clientId?.district || "N/A"}</td>
-             
-                <td className={`p-2 border ${p.status === "Pending" ? "text-yellow-500" : "text-green-500"}`}>
-                  {p.status || "Pending"}
-                </td>
-              </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan="7" className="p-2 text-center">No projects found</td>
-            </tr>
-          )}
-        </tbody>
-      </table>
-    </div>
+                  <button onClick={handleDelete} className="px-3 py-1 text-white bg-red-500 rounded">
+                    Delete
+                  </button>
+                </div>
+              </div>
+
+              <table className="w-full text-left border border-collapse">
+                <thead className="bg-gray-100">
+                  <tr>
+                    <th className="p-2 border"></th> {/* Checkbox header */}
+                    <th className="p-2 border">SL No</th>
+                    <th className="p-2 border">Client Name</th>
+                    <th className="p-2 border">Phone</th>
+                    <th className="p-2 border">Location</th>
+
+                    <th className="p-2 border">Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredProjects.length > 0 ? (
+                    filteredProjects.map((p, index) => (
+                      <tr key={p._id} className="border hover:bg-gray-50">
+                        <td className="p-2 border">
+                          <input
+                            type="checkbox"
+                            checked={selectedProjects.includes(p._id)}
+                            onChange={() => handleCheckboxChange(p._id)}
+                          />
+                        </td>
+                        <td className="p-2 border">{index + 1}</td>
+                        <td className="p-2 border">{p.clientId?.name || "N/A"}</td>
+                        <td className="p-2 border">{p.clientId?.phoneNo || "N/A"}</td>
+                        <td className="p-2 border">{p.clientId?.district || "N/A"}</td>
+
+                        <td className={`p-2 border ${p.status === "Pending" ? "text-yellow-500" : "text-green-500"}`}>
+                          {p.status || "Pending"}
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="7" className="p-2 text-center">No projects found</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
 
 
 
             {/* -------------------------------------------------- */}
             {/* Completed Projects */}
             {/* Completed Projects */}
-            {/* <div className="bg-white rounded-xl shadow-md p-4">
-              <div className="flex justify-between items-center mb-4">
+            {/* <div className="p-4 bg-white shadow-md rounded-xl">
+              <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-bold text-[#4c48a5]">
                   Completed Projects
                 </h2>
@@ -421,23 +388,23 @@ const [selectedProjects, setSelectedProjects] = useState([]);
                     placeholder="Search..."
                     value={searchCompleted}
                     onChange={handleSearchCompleted}
-                    className="border border-gray-300 rounded px-2 py-1"
+                    className="px-2 py-1 border border-gray-300 rounded"
                   />
                   <button
                     onClick={() => handleDelete2(item.id)}
-                    className="bg-red-500 text-white px-3 py-1 rounded mr-2"
+                    className="px-3 py-1 mr-2 text-white bg-red-500 rounded"
                   >
                     Delete
                   </button>
-                  <button className="bg-gray-200 text-gray-700 px-3 py-1 rounded">
+                  <button className="px-3 py-1 text-gray-700 bg-gray-200 rounded">
                     Filter
                   </button>
-                  <button className="bg-gray-200 text-gray-700 px-3 py-1 rounded">
+                  <button className="px-3 py-1 text-gray-700 bg-gray-200 rounded">
                     Export
                   </button>
                 </div>
               </div>
-              <table className="w-full border-collapse border-t border-b border-gray-300 text-left">
+              <table className="w-full text-left border-t border-b border-collapse border-gray-300">
               
               <thead>
   <tr>
@@ -472,10 +439,10 @@ const [selectedProjects, setSelectedProjects] = useState([]);
           {p.payment}
         </td>
         <td className="p-2">
-          <button className="bg-blue-500 text-white px-3 py-1 rounded-full">See Details</button>
+          <button className="px-3 py-1 text-white bg-blue-500 rounded-full">See Details</button>
           <button
             onClick={() => handleDelete(p._id)}
-            className="bg-red-500 text-white px-3 py-1 rounded-full ml-2"
+            className="px-3 py-1 ml-2 text-white bg-red-500 rounded-full"
           >
             Delete
           </button>
@@ -497,7 +464,7 @@ const [selectedProjects, setSelectedProjects] = useState([]);
               >
                 {isExpanded2 ? "Show Less" : "Show More"}
               </button>
-              <div className="flex justify-between items-center mt-4">
+              <div className="flex items-center justify-between mt-4">
                 <div>
                   Page {currentPage} of {totalPages2}
                 </div>
@@ -519,64 +486,64 @@ const [selectedProjects, setSelectedProjects] = useState([]);
               </div>
             </div> */}
 
-<div className="bg-white rounded-xl shadow-md p-4 mb-6">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-bold text-[#4c48a5]">Completed Projects</h2>
-        <div className="flex space-x-2">
-        <input
+            <div className="p-4 mb-6 bg-white shadow-md rounded-xl">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-bold text-[#4c48a5]">Completed Projects</h2>
+                <div className="flex space-x-2">
+                  <input
                     type="text"
                     placeholder="Search..."
                     value={searchCompleted}
                     onChange={handleSearchCompleted}
-                    className="border border-gray-300 rounded px-2 py-1"
+                    className="px-2 py-1 border border-gray-300 rounded"
                   />
-          <button onClick={handleDelete} className="bg-red-500 text-white px-3 py-1 rounded">
-            Delete
-          </button>
-        </div>
-      </div>
+                  <button onClick={handleDelete} className="px-3 py-1 text-white bg-red-500 rounded">
+                    Delete
+                  </button>
+                </div>
+              </div>
 
-      <table className="w-full border-collapse border text-left">
-        <thead className="bg-gray-100">
-          <tr>
-            <th className="p-2 border"></th> {/* Checkbox header */}
-            <th className="p-2 border">SL No</th>
-            <th className="p-2 border">Client Name</th>
-            <th className="p-2 border">Phone</th>
-            <th className="p-2 border">Location</th>
-       
-            <th className="p-2 border">Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredCompletedProjects.length > 0 ? (
-            filteredCompletedProjects.map((p, index) => (
-              <tr key={p._id} className="border hover:bg-gray-50">
-                <td className="p-2 border">
-                  <input
-                    type="checkbox"
-                    checked={selectedProjects.includes(p._id)}
-                    onChange={() => handleCheckboxChange(p._id)}
-                  />
-                </td>
-                <td className="p-2 border">{index + 1}</td>
-                <td className="p-2 border">{p.clientId?.name || "N/A"}</td>
-                <td className="p-2 border">{p.clientId?.phoneNo || "N/A"}</td>
-                <td className="p-2 border">{p.clientId?.district || "N/A"}</td>
-             
-                <td className={`p-2 border ${p.status === "Pending" ? "text-yellow-500" : "text-green-500"}`}>
-                  {p.status || "Pending"}
-                </td>
-              </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan="7" className="p-2 text-center">No projects found</td>
-            </tr>
-          )}
-        </tbody>
-      </table>
-    </div>
+              <table className="w-full text-left border border-collapse">
+                <thead className="bg-gray-100">
+                  <tr>
+                    <th className="p-2 border"></th> {/* Checkbox header */}
+                    <th className="p-2 border">SL No</th>
+                    <th className="p-2 border">Client Name</th>
+                    <th className="p-2 border">Phone</th>
+                    <th className="p-2 border">Location</th>
+
+                    <th className="p-2 border">Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredCompletedProjects.length > 0 ? (
+                    filteredCompletedProjects.map((p, index) => (
+                      <tr key={p._id} className="border hover:bg-gray-50">
+                        <td className="p-2 border">
+                          <input
+                            type="checkbox"
+                            checked={selectedProjects.includes(p._id)}
+                            onChange={() => handleCheckboxChange(p._id)}
+                          />
+                        </td>
+                        <td className="p-2 border">{index + 1}</td>
+                        <td className="p-2 border">{p.clientId?.name || "N/A"}</td>
+                        <td className="p-2 border">{p.clientId?.phoneNo || "N/A"}</td>
+                        <td className="p-2 border">{p.clientId?.district || "N/A"}</td>
+
+                        <td className={`p-2 border ${p.status === "Pending" ? "text-yellow-500" : "text-green-500"}`}>
+                          {p.status || "Pending"}
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="7" className="p-2 text-center">No projects found</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
 
 
 
@@ -594,106 +561,105 @@ const [selectedProjects, setSelectedProjects] = useState([]);
 
 
             {/* ---------------------------Employee Details------------------------------- */}
-            <div className="bg-white rounded-xl shadow-md p-4">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-bold text-[#4c48a5]">Employee Details</h2>
-        <div className="flex space-x-2">
-          <input
-            type="text"
-            placeholder="Search..."
-            value={searchEmployee}
-            onChange={handleSearchEmployee}
-            className="border border-gray-300 rounded px-2 py-1"
-          />
-      
-          <button className="bg-gray-200 text-gray-700 px-3 py-1 rounded">
-            Filter
-          </button>
-          <button className="bg-gray-200 text-gray-700 px-3 py-1 rounded">
-            Export
-          </button>
-        </div>
-      </div>
+            <div className="p-4 bg-white shadow-md rounded-xl">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-bold text-[#4c48a5]">Employee Details</h2>
+                <div className="flex space-x-2">
+                  <input
+                    type="text"
+                    placeholder="Search..."
+                    value={searchEmployee}
+                    onChange={handleSearchEmployee}
+                    className="px-2 py-1 border border-gray-300 rounded"
+                  />
 
-      {loading ? (
-        <p>Loading...</p>
-      ) : error ? (
-        <p className="text-red-500">{error}</p>
-      ) : (
-        <>
-          <table className="w-full border-collapse border-t border-b border-gray-300 text-left">
-            <thead>
-              <tr>
-                <th className="p-2 border-b border-gray-300"></th>
-                <th className="p-2 border-b border-gray-300">SL No</th>
-                <th className="p-2 border-b border-gray-300">Employee ID</th>
-                <th className="p-2 border-b border-gray-300">Name</th>
-                <th className="p-2 border-b border-gray-300">Phone No</th>
-                <th className="p-2 border-b border-gray-300">Role</th>
-                <th className="p-2 border-b border-gray-300">Status</th>
-                <th className="p-2 border-b border-gray-300">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-  {(isExpanded3 ? paginatedData3 : paginatedData3.slice(0, 2)).map((item, index) => (
-  <tr key={item.id || `row-${index}`} className="border-b border-gray-300">
+                  <button className="px-3 py-1 text-gray-700 bg-gray-200 rounded">
+                    Filter
+                  </button>
+                  <button className="px-3 py-1 text-gray-700 bg-gray-200 rounded">
+                    Export
+                  </button>
+                </div>
+              </div>
 
-<td className="p-2">
-  <input
-    type="checkbox"
- 
-  />
-</td>
+              {loading ? (
+                <p>Loading...</p>
+              ) : error ? (
+                <p className="text-red-500">{error}</p>
+              ) : (
+                <>
+                  <table className="w-full text-left border-t border-b border-collapse border-gray-300">
+                    <thead>
+                      <tr>
+                        <th className="p-2 border-b border-gray-300"></th>
+                        <th className="p-2 border-b border-gray-300">SL No</th>
+                        <th className="p-2 border-b border-gray-300">Employee ID</th>
+                        <th className="p-2 border-b border-gray-300">Name</th>
+                        <th className="p-2 border-b border-gray-300">Phone No</th>
+                        <th className="p-2 border-b border-gray-300">Role</th>
+                        <th className="p-2 border-b border-gray-300">Status</th>
+                        <th className="p-2 border-b border-gray-300">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {(isExpanded3 ? paginatedData3 : paginatedData3.slice(0, 2)).map((item, index) => (
+                        <tr key={item.id || `row-${index}`} className="border-b border-gray-300">
 
-      <td className="p-2">{(currentPage - 1) * itemsPerPage + index + 1}</td>
-      <td className="p-2">{item.mailId}</td>
-      <td className="p-2">{item.name}</td>
-      <td className="p-2">{item.mobileNumber}</td>
-      <td className="p-2">
-        {Array.isArray(item.designations) ? item.designations.join(", ") : item.designations || "N/A"}
-      </td>
-      <td className={`p-2 ${item.isActive ? "text-green-500" : "text-yellow-500"}`}>
-        {item.isActive ? "Active" : "Inactive"}
-      </td>
-      <td className="p-2">
-        <button className="bg-blue-500 text-white px-3 py-1 rounded-full">See Details</button>
-      </td>
-    </tr>
-  ))}
-</tbody>
+                          <td className="p-2">
+                            <input
+                              type="checkbox"
+
+                            />
+                          </td>
+
+                          <td className="p-2">{(currentPage - 1) * itemsPerPage + index + 1}</td>
+                          <td className="p-2">{item.mailId}</td>
+                          <td className="p-2">{item.name}</td>
+                          <td className="p-2">{item.mobileNumber}</td>
+                          <td className="p-2">
+                            {Array.isArray(item.designations) ? item.designations.join(", ") : item.designations || "N/A"}
+                          </td>
+                          <td className={`p-2 ${item.isActive ? "text-green-500" : "text-yellow-500"}`}>
+                            {item.isActive ? "Active" : "Inactive"}
+                          </td>
+                          <td className="p-2">
+                            <button className="px-3 py-1 text-white bg-blue-500 rounded-full">See Details</button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
 
 
 
-          </table>
+                  </table>
 
-          <button
-            onClick={handleToggleExpand3}
-            className="mt-2 text-blue-500 underline"
-          >
-            {isExpanded3 ? "Show Less" : "Show More"}
-          </button>
+                  <button
+                    onClick={handleToggleExpand3}
+                    className="mt-2 text-blue-500 underline"
+                  >
+                    {isExpanded3 ? "Show Less" : "Show More"}
+                  </button>
 
-          <div className="flex justify-between items-center mt-4">
-            <div>Page {currentPage} of {totalPages3}</div>
-            <div className="flex space-x-2">
-              {[...Array(totalPages3)].map((_, pageIndex) => (
-                <button
-                  key={pageIndex}
-                  onClick={() => handlePageChange(pageIndex + 1)}
-                  className={`px-3 py-1 rounded ${
-                    pageIndex + 1 === currentPage
-                      ? "bg-blue-500 text-white"
-                      : "bg-gray-200 text-gray-700"
-                  }`}
-                >
-                  {pageIndex + 1}
-                </button>
-              ))}
+                  <div className="flex items-center justify-between mt-4">
+                    <div>Page {currentPage} of {totalPages3}</div>
+                    <div className="flex space-x-2">
+                      {[...Array(totalPages3)].map((_, pageIndex) => (
+                        <button
+                          key={pageIndex}
+                          onClick={() => handlePageChange(pageIndex + 1)}
+                          className={`px-3 py-1 rounded ${pageIndex + 1 === currentPage
+                              ? "bg-blue-500 text-white"
+                              : "bg-gray-200 text-gray-700"
+                            }`}
+                        >
+                          {pageIndex + 1}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
-          </div>
-        </>
-      )}
-    </div>
             {/* ---------------- */}
           </div>
         </div>
