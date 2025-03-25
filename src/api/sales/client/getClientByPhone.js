@@ -9,6 +9,8 @@ export const getClientByPhone = async (clientName = "", phoneNo = "") => {
            phoneNo
         }
       });
+      console.log("client",response);
+      
       return response;
     } catch (err) {
       console.log(err);
