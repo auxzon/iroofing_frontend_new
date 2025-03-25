@@ -53,8 +53,10 @@ function ProductsAdding() {
  
  
   const handleImageChange = (e) => {
-    setItemForm({ ...itemForm, image: e.target.files[0] });
+    const file = e.target.files[0];
+    setCategoryForm((prev) => ({ ...prev, roofModelImage: file }));
   };
+  
  
  
   const handleProductSubmit = async (e) => {
@@ -162,19 +164,34 @@ useEffect(() => {
      };
  
  
+
 const handleCategorytSubmit = async (e) => {
   e.preventDefault();
   try {
-    await createCategory(categoryForm);
-    alert("Category added successfully!");
-    setCategoryForm({
-      roofType: "",
-     roofModel: "",
-    });
+    const formData = new FormData();
+    formData.append("roofType", categoryForm.roofType);
+    formData.append("roofModel", categoryForm.roofModel);
+    if (categoryForm.roofModelImage) {
+      formData.append("roofModelImage", categoryForm.roofModelImage);
+    }
+
+    const response = await createCategory( formData);
+
+    if (response.success) {
+      alert("Category added successfully!");
+      setCategoryForm({
+        roofType: "",
+        roofModel: "",
+        roofModelImage: null,
+      });
+    } else {
+      alert(response.data.message || "An error occurred while adding the category.");
+    }
   } catch (error) {
-    alert(error || "An error occurred while adding category.");
+    alert(error.response?.data?.message || "An error occurred while adding the category.");
   }
 };
+
  
  
 const handleFindClick = () => {
@@ -247,6 +264,10 @@ const handleFindClick = () => {
       className="p-2 border border-gray-300 rounded-md mt-2"
     />
   </div>
+</div>
+  <div className="flex flex-col gap-2">
+  <label className="text-sm font-medium text-[#15164A]">Upload Image</label>
+  <input type="file" className="p-2 border border-gray-300 rounded-md" onChange={handleImageChange} />
 </div>
  
                
@@ -391,10 +412,6 @@ const handleFindClick = () => {
  
      
  
-      <div className="flex flex-col gap-2 w-52">
-        <label className="text-sm font-medium text-[#15164A]">Upload Image</label>
-        <input type="file" className="p-2 border border-gray-300 rounded-md" onChange={handleImageChange} />
-      </div>      
              
            
              

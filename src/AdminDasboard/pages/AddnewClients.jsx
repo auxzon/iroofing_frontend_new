@@ -208,7 +208,7 @@ useEffect(() => {
   const OngoingProject = [
     {
       id: 1,
-      name: "Kevin",
+      name: "Kevin",  
       phone: "+91 9867 5433 33",
       location: "Kochi",
       roof: "Car Porch",

@@ -1,12 +1,11 @@
 import { useState,useEffect } from "react";
-
 import Header from "../components/Header";
 import addnew from "../assets/icons/adduser.png";
 import addclients from "../assets/icons/addclients.png";
 import addestimate from "../assets/icons/addestimate.png";
 import SideNav from "../components/SideNav";
 import { useNavigate } from "react-router-dom";
-import { getEmployee } from "../../api/admin/employee/getEmployee";
+import { deleteEstimate, getEmployee } from "../../api/admin/employee/getEmployee";
 import { getProjectStatus } from "../../api/admin/projects/projectstatus";
 
 const AdminDashboard = () => {
@@ -24,6 +23,62 @@ const [completedProjects, setCompletedProjects] = useState([]);
 
 console.log("ongoingProjects",ongoingProjects);
 console.log("completedProjects",completedProjects);
+
+
+
+
+const [selectedProjects, setSelectedProjects] = useState([]);
+
+  const handleCheckboxChange = (projectId) => {
+    setSelectedProjects((prevSelected) =>
+      prevSelected.includes(projectId)
+        ? prevSelected.filter((id) => id !== projectId)
+        : [...prevSelected, projectId]
+    );
+  };
+
+  const handleDelete = async () => {
+    if (selectedProjects.length === 0) {
+      alert("Please select at least one project to delete.");
+      return;
+    }
+
+    try {
+     const response= await deleteEstimate({ ids: selectedProjects });
+      console.log(response);
+      
+     
+     alert("Deleted successfully!");
+          window.location.reload();
+      setSelectedProjects([]); // Clear selection after deletion
+      // Refresh or fetch updated project list
+    } catch (error) {
+      console.error("Error deleting projects:", error);
+      alert("Failed to delete projects.");
+    }
+  };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   // --------------------------------------------------
 
@@ -137,9 +192,7 @@ console.log("completedProjects",completedProjects);
 
   const navigate = useNavigate();
 
-  const handleDelete = (id) => {
-    setData(data.filter((item) => item.id !== id));
-  };
+ 
 
   const handleDelete2 = (id) => {
     setData2(data.filter((item) => item.id !== id));
@@ -296,79 +349,60 @@ console.log("completedProjects",completedProjects);
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-bold text-[#4c48a5]">Ongoing Projects</h2>
         <div className="flex space-x-2">
+     
         <input
-  type="text"
-  placeholder="Search..."
-  value={searchOngoing}
-  onChange={handleSearchOngoing}
-  className="border border-gray-300 rounded px-2 py-1"
-/>
-
-          <button className="bg-gray-200 text-gray-700 px-3 py-1 rounded">Filter</button>
-          <button className="bg-gray-200 text-gray-700 px-3 py-1 rounded">Export</button>
-        </div>
+            type="text"
+            placeholder="Search..."
+         value={searchOngoing}
+            onChange={handleSearchOngoing}
+            className="border border-gray-300 rounded px-2 py-1"
+          />
+          <button onClick={handleDelete} className="bg-red-500 text-white px-3 py-1 rounded">
+            Delete
+          </button>
+             </div>
       </div>
 
       <table className="w-full border-collapse border text-left">
-  <thead className="bg-gray-100">
-    <tr>
-      <th className="p-2 border"></th> {/* Empty header for checkbox */}
-      <th className="p-2 border">SL No</th>
-      <th className="p-2 border">Client Name</th>
-      <th className="p-2 border">Phone</th>
-      <th className="p-2 border">Location</th>
-      <th className="p-2 border">Work Type</th>
-      <th className="p-2 border">Status</th>
-    </tr>
-  </thead>
-  <tbody>
-    {filteredProjects.length > 0 ? (
-      filteredProjects.map((p, index) => (
-        <tr key={p._id} className="border hover:bg-gray-50">
-          <td className="p-2 border">
-            <input type="checkbox" />
-          </td>
-          <td className="p-2 border">{index + 1}</td>
-          <td className="p-2 border">{p.clientId?.name || "N/A"}</td>
-          <td className="p-2 border">{p.clientId?.phoneNo || "N/A"}</td>
-          <td className="p-2 border">{p.clientId?.district || "N/A"}</td>
-          <td className="p-2 border">
-            {p.sheetingPrice?.roofModel || "Not Specified"}
-          </td>
-          <td className={`p-2 border ${p.status === "Pending" ? "text-yellow-500" : "text-green-500"}`}>
-            {p.status || "Pending"}
-          </td>
-        </tr>
-      ))
-    ) : (
-      <tr>
-        <td colSpan="7" className="p-2 text-center">No projects found</td>
-      </tr>
-    )}
-  </tbody>
-</table>
-
-
-      <button onClick={handleToggleExpand} className="mt-2 text-blue-500 underline">
-        {isExpanded ? "Show Less" : "Show More"}
-      </button>
-
-      <div className="flex justify-between items-center mt-4">
-        <div>Page {currentPage} of {totalPages}</div>
-        <div className="flex space-x-2">
-          {[...Array(totalPages)].map((_, pageIndex) => (
-            <button
-              key={pageIndex}
-              onClick={() => handlePageChange(pageIndex + 1)}
-              className={`px-3 py-1 rounded ${
-                currentPage === pageIndex + 1 ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-700"
-              }`}
-            >
-              {pageIndex + 1}
-            </button>
-          ))}
-        </div>
-      </div>
+        <thead className="bg-gray-100">
+          <tr>
+            <th className="p-2 border"></th> {/* Checkbox header */}
+            <th className="p-2 border">SL No</th>
+            <th className="p-2 border">Client Name</th>
+            <th className="p-2 border">Phone</th>
+            <th className="p-2 border">Location</th>
+          
+            <th className="p-2 border">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {filteredProjects.length > 0 ? (
+            filteredProjects.map((p, index) => (
+              <tr key={p._id} className="border hover:bg-gray-50">
+                <td className="p-2 border">
+                  <input
+                    type="checkbox"
+                    checked={selectedProjects.includes(p._id)}
+                    onChange={() => handleCheckboxChange(p._id)}
+                  />
+                </td>
+                <td className="p-2 border">{index + 1}</td>
+                <td className="p-2 border">{p.clientId?.name || "N/A"}</td>
+                <td className="p-2 border">{p.clientId?.phoneNo || "N/A"}</td>
+                <td className="p-2 border">{p.clientId?.district || "N/A"}</td>
+             
+                <td className={`p-2 border ${p.status === "Pending" ? "text-yellow-500" : "text-green-500"}`}>
+                  {p.status || "Pending"}
+                </td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan="7" className="p-2 text-center">No projects found</td>
+            </tr>
+          )}
+        </tbody>
+      </table>
     </div>
 
 
@@ -376,7 +410,7 @@ console.log("completedProjects",completedProjects);
             {/* -------------------------------------------------- */}
             {/* Completed Projects */}
             {/* Completed Projects */}
-            <div className="bg-white rounded-xl shadow-md p-4">
+            {/* <div className="bg-white rounded-xl shadow-md p-4">
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-xl font-bold text-[#4c48a5]">
                   Completed Projects
@@ -429,7 +463,7 @@ console.log("completedProjects",completedProjects);
           />
         </td>
         <td className="p-2">{index + 1 + (currentPage - 1) * itemsPerPage}</td>
-        <td className="p-2">{p.name}</td>
+        <td className="p-2">{p.clientId?.name }</td>
         <td className="p-2">{p.date}</td>
         <td className="p-2">{p.location}</td>
         <td className="p-2">{p.roof}</td>
@@ -483,7 +517,81 @@ console.log("completedProjects",completedProjects);
                   ))}
                 </div>
               </div>
-            </div>
+            </div> */}
+
+<div className="bg-white rounded-xl shadow-md p-4 mb-6">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-xl font-bold text-[#4c48a5]">Completed Projects</h2>
+        <div className="flex space-x-2">
+        <input
+                    type="text"
+                    placeholder="Search..."
+                    value={searchCompleted}
+                    onChange={handleSearchCompleted}
+                    className="border border-gray-300 rounded px-2 py-1"
+                  />
+          <button onClick={handleDelete} className="bg-red-500 text-white px-3 py-1 rounded">
+            Delete
+          </button>
+        </div>
+      </div>
+
+      <table className="w-full border-collapse border text-left">
+        <thead className="bg-gray-100">
+          <tr>
+            <th className="p-2 border"></th> {/* Checkbox header */}
+            <th className="p-2 border">SL No</th>
+            <th className="p-2 border">Client Name</th>
+            <th className="p-2 border">Phone</th>
+            <th className="p-2 border">Location</th>
+       
+            <th className="p-2 border">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {filteredCompletedProjects.length > 0 ? (
+            filteredCompletedProjects.map((p, index) => (
+              <tr key={p._id} className="border hover:bg-gray-50">
+                <td className="p-2 border">
+                  <input
+                    type="checkbox"
+                    checked={selectedProjects.includes(p._id)}
+                    onChange={() => handleCheckboxChange(p._id)}
+                  />
+                </td>
+                <td className="p-2 border">{index + 1}</td>
+                <td className="p-2 border">{p.clientId?.name || "N/A"}</td>
+                <td className="p-2 border">{p.clientId?.phoneNo || "N/A"}</td>
+                <td className="p-2 border">{p.clientId?.district || "N/A"}</td>
+             
+                <td className={`p-2 border ${p.status === "Pending" ? "text-yellow-500" : "text-green-500"}`}>
+                  {p.status || "Pending"}
+                </td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan="7" className="p-2 text-center">No projects found</td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
             {/* ---------------------------Employee Details------------------------------- */}
             <div className="bg-white rounded-xl shadow-md p-4">
@@ -497,12 +605,7 @@ console.log("completedProjects",completedProjects);
             onChange={handleSearchEmployee}
             className="border border-gray-300 rounded px-2 py-1"
           />
-          <button
-            onClick={handleDelete3}
-            className="bg-red-500 text-white px-3 py-1 rounded mr-2"
-          >
-            Delete
-          </button>
+      
           <button className="bg-gray-200 text-gray-700 px-3 py-1 rounded">
             Filter
           </button>
