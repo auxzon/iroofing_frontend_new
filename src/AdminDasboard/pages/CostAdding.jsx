@@ -7,7 +7,7 @@ import { welding } from "../../api/admin/labour/welding";
 function CostAdding() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  // Form States
+ 
   const [sheetingData, setSheetingData] = useState({
     localWork: "",
     siteWork: "",
@@ -24,7 +24,7 @@ function CostAdding() {
     setIsSidebarOpen((prev) => !prev);
   };
 
-  // Handle Input Changes
+  
   const handleSheetingChange = (e) => {
     const { name, value } = e.target;
     setSheetingData((prev) => ({ ...prev, [name]: value }));
@@ -35,7 +35,7 @@ function CostAdding() {
     setWeldingData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // API Calls on Button Click
+  
   const handleSubmitSheeting = async () => {
     setLoading(true);
     try {

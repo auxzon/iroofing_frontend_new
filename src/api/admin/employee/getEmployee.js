@@ -12,7 +12,7 @@ export const getEmployee = async()=>{
 
 export const getUserById = async () => {
     try {
-        const response = await Api.get("/admin/profile"); // No need for ID
+        const response = await Api.get("/admin/profile")
         return response.data;
     } catch (error) {
         console.error("Error fetching user:", error?.response?.data || error.message);
@@ -21,7 +21,34 @@ export const getUserById = async () => {
 };
 export const editUserById = async (id,values) => {
     try {
-        const response = await Api.put(`/admin/edit/${id}`,values); // No need for ID
+        const response = await Api.put(`/admin/edit/${id}`,values);
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching user:", error?.response?.data || error.message);
+        throw error;
+    }
+};
+export const deleteEstimate = async (ids) => {
+    try {
+        const response = await Api.post('/estimate/delete',ids);
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching user:", error?.response?.data || error.message);
+        throw error;
+    }
+};
+export const deleteEmploye = async (ids) => {
+    try {
+        const response = await Api.post('/admin/deteletEmploye',ids);
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching user:", error?.response?.data || error.message);
+        throw error;
+    }
+};
+export const deleteClient = async (ids) => {
+    try {
+        const response = await Api.post('/admin/deteletClient',ids);
         return response.data;
     } catch (error) {
         console.error("Error fetching user:", error?.response?.data || error.message);
