@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 
-import Header from "../../SalesDashboard/components/Header";
-import Sidebar from "../../SalesDashboard/components/Sidebar";
+import Header from "..components/Header";
+import Sidebar from "../components/SideNav"
 
 import { getClient } from "../../api/admin/client/getClient";
 import { deleteClient } from "../../api/admin/employee/getEmployee";
