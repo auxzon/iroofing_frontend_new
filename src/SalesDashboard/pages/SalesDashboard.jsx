@@ -351,34 +351,34 @@ const SalesDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen flex bg-gray-100 w-full">
+    <div className="flex h-screen bg-gray-100">
       {/* Sidebar */}
       <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col w-full">
+      <div className="flex-1 overflow-y-auto">
         <Header toggleSidebar={toggleSidebar} />
 
-        <div className="space-y-8 bg-gray-100 py-5 px-5 w-full max-w-full">
+        <div className="w-full max-w-full px-5 py-5 space-y-8 bg-gray-100">
           <h1 className="text-3xl font-bold text-[#4c48a5]">Dashboard</h1>
 
           {/* Action Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 px-5 w-full">
-            <div className="p-4 bg-white rounded-2xl shadow-md flex items-center space-x-4 py-5 w-full">
+          <div className="grid w-full grid-cols-1 gap-6 px-5 md:grid-cols-3">
+            <div className="flex items-center w-full p-4 py-5 space-x-4 bg-white shadow-md rounded-2xl">
               <img src={addnew} alt="Add New Clients" className="w-12 h-12" />
               <div onClick={() => navigate("/salesaddnewclient")} className="cursor-pointer">
                 <h2 className="text-lg font-normal">Add New Clients</h2>
                 <p className="text-gray-600">To register new clients</p>
               </div>
             </div>
-            <div className="p-4 bg-white rounded-2xl shadow-md flex items-center space-x-4 py-5 w-full">
+            <div className="flex items-center w-full p-4 py-5 space-x-4 bg-white shadow-md rounded-2xl">
               <img src={addclients} alt="Existing Clients" className="w-12 h-12" />
               <div>
                 <h2 className="text-lg font-normal">Existing Clients</h2>
                 <p className="text-gray-600">View existing clients</p>
               </div>
             </div>
-            <div className="p-4 bg-white rounded-2xl shadow-md flex items-center space-x-4 py-5 w-full">
+            <div className="flex items-center w-full p-4 py-5 space-x-4 bg-white shadow-md rounded-2xl">
               <img src={addestimate} alt="Create an Estimate" className="w-12 h-12" />
               <div>
                 <h2 className="text-lg font-normal">Create an Estimate</h2>
@@ -388,12 +388,12 @@ const SalesDashboard = () => {
           </div>
 
           {/* Customer Records Table */}
-          <div className="space-y-8 w-full">
+          <div className="w-full space-y-8">
             {/* Add New Client Section */}
-            <div className="p-6 bg-white shadow-md rounded-lg w-full">
+            <div className="w-full p-6 bg-white rounded-lg shadow-md">
 
 
-              <h2 className="text-lg font-semibold text-indigo-900 flex items-center justify-between">
+              <h2 className="flex items-center justify-between text-lg font-semibold text-indigo-900">
                 <span className="flex items-center gap-2">
                   Add New Client
                   {/* <input type="checkbox" className="w-4 h-4" /> */}
@@ -406,67 +406,67 @@ const SalesDashboard = () => {
               </h2> <br />
 
               {/* First Row - Three Input Fields */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+              <div className="grid grid-cols-1 gap-4 mb-4 md:grid-cols-3">
                 <div className="flex items-center gap-2">
-                  <label className="text-sm text-gray-600 w-24">Name:</label>
+                  <label className="w-24 text-sm text-gray-600">Name:</label>
                   <input
                     type="text"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Amal"
-                    className="flex-1 bg-gray-200 text-gray-800 p-2 rounded-md focus:outline-none"
+                    className="flex-1 p-2 text-gray-800 bg-gray-200 rounded-md focus:outline-none"
                   />
                 </div>
                 <div className="flex items-center gap-2">
-                  <label className="text-sm text-gray-600 w-24">Phone:</label>
+                  <label className="w-24 text-sm text-gray-600">Phone:</label>
                   <input
                     type="text"
                     value={phoneNo}
                     onChange={(e) => setPhoneNo(e.target.value)}
                     placeholder="676876872"
-                    className="flex-1 bg-gray-200 text-gray-800 p-2 rounded-md focus:outline-none"
+                    className="flex-1 p-2 text-gray-800 bg-gray-200 rounded-md focus:outline-none"
                   />
                 </div>
                 <div className="flex items-center gap-2">
-                  <label className="text-sm text-gray-600 w-24">Place:</label>
+                  <label className="w-24 text-sm text-gray-600">Place:</label>
                   <input
                     type="text"
                     value={place}
                     onChange={(e) => setPlace(e.target.value)}
                     placeholder="Kochi"
-                    className="flex-1 border border-gray-300 p-2 rounded-md focus:outline-indigo-500"
+                    className="flex-1 p-2 border border-gray-300 rounded-md focus:outline-indigo-500"
                   />
                 </div>
               </div>
 
               {/* Second Row - Two Input Fields */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div className="flex items-center gap-2">
-                  <label className="text-sm text-gray-600 w-24">District:</label>
+                  <label className="w-24 text-sm text-gray-600">District:</label>
                   <input
                     type="text"
                     value={district}
                     onChange={(e) => setDistrict(e.target.value)}
                     placeholder="District"
-                    className="flex-1 border border-gray-300 p-2 rounded-md focus:outline-indigo-500"
+                    className="flex-1 p-2 border border-gray-300 rounded-md focus:outline-indigo-500"
                   />
                 </div>
                 <div className="flex items-center gap-2">
-                  <label className="text-sm text-gray-600 w-24">Comments:</label>
+                  <label className="w-24 text-sm text-gray-600">Comments:</label>
                   <input
                     type="text"
                     value={comments}
                     onChange={(e) => setComments(e.target.value)}
                     placeholder="Add comments"
-                    className="flex-1 border border-gray-300 p-2 rounded-md focus:outline-indigo-500"
+                    className="flex-1 p-2 border border-gray-300 rounded-md focus:outline-indigo-500"
                   />
                 </div>
               </div>
 
               {/* Buttons */}
-              <div className="flex justify-center py-6 gap-5">
+              <div className="flex justify-center gap-5 py-6">
                 <button
-                  className="bg-red-600 text-white px-6 py-3 text-lg rounded-lg shadow-md hover:bg-red-700 transition"
+                  className="px-6 py-3 text-lg text-white transition bg-red-600 rounded-lg shadow-md hover:bg-red-700"
                   onClick={() => {
                     setName("");
                     setPhoneNo("");
@@ -479,7 +479,7 @@ const SalesDashboard = () => {
                   Cancel
                 </button>
                 <button
-                  className="bg-blue-600 text-white px-6 py-3 text-lg rounded-lg shadow-md hover:bg-blue-700 transition ml-4"
+                  className="px-6 py-3 ml-4 text-lg text-white transition bg-blue-600 rounded-lg shadow-md hover:bg-blue-700"
                   onClick={handleSubmit}
                   disabled={isSubmitting}
                 >
@@ -491,34 +491,34 @@ const SalesDashboard = () => {
 
                 {areas.map((area) => (
                   <div key={area.id} className="p-6 ">
-                    <h2 className="text-lg font-semibold text-indigo-900 mb-6">{area.name}</h2>
-                    <div className="flex items-center gap-2 justify-end">
+                    <h2 className="mb-6 text-lg font-semibold text-indigo-900">{area.name}</h2>
+                    <div className="flex items-center justify-end gap-2">
                       {/* Export Button */}
-                      <button className="flex items-center gap-1 border border-gray-300 px-3 py-1 rounded-md text-gray-700 hover:bg-gray-100 transition">
+                      <button className="flex items-center gap-1 px-3 py-1 text-gray-700 transition border border-gray-300 rounded-md hover:bg-gray-100">
                         <Upload size={16} />
                         Export
                       </button>
 
                       {/* Delete Button */}
-                      <button className="flex items-center gap-1 text-gray-600 hover:text-red-600 transition">
+                      <button className="flex items-center gap-1 text-gray-600 transition hover:text-red-600">
                         <Trash2 size={18} />
                         Delete
                       </button>
                     </div>
                     <div className="flex items-center justify-between gap-2 py-5">
-                      <div className="relative flex gap-2 justify-center items-center">
+                      <div className="relative flex items-center justify-center gap-2">
                         <label className="text-sm text-gray-600">Client Name:</label>
                         <input
                           type="text"
                           value={searchTerm}
                           onChange={(e) => setSearchTerm(e.target.value)}
                           placeholder="Search Client"
-                          className="w-100 border border-gray-300 p-2 rounded-md focus:outline-indigo-500 bg-white"
+                          className="p-2 bg-white border border-gray-300 rounded-md w-100 focus:outline-indigo-500"
                         />
 
                         {/* Show dropdown only if there are matching results */}
                         {filteredClients.length > 0 && (
-                          <ul className="absolute top-full left-0 w-full bg-white border border-gray-300 rounded-md mt-1 max-h-48 overflow-y-auto shadow-lg">
+                          <ul className="absolute left-0 w-full mt-1 overflow-y-auto bg-white border border-gray-300 rounded-md shadow-lg top-full max-h-48">
                             {filteredClients.map((client) => (
                               <li
                                 key={client.id}
@@ -538,7 +538,7 @@ const SalesDashboard = () => {
 
                       {/* Measurement Button */}
                       <h1
-                        className="text-decoration underline cursor-pointer text-lg"
+                        className="text-lg underline cursor-pointer text-decoration"
                         onClick={() => setShowMeasurements(!showMeasurements)}
                       >
                         Custom Measurements
@@ -549,9 +549,9 @@ const SalesDashboard = () => {
                     <br />
 
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-2 mb-4">
+                    <div className="grid grid-cols-1 gap-2 mb-4 md:grid-cols-3">
                       <div className="flex items-center">
-                        <label className="text-sm text-gray-600 w-24">Project Type:</label>
+                        <label className="w-24 text-sm text-gray-600">Project Type:</label>
                         <select className="w-[200px] border border-gray-300 p-2 rounded-md focus:outline-indigo-500 bg-white">
                           <option value="">Select a type</option>
                           {projectTypes.map((type, index) => (
@@ -563,7 +563,7 @@ const SalesDashboard = () => {
 
                       </div>
                       <div className="flex items-center gap-2">
-                        <label className="text-sm text-gray-600 w-24">Roof Model:</label>
+                        <label className="w-24 text-sm text-gray-600">Roof Model:</label>
                         <select className="w-[200px] border border-gray-300 p-2 rounded-md focus:outline-indigo-500 bg-white text-black">
                           <option value="">Select a category</option>
                           {categories.map((category) => (
@@ -575,7 +575,7 @@ const SalesDashboard = () => {
                       </div>
                       <div className="flex items-center gap-2 md:pl-10">
 
-                        <select className="w-100 border border-gray-300 p-2 rounded-md focus:outline-indigo-500 bg-white ">
+                        <select className="p-2 bg-white border border-gray-300 rounded-md w-100 focus:outline-indigo-500 ">
                           <option value="" >
                             double car parking
                           </option>
@@ -587,23 +587,23 @@ const SalesDashboard = () => {
                     </div>
 
                     <div className="grid grid-cols-4 gap-4 mt-4">
-                      <select className="border p-2 rounded-md w-full">
+                      <select className="w-full p-2 border rounded-md">
                         <option>Materials</option>
                       </select>
-                      <select className="border p-2 rounded-md w-full">
+                      <select className="w-full p-2 border rounded-md">
                         <option>Materials</option>
                       </select>
-                      <select className="border p-2 rounded-md w-full">
+                      <select className="w-full p-2 border rounded-md">
                         <option>Materials</option>
                       </select>
-                      <select className="border p-2 rounded-md w-full">
+                      <select className="w-full p-2 border rounded-md">
                         <option>Materials</option>
                       </select>
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-2 mb-4 md:py-5">
+                    <div className="grid grid-cols-1 gap-2 mb-4 md:grid-cols-3 md:py-5">
                       {/* Roof Type */}
                       <div className="flex items-center">
-                        <label className="text-sm text-gray-600 w-24">Span:</label>
+                        <label className="w-24 text-sm text-gray-600">Span:</label>
                         <input
                           type="text"
                           placeholder="250m"
@@ -613,7 +613,7 @@ const SalesDashboard = () => {
 
                       {/* Roof Model */}
                       <div className="flex items-center gap-2">
-                        <label className="text-sm text-gray-600 w-24">Length:</label>
+                        <label className="w-24 text-sm text-gray-600">Length:</label>
                         <input
                           type="text"
                           placeholder="200m"
@@ -623,7 +623,7 @@ const SalesDashboard = () => {
 
                       {/* Custom Field */}
                       <div className="flex items-center gap-2 md:pl-10">
-                        <label className="text-sm text-gray-600 w-24">Height:</label>
+                        <label className="w-24 text-sm text-gray-600">Height:</label>
                         <input
                           type="text"
                           placeholder="250m"
@@ -636,7 +636,7 @@ const SalesDashboard = () => {
                       <div className="mt-4">
 
 
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
                           <div className="flex flex-col gap-2">
                             <label className="text-sm font-medium text-[#15164A]">
                               Material
@@ -659,9 +659,9 @@ const SalesDashboard = () => {
                           </div>
                         </div> <br />
 
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
                           {materials.map((item, index) => (
-                            <div key={index} className="grid grid-cols-2 gap-4 col-span-2">
+                            <div key={index} className="grid grid-cols-2 col-span-2 gap-4">
                               <div className="flex flex-col gap-2">
                                 <label className="text-sm font-medium text-[#15164A]">Material</label>
                                 <input
@@ -693,71 +693,71 @@ const SalesDashboard = () => {
                         <div className="grid grid-cols-3 gap-4 mt-4">
                           <div>
                             <label className="text-sm text-gray-600">Type of Panel:</label>
-                            <input type="text" placeholder="00" className="border p-2 rounded-md w-full" />
+                            <input type="text" placeholder="00" className="w-full p-2 border rounded-md" />
                           </div>
                           <div>
                             <label className="text-sm text-gray-600">Off Set:</label>
-                            <input type="text" placeholder="00" className="border p-2 rounded-md w-full" />
+                            <input type="text" placeholder="00" className="w-full p-2 border rounded-md" />
                           </div>
                           <div>
                             <label className="text-sm text-gray-600">Sheet Thickness:</label>
-                            <input type="text" placeholder="00" className="border p-2 rounded-md w-full" />
+                            <input type="text" placeholder="00" className="w-full p-2 border rounded-md" />
                           </div>
                         </div>
 
                         <div className="grid grid-cols-3 gap-4 mt-4">
                           <div>
                             <label className="text-sm text-gray-600">Center Height:</label>
-                            <input type="text" placeholder="00" className="border p-2 rounded-md w-full" />
+                            <input type="text" placeholder="00" className="w-full p-2 border rounded-md" />
                           </div>
                           <div>
                             <label className="text-sm text-gray-600">Extra Panel:</label>
-                            <input type="text" placeholder="00" className="border p-2 rounded-md w-full" />
+                            <input type="text" placeholder="00" className="w-full p-2 border rounded-md" />
                           </div>
                           <div>
                             <label className="text-sm text-gray-600">No of Bay:</label>
-                            <input type="text" placeholder="00" className="border p-2 rounded-md w-full" />
+                            <input type="text" placeholder="00" className="w-full p-2 border rounded-md" />
                           </div>
                         </div>
 
                         <div className="grid grid-cols-3 gap-4 mt-4">
                           <div>
                             <label className="text-sm text-gray-600">Cutting Length:</label>
-                            <input type="text" placeholder="00" className="border p-2 rounded-md w-full" />
+                            <input type="text" placeholder="00" className="w-full p-2 border rounded-md" />
                           </div>
                           <div>
                             <label className="text-sm text-gray-600">Final Cutting:</label>
-                            <input type="text" placeholder="00" className="border p-2 rounded-md w-full" />
+                            <input type="text" placeholder="00" className="w-full p-2 border rounded-md" />
                           </div>
                         </div>
                       </div>
                     )}
 
 
-                    <div className="flex items-center gap-2  w-full">
+                    <div className="flex items-center w-full gap-2">
                       <label className="text-sm text-gray-600 w-medium">Comments:</label>
                       <input
                         type="text"
                         placeholder="Enter comment"
-                        className="w-5/6 border border-gray-300 p-2 rounded-md focus:outline-indigo-500 bg-white"
+                        className="w-5/6 p-2 bg-white border border-gray-300 rounded-md focus:outline-indigo-500"
                       />
                     </div>
 
 
                     <div className="mt-4">
-                      <input type="file" className="border p-2 rounded-md w-small" />
+                      <input type="file" className="p-2 border rounded-md w-small" />
                     </div>
 
                     <div className="mt-4 text-right">
                       <button
                         onClick={addNewArea}
-                        className="bg-blue-500 text-white py-2 px-4 rounded-md mb-4"
+                        className="px-4 py-2 mb-4 text-white bg-blue-500 rounded-md"
                       >
                         Add New Area +
                       </button>
                       <button
                         onClick={() => removeArea(area.id)}
-                        className="bg-red-500 text-white py-2 px-4 rounded-md mt-4"
+                        className="px-4 py-2 mt-4 text-white bg-red-500 rounded-md"
                       >
                         Remove Area
                       </button>
@@ -768,11 +768,11 @@ const SalesDashboard = () => {
               </div>
 
 
-              <div className="p-6  ">
-                <h2 className="text-lg font-semibold text-indigo-900 mb-4">Estimate</h2>
+              <div className="p-6 ">
+                <h2 className="mb-4 text-lg font-semibold text-indigo-900">Estimate</h2>
 
                 {/* First Row - Two Fields (Total sq. ft & Total Cost) */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div className="grid grid-cols-1 gap-4 mb-4 md:grid-cols-2">
                   {/* Total Square Feet */}
                   <div className="flex items-center gap-2">
                     <label className="text-sm text-gray-600 w-28">Total sq. ft:</label>
@@ -780,7 +780,7 @@ const SalesDashboard = () => {
                       type="text"
                       value="1023.54"
                       readOnly
-                      className="flex-1 bg-gray-200 text-gray-800 p-2 rounded-md text-center"
+                      className="flex-1 p-2 text-center text-gray-800 bg-gray-200 rounded-md"
                     />
                   </div>
 
@@ -791,27 +791,27 @@ const SalesDashboard = () => {
                       type="text"
                       value="₹57800/-"
                       readOnly
-                      className="flex-1 bg-gray-200 text-gray-800 p-2 rounded-md text-center"
+                      className="flex-1 p-2 text-center text-gray-800 bg-gray-200 rounded-md"
                     />
                   </div>
                 </div>
 
                 {/* Second Row - Three Fields (Comments, Status, Other Info) */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
                   {/* Comments */}
                   <div className="flex items-center gap-2">
                     <label className="text-sm text-gray-600 w-28">Comments:</label>
                     <input
                       type="text"
                       placeholder="Enter comments"
-                      className="flex-1 border border-gray-300 p-2 rounded-md focus:outline-indigo-500"
+                      className="flex-1 p-2 border border-gray-300 rounded-md focus:outline-indigo-500"
                     />
                   </div>
 
                   {/* Status Dropdown */}
                   <div className="flex items-center gap-2">
                     <label className="text-sm text-gray-600 w-28">Status:</label>
-                    <select className="flex-1 border border-gray-300 p-2 rounded-md bg-white">
+                    <select className="flex-1 p-2 bg-white border border-gray-300 rounded-md">
                       <option>Site Visit</option>
                       <option>Approved</option>
                       <option>Rejected</option>
@@ -824,19 +824,19 @@ const SalesDashboard = () => {
               </div>
               {/* New Layout Based on the Image */}
               <div className="p-6">
-                <h2 className="text-lg font-semibold text-indigo-900 mb-4">Schedule Site Visit</h2>
+                <h2 className="mb-4 text-lg font-semibold text-indigo-900">Schedule Site Visit</h2>
 
                 {/* First Row - Select Date, Time, Status */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                <div className="grid grid-cols-1 gap-4 mb-4 md:grid-cols-3">
                   {/* Select Date */}
                   <div className="flex items-center gap-2">
                     <label className="text-sm text-gray-600 w-28">Select Date:</label>
                     <div className="relative flex-1">
                       <input
                         type="date"
-                        className="w-full border border-gray-300 p-2 pl-10 rounded-md focus:outline-indigo-500"
+                        className="w-full p-2 pl-10 border border-gray-300 rounded-md focus:outline-indigo-500"
                       />
-                      <Calendar className="absolute left-3 top-3 text-gray-500" size={16} />
+                      <Calendar className="absolute text-gray-500 left-3 top-3" size={16} />
                     </div>
                   </div>
 
@@ -846,16 +846,16 @@ const SalesDashboard = () => {
                     <div className="relative flex-1">
                       <input
                         type="time"
-                        className="w-full border border-gray-300 p-2 pl-10 rounded-md focus:outline-indigo-500"
+                        className="w-full p-2 pl-10 border border-gray-300 rounded-md focus:outline-indigo-500"
                       />
-                      <Clock className="absolute left-3 top-3 text-gray-500" size={16} />
+                      <Clock className="absolute text-gray-500 left-3 top-3" size={16} />
                     </div>
                   </div>
 
                   {/* Status Dropdown */}
                   <div className="flex items-center gap-2">
                     <label className="text-sm text-gray-600 w-28">Status:</label>
-                    <select className="w-full border border-gray-300 p-2 rounded-md bg-white">
+                    <select className="w-full p-2 bg-white border border-gray-300 rounded-md">
                       <option>Site Visit</option>
                       <option>Approved</option>
                       <option>Rejected</option>
@@ -864,21 +864,21 @@ const SalesDashboard = () => {
                 </div>
 
                 {/* Second Row - Comments & Assign To */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div className="grid grid-cols-1 gap-4 mb-4 md:grid-cols-2">
                   {/* Comments */}
                   <div className="flex items-center gap-2">
                     <label className="text-sm text-gray-600 w-28">Comments:</label>
                     <input
                       type="text"
                       placeholder="Enter comments"
-                      className="w-full border border-gray-300 p-2 rounded-md focus:outline-indigo-500"
+                      className="w-full p-2 border border-gray-300 rounded-md focus:outline-indigo-500"
                     />
                   </div>
 
                   {/* Assign To */}
                   <div className="flex items-center gap-2">
                     <label className="text-sm text-gray-600 w-28">Assign To:</label>
-                    <select className="w-full border border-gray-300 p-2 rounded-md bg-white">
+                    <select className="w-full p-2 bg-white border border-gray-300 rounded-md">
                       <option>Select Name</option>
                       <option>John Doe</option>
                       <option>Jane Smith</option>
@@ -888,19 +888,19 @@ const SalesDashboard = () => {
                 <br />
                 {/* Buttons - Cancel & Add */}
                 <div className="flex justify-center gap-4">
-                  <button className="bg-red-600 text-white px-6 py-2 rounded-md text-lg font-semibold">
+                  <button className="px-6 py-2 text-lg font-semibold text-white bg-red-600 rounded-md">
                     Cancel
                   </button>
-                  <button className="bg-blue-600 text-white px-6 py-2 rounded-md text-lg font-semibold">
+                  <button className="px-6 py-2 text-lg font-semibold text-white bg-blue-600 rounded-md">
                     Add
                   </button>
                 </div>
 
 
-                <div className="space-y-8 p-4">
+                <div className="p-4 space-y-8">
                   {/*-----------------------Ongoing Projects----------------------- */}
-                  <div className="bg-white rounded-xl shadow-md p-4 overflow-x-auto">
-                    <div className="flex flex-col md:flex-row md:justify-between items-center mb-4">
+                  <div className="p-4 overflow-x-auto bg-white shadow-md rounded-xl">
+                    <div className="flex flex-col items-center mb-4 md:flex-row md:justify-between">
                       <h2 className="text-xl font-medium text-[#4c48a5] mb-2 md:mb-0">
                         Customer Records
                       </h2>
@@ -910,18 +910,18 @@ const SalesDashboard = () => {
                           placeholder="Search..."
                           value={search}
                           onChange={handleSearch}
-                          className="border border-gray-300 rounded px-2 py-1 w-full sm:w-auto"
+                          className="w-full px-2 py-1 border border-gray-300 rounded sm:w-auto"
                         />
                         <button
                           onClick={() => handleDelete(item.id)}
-                          className="bg-red-500 text-white px-3 py-1 rounded"
+                          className="px-3 py-1 text-white bg-red-500 rounded"
                         >
                           Delete
                         </button>
-                        <button className="bg-gray-200 text-gray-700 px-3 py-1 rounded">
+                        <button className="px-3 py-1 text-gray-700 bg-gray-200 rounded">
                           Filter
                         </button>
-                        <button className="bg-gray-200 text-gray-700 px-3 py-1 rounded">
+                        <button className="px-3 py-1 text-gray-700 bg-gray-200 rounded">
                           Export
                         </button>
                       </div>
@@ -929,7 +929,7 @@ const SalesDashboard = () => {
 
                     {/* Table */}
                     <div className="overflow-x-auto">
-                      <table className="w-full border-collapse border-t border-b border-gray-300 text-left min-w-max">
+                      <table className="w-full text-left border-t border-b border-collapse border-gray-300 min-w-max">
                         <thead>
                           <tr>
                             <th className="p-2 border-b border-gray-300"></th>
@@ -957,13 +957,13 @@ const SalesDashboard = () => {
                               <td className="p-2">{item.phone}</td>
                               <td className="p-2">{item.location}</td>
                               <td className="p-2">{item.roof}</td>
-                              <td className="p-2 relative">
+                              <td className="relative p-2">
                                 <button
                                   className={`px-3 py-1 rounded-full ${getStatusColor(item.status)}`}
                                   onClick={() => toggleDropdown(item.id)}
                                   style={{ width: "150px", height: "40px" }}
                                 >
-                                  <div className="flex justify-center items-center gap-2">
+                                  <div className="flex items-center justify-center gap-2">
                                     <div>{item.status}</div>
                                     <div>
                                       <img src={dropdown} alt="" />
@@ -971,34 +971,34 @@ const SalesDashboard = () => {
                                   </div>
                                 </button>
                                 {dropdownOpen === item.id && (
-                                  <div className="absolute bg-white shadow-md rounded-md mt-2 w-48 z-10">
+                                  <div className="absolute z-10 w-48 mt-2 bg-white rounded-md shadow-md">
                                     <button
                                       onClick={() => handleStatusChange(item.id, "site visit")}
-                                      className="w-full text-left p-2 hover:bg-gray-100"
+                                      className="w-full p-2 text-left hover:bg-gray-100"
                                     >
                                       Site Visit
                                     </button>
                                     <button
                                       onClick={() => handleStatusChange(item.id, "discussion")}
-                                      className="w-full text-left p-2 hover:bg-gray-100"
+                                      className="w-full p-2 text-left hover:bg-gray-100"
                                     >
                                       Discussion
                                     </button>
                                     <button
                                       onClick={() => handleStatusChange(item.id, "in-progress")}
-                                      className="w-full text-left p-2 hover:bg-gray-100"
+                                      className="w-full p-2 text-left hover:bg-gray-100"
                                     >
                                       In Progress
                                     </button>
                                     <button
                                       onClick={() => handleStatusChange(item.id, "declined")}
-                                      className="w-full text-left p-2 hover:bg-gray-100"
+                                      className="w-full p-2 text-left hover:bg-gray-100"
                                     >
                                       Declined
                                     </button>
                                     <button
                                       onClick={() => handleStatusChange(item.id, "pending")}
-                                      className="w-full text-left p-2 hover:bg-gray-100"
+                                      className="w-full p-2 text-left hover:bg-gray-100"
                                     >
                                       Pending
                                     </button>
@@ -1006,7 +1006,7 @@ const SalesDashboard = () => {
                                 )}
                               </td>
                               <td className="p-2">
-                                <button className="bg-blue-500 text-white px-3 py-1 rounded-full">
+                                <button className="px-3 py-1 text-white bg-blue-500 rounded-full">
                                   See Details
                                 </button>
                               </td>
@@ -1017,7 +1017,7 @@ const SalesDashboard = () => {
                     </div>
 
                     {/* Pagination */}
-                    <div className="flex flex-col sm:flex-row justify-between items-center mt-4 space-y-2 sm:space-y-0">
+                    <div className="flex flex-col items-center justify-between mt-4 space-y-2 sm:flex-row sm:space-y-0">
                       <div>Page {currentPage} of {totalPages}</div>
                       <div className="flex space-x-2">
                         {[...Array(totalPages)].map((_, pageIndex) => (

@@ -50,7 +50,7 @@ const Estimate = () => {
   const [projectTypes, setProjectTypes] = useState([]);
   const [roofModels, setRoofModels] = useState([]);
   const [siteVisitors, setSiteVisitors] = useState([]);
-  const [areaProductData, setAreaProductData] = useState({});
+  const [, setAreaProductData] = useState({});
 
   // Client search
   const [clientList, setClientList] = useState([]);
