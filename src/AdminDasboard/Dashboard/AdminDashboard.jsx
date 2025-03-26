@@ -216,7 +216,6 @@ const AdminDashboard = () => {
     setIsExpanded3(!isExpanded3);
   };
 
-  const [filteredProjects, setFilteredProjects] = useState([]);
 
   useEffect(() => {
     // Initially, show all projects
@@ -252,6 +251,24 @@ const AdminDashboard = () => {
     );
 
     setFilteredCompletedProjects(filtered);
+  };
+
+// ----------------------------------------------------------------------------
+
+const [filteredProjects, setFilteredProjects] = useState([]);
+const [selectedOngoingItems, setSelectedOngoingItems] = useState([]);
+  // Track checkbox selection
+  const handleCheckboxChangeOngoing = (id) => {
+    selectedOngoingItems((prev) =>
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+    );
+  };
+
+  // Handle deletion
+  const handleDeleteongoing = () => {
+    const updatedProjects = filteredProjects.filter((p) => !selectedOngoingItems.includes(p._id));
+    setFilteredProjects(updatedProjects);
+    setSelectedOngoingItems([]);
   };
 
 
@@ -312,6 +329,7 @@ const AdminDashboard = () => {
           {/* Tables */}
           <div className="space-y-8">
             {/* Ongoing Projects */}
+
             <div className="p-4 mb-6 bg-white shadow-md rounded-xl">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-bold text-[#4c48a5]">Ongoing Projects</h2>

@@ -202,6 +202,20 @@ useEffect(() => {
 
 
 
+// const handleEstimate = (itemForm)=>{
+
+
+
+//   try {
+// const response = 
+    
+//   } catch (error) {
+    
+//   }
+
+// }
+
+
 
   
  
@@ -729,338 +743,16 @@ useEffect(() => {
       Delete
     </button> */}
   </div>
-              <div className="flex items-center justify-between gap-2 py-5">
-              <div className="relative flex gap-2 justify-center items-center">
-  <label className="text-sm text-gray-600">Client Name:</label>
-  <input
-    type="text"
-    value={searchTerm}
-    onChange={(e) => setSearchTerm(e.target.value)}
-    placeholder="Search Client"
-    className="w-100 border border-gray-300 p-2 rounded-md focus:outline-indigo-500 bg-white"
-  />
-
-  {/* Show dropdown only if there are matching results */}
-  {filteredClients.length > 0 && (
-    <ul className="absolute top-full left-0 w-full bg-white border border-gray-300 rounded-md mt-1 max-h-48 overflow-y-auto shadow-lg">
-      {filteredClients.map((client) => (
-        <li
-          key={client.id}
-          onClick={() => {
-            setSearchTerm(client.name); // Set input value when clicked
-            setFilteredClients([]); // Hide dropdown after selection
-          }}
-          className="p-2 cursor-pointer hover:bg-gray-200"
-        >
-          {client.name}
-        </li>
-      ))}
-    </ul>
-  )}
-</div>
-
-               
-      {/* Measurement Button */}
-      <h1
-      className="text-decoration underline cursor-pointer text-lg"
-      onClick={() => navigate("/admin/custommeasurement")}
-    >
-      Custom Measurements
-    </h1>
- 
-</div>
+              {/* < */}
  <br />
  
  
 
 
- <div className="bg-white shadow-lg">
- 
- {areas.map((area) => (
-<div key={area.id} className="px-6 ">
-<h2 className="text-lg font-semibold text-indigo-900 mb-6">{area.name}</h2>
- 
-<div className="flex items-center gap-2 justify-end">
-{/* Export Button */}
-{/* <button className="flex items-center gap-1 border border-gray-300 px-3 py-1 rounded-md text-gray-700 hover:bg-gray-100 transition">
-<Upload size={16} />
-Export
-</button> */}
-
-{/* Delete Button */}
-{/* <button className="flex items-center gap-1 text-gray-600 hover:text-red-600 transition">
-<Trash2 size={18} />
-Delete
-</button> */}
-</div> <br /><br />
-
-<div className="grid grid-cols-1 md:grid-cols-3 gap-2 mb-4">
-{/* Roof Type */}
-<div className="flex flex-col gap-2">
-<label className="text-sm font-medium text-[#15164A]">Project Type</label>
-<select
-className="p-2 border border-gray-300 rounded-md"
-onChange={(e) => handleAreaChange(area.id, "roofType", e.target.value)}
-value={area.itemForm.roofType}
->
-<option value="">Select</option>
-{projectTypeData?.map((category) => (
-<option key={category._id} value={category._id}>
-{category.projectType}
-</option>
-))}
-</select>
-</div>
-
-{/* Roof Model */}
-<div className="flex flex-col gap-2">
-<label className="text-sm font-medium text-[#15164A]">Roof Model</label>
-<select
-className="p-2 border border-gray-300 rounded-md"
-onChange={(e) => handleAreaChange(area.id, "roofModel", e.target.value)}
-value={area.itemForm.roofModel}
->
-<option value="">Select Category</option>
-{roofModelData.map((roofModel) => (
-<option key={roofModel._id} value={roofModel._id}>
-{roofModel.roofModel}
-</option>
-))}
-</select>
-</div>
-
-{/* Roof Preference */}
-<div className="flex flex-col gap-2">
-<label className="text-sm font-medium text-[#15164A]">Roof Preference</label>
-<select
-className="p-2 border border-gray-300 rounded-md"
-onChange={(e) => handleAreaChange(area.id, "roofPreference", e.target.value)}
-value={area.itemForm.roofPreference}
->
-<option value="">Select</option>
-<option value="Single Car Parking">Single Car Parking</option>
-<option value="Double Car Parking">Double Car Parking</option>
-</select>
-</div>
-</div>
+ {/*  */}
 
 
-   
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-2 mb-4 md:py-5">
-{/* Roof Type */}
-<div className="flex flex-col gap-2">
-        <label className="text-sm font-medium text-[#15164A]">
-          Span
-        </label>
-        <input
-type="text"
-className="p-2 border border-gray-300 rounded-md"
-placeholder="200m"
-value={areaProductData[area.id]?.span || ""}
-onChange={(e) => {
-const updatedData = { ...areaProductData[area.id], span: e.target.value };
-setAreaProductData((prevData) => ({ ...prevData, [area.id]: updatedData }));
-}}
-/>
-
-
-
-      </div>
-
-{/* Roof Model */}
-<div className="flex flex-col gap-2">
-        <label className="text-sm font-medium text-[#15164A]">
-          Length
-        </label>
-        <input
-type="text"
-className="p-2 border border-gray-300 rounded-md"
-placeholder="200m"
-value={areaProductData[area.id]?.length || ""}
-onChange={(e) => {
-const updatedData = { ...areaProductData[area.id], length: e.target.value };
-setAreaProductData((prevData) => ({ ...prevData, [area.id]: updatedData }));
-}}
-/>
-      </div>
-
-{/* Custom Field */}
-<div className="flex flex-col gap-2">
-        <label className="text-sm font-medium text-[#15164A]">
-          Height
-        </label>
-        <input
-type="text"
-className="p-2 border border-gray-300 rounded-md"
-placeholder="200m"
-value={areaProductData[area.id]?.height || ""}
-onChange={(e) => {
-const updatedData = { ...areaProductData[area.id], height: e.target.value };
-setAreaProductData((prevData) => ({ ...prevData, [area.id]: updatedData }));
-}}
-/>
-      </div>
-
-
-
-</div>
-<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-{areaProductData[area.id]?.materials?.map((item, index) => (
-<div key={index} className="grid grid-cols-2 gap-4 col-span-2">
-<div className="flex flex-col gap-2">
-<label className="text-sm font-medium text-[#15164A]">Material</label>
-<input
-type="text"
-className="p-2 border border-gray-300 rounded-md"
-placeholder="Material"
-value={item.itemId?.item || ""}
-readOnly
-/>
-</div>
-<div className="flex flex-col gap-2">
-<label className="text-sm font-medium text-[#15164A]">Quantity</label>
-<input
-type="text"
-className="p-2 border border-gray-300 rounded-md"
-placeholder="Quantity"
-value={item.unit || ""}
-onChange={(e) => {
-const updatedMaterials = [...areaProductData[area.id].materials];
-updatedMaterials[index].unit = e.target.value;
-setAreaProductData((prevData) => ({
-  ...prevData,
-  [area.id]: { ...prevData[area.id], materials: updatedMaterials },
-}));
-}}
-/>
-</div>
-</div>
-))}
-{/* <div className="flex flex-col items-end gap-2 mt-5">
-<h1
-className="text-lg font-medium underline cursor-pointer text-black-600"
-onClick={addNewMaterial}
->
-Add New Material
-</h1>
-</div> */}
-</div>
-
-
-
-
-
-
-
-    <div className="mt-4">
-      <input type="file" className="border p-2 rounded-md w-full" />
-    </div>
-
-    <div className="mt-4 text-right">
-    <div className="mt-4 text-right">
-              <button
-        onClick={addNewArea}
-        className="bg-blue-500 text-white py-2 px-4 rounded-md mb-4"
-      >
-        Add New Area +
-      </button>
-      <button onClick={() => removeArea(area.id)} className="bg-red-500 text-white py-2 px-4 rounded-md ml-4">Remove Area</button>
-              </div>
-    </div>
- 
-
-
-
-    <div className="flex justify-start items-center gap-4">
-{/* Comments */}
-<div className="flex flex-col gap-2">
-        <label className="text-sm font-medium text-[#15164A]">
-        Area Sq. Ft
-        </label>
-        <input
-type="text"
-className="p-2 border border-gray-300 rounded-md"
-placeholder="200m"
-value={areaProductData[area.id]?.totalArea || ""}
-onChange={(e) => {
-const updatedData = {
-...areaProductData[area.id],
-totalArea: e.target.value,
-};
-setAreaProductData((prevData) => ({
-...prevData,
-[area.id]: updatedData,
-}));
-}}
-/></div>
-
-{/* Status Dropdown */}
-<div className="flex flex-col gap-2">
-        <label className="text-sm font-medium text-[#15164A]  ">
-          Sheet Rate
-        </label>
-        <input
-type="text"
-className="p-2 border border-gray-300 rounded-md"
-placeholder="200m"
-value={areaProductData[area.id]?.sheetRate || ""}
-onChange={(e) => {
-const updatedData = {
-...areaProductData[area.id],
-sheetRate: e.target.value,
-};
-setAreaProductData((prevData) => ({
-...prevData,
-[area.id]: updatedData,
-}));
-}}
-/></div>
-</div> <br /><br />
-
-
-
-
-
-
-</div>
-))}
-  </div>
-
-
-  <div className="p-6 bg-white shadow-lg  ">
-<h2 className="text-lg font-semibold text-indigo-900 mb-4">Estimate</h2>
-
-{/* First Row - Two Fields (Total sq. ft & Total Cost) */}
-{/* First Row - Two Fields (Total sq. ft & Total Cost) */}
-<div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-{/* Total Square Feet */}
-<div className="flex items-center gap-2">
-<label className="text-sm text-gray-600 w-28">Total sq. ft:</label>
-<input
-type="text"
-value={totalSqFt}
-readOnly
-className="flex-1 bg-gray-200 text-gray-800 p-2 rounded-md text-center"
-/>
-</div>
-
-{/* Total Cost */}
-<div className="flex items-center gap-2">
-<label className="text-sm text-gray-600 w-28">Total Cost:</label>
-<input
-type="text"
-value={`₹${totalCost}/-`}
-readOnly
-className="flex-1 bg-gray-200 text-gray-800 p-2 rounded-md text-center"
-/>
-</div>
-</div>
-
-
-{/* Second Row - Three Fields (Comments, Status, Other Info) */}
-
-</div>
-
+  
 
  
             
@@ -1077,80 +769,11 @@ className="flex-1 bg-gray-200 text-gray-800 p-2 rounded-md text-center"
  
             <div>
             {/* New Layout Based on the Image */}
-            <div className="p-6">
-  <h2 className="text-lg font-semibold text-indigo-900 mb-4">Schedule Site Visit</h2>
- 
-  {/* First Row - Select Date, Time, Status */}
-  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-    {/* Select Date */}
-    <div className="flex items-center gap-2">
-      <label className="text-sm text-gray-600 w-28">Select Date:</label>
-      <div className="relative flex-1">
-        <input
-          type="date"
-          className="w-full border border-gray-300 p-2 pl-10 rounded-md focus:outline-indigo-500"
-        />
-        <Calendar className="absolute left-3 top-3 text-gray-500" size={16} />
-      </div>
-    </div>
- 
-    {/* Time Selection */}
-    <div className="flex items-center gap-2">
-      <label className="text-sm text-gray-600 w-28">Time:</label>
-      <div className="relative flex-1">
-        <input
-          type="time"
-          className="w-full border border-gray-300 p-2 pl-10 rounded-md focus:outline-indigo-500"
-        />
-        <Clock className="absolute left-3 top-3 text-gray-500" size={16} />
-      </div>
-    </div>
- 
-    {/* Status Dropdown */}
-    <div className="flex items-center gap-2">
-      <label className="text-sm text-gray-600 w-28">Status:</label>
-      <select className="w-full border border-gray-300 p-2 rounded-md bg-white">
-        <option>Site Visit</option>
-        <option>Approved</option>
-        <option>Rejected</option>
-      </select>
-    </div>
-  </div>
- 
-  {/* Second Row - Comments & Assign To */}
-  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-    {/* Comments */}
-    <div className="flex items-center gap-2">
-      <label className="text-sm text-gray-600 w-28">Assign To:</label>
-      <select className="w-full border border-gray-300 p-2 rounded-md bg-white">
-        <option>Select Name</option>
-        {siteVisitors.map((visitor) => (
-          <option key={visitor._id} value={visitor._id}>
-            {visitor.name}
-          </option>
-        ))}
-      </select>
-    </div>
- 
-    {/* Assign To */}
-   
-  </div>
-<br />
-  {/* Buttons - Cancel & Add */}
-  <div className="flex justify-center gap-4">
-    <button className="bg-red-600 text-white px-6 py-2 rounded-md text-lg font-semibold">
-      Cancel
-    </button>
-    <button className="bg-blue-600 text-white px-6 py-2 rounded-md text-lg font-semibold">
-      Add
-    </button>
-  </div>
- 
-  </div>
+            
   <div className="space-y-8 p-4">
   {/*-----------------------Ongoing Projects----------------------- */}
   <div className="bg-white rounded-xl shadow-md p-4 overflow-x-auto">
-    <div className="flex flex-col md:flex-row md:justify-between items-center mb-4">
+    {/* <div className="flex flex-col md:flex-row md:justify-between items-center mb-4">
       <h2 className="text-xl font-medium text-[#4c48a5] mb-2 md:mb-0">
         Customer Records
       </h2>
@@ -1175,10 +798,9 @@ className="flex-1 bg-gray-200 text-gray-800 p-2 rounded-md text-center"
           Export
         </button>
       </div>
-    </div>
+    </div> */}
  
-    {/* Table */}
-    <div className="overflow-x-auto">
+    {/* <div className="overflow-x-auto">
       <table className="w-full border-collapse border-t border-b border-gray-300 text-left min-w-max">
         <thead>
           <tr>
@@ -1264,10 +886,10 @@ className="flex-1 bg-gray-200 text-gray-800 p-2 rounded-md text-center"
           ))}
         </tbody>
       </table>
-    </div>
+    </div> */}
  
     {/* Pagination */}
-    <div className="flex flex-col sm:flex-row justify-between items-center mt-4 space-y-2 sm:space-y-0">
+    {/* <div className="flex flex-col sm:flex-row justify-between items-center mt-4 space-y-2 sm:space-y-0">
       <div>Page {currentPage} of {totalPages}</div>
       <div className="flex space-x-2">
         {[...Array(totalPages)].map((_, pageIndex) => (
@@ -1284,7 +906,7 @@ className="flex-1 bg-gray-200 text-gray-800 p-2 rounded-md text-center"
           </button>
         ))}
       </div>
-    </div>
+    </div> */}
   </div>
 </div>
 </div>

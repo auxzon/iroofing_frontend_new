@@ -19,5 +19,6 @@ export const adminEndponits = {
      getAllProjectTypes:"admin/getAllProjectType",
      getProjectStatus:"estimate/getAllEstimates ", 
      getClientByPhone:"estimate/getEstimateByClientAndPhone",
-     finalEstimate:"estimate/finalEstimate"
+     finalEstimate:"estimate/finalEstimate",
+    
 }

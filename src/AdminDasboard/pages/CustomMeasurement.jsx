@@ -1,905 +1,556 @@
-
-
-import { useState,useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { Calendar, Clock } from "lucide-react";
+import React, { useState, useEffect } from 'react';
+import { Trash2, Plus, Search } from 'lucide-react';
+import { toast } from 'react-toastify';
+import { getClient } from '../../api/admin/client/getClient';
+import { getAllProjectType } from '../../api/sales/project/project';
+import { getAllCategories } from '../../api/sales/project/project';
+import { getSitevisitor } from '../../api/admin/employee/sitevistor';
 import Header from "../../AdminDasboard/components/Header";
 import Sidebar from "../../AdminDasboard/components/SideNav";
-import { Trash2, Upload } from "lucide-react";
-import addnew from "../../SalesDashboard/assets/icons/adduser.png";
-import addclients from "../../SalesDashboard/assets/icons/addclients.png";
-import addestimate from "../../SalesDashboard/assets/icons/addestimate.png";
-import dropdown from "../../SalesDashboard/assets/icons/dropdown.png";
-import {addNewclient} from "../../api/admin/client/addClient";
-import { getClient } from "../../api/admin/client/getClient";
-import { getAllProjectType } from "../../api/sales/project/project";
-import {getAllCategories} from "../../api/sales/project/project"
-import { toast } from "react-toastify";
-
+import { finalEstimate } from "../../api/admin/estimate/createEstimate";
+import { getAllMaterialItem } from '../../api/admin/product/getAllCategories';
 
 const CustomMeasurement = () => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const toggleSidebar = () => setIsSidebarOpen((prev) => !prev);
+   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const toggleSidebar = () => setIsSidebarOpen((prev) => !prev);
+    
+  // State Management
+  const [areas, setAreas] = useState([
+    { 
+      id: 1, 
+      clientId: '', 
+      projectType: '', 
+      roofModel: '', 
+      roofPreference: '',
+      span: '',
+      length: '',
+      height: '',
+      typeOfPanel:'',
+      offset:'',
+      sheetThickness:'',
+      numberofbay:'',
+      extrapanel:'',
+      materials: [{ material: '', quantity: '' }]
+    }
+  ]);
 
- const navigate = useNavigate ()
- 
-  const [areas, setAreas] = useState([{ id: 1, name: "Area 1" }]);
-  const [showMeasurements, setShowMeasurements] = useState(false);
- 
-  const [materials, setMaterials] = useState([{ material: "", quantity: "" }]);
- 
-  const addNewMaterial = () => {
-  setMaterials([...materials, { material: "", quantity: "" }]);
-  };
+  const [clients, setClients] = useState([]);
+  const [projectTypes, setProjectTypes] = useState([]);
+  const [roofModels, setRoofModels] = useState([]);
+  const [siteVisitors, setSiteVisitors] = useState([]);
+
+  // Form States
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filteredClients, setFilteredClients] = useState([]);
+  const [selectedSiteVisitor, setSelectedSiteVisitor] = useState('');
+
+  // Fetch Initial Data
+  useEffect(() => {
+    const fetchInitialData = async () => {
+      try {
+        const [
+          clientResponse, 
+          projectTypeResponse, 
+          roofModelResponse, 
+          siteVisitorResponse
+        ] = await Promise.all([
+          getClient(),
+          getAllProjectType(),
+          getAllCategories(),
+          getSitevisitor()
+        ]);
+
+        setClients(clientResponse.data?.clients || []);
+        setProjectTypes(projectTypeResponse.projectTypes || []);
+        setRoofModels(roofModelResponse.categories || []);
+        setSiteVisitors(siteVisitorResponse.data || []);
+      } catch (error) {
+        toast.error('Failed to fetch initial data');
+        console.error('Data fetch error:', error);
+      }
+    };
+
+    fetchInitialData();
+  }, []);
+
+  // Client Search Functionality
+  useEffect(() => {
+    if (!searchTerm) {
+      setFilteredClients([]);
+      return;
+    }
+
+    const filtered = clients.filter((client) =>
+      client.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredClients(filtered);
+  }, [searchTerm, clients]);
+
+  // Area Management Functions
   const addNewArea = () => {
     const newArea = {
       id: areas.length + 1,
-      name: `Area ${areas.length + 1}`,
+      clientId: '',
+      projectType: '',
+      roofModel: '',
+      roofPreference: '',
+      span: '',
+      length: '',
+      height: '',
+      typeOfPanel:'',
+      offset:'',
+      sheetThickness:'',
+      numberofbay:'',
+      extrapanel:'',
+      materials: [{ material: '', quantity: '' }]
+      
     };
     setAreas([...areas, newArea]);
   };
 
-  // Function to remove an area (excluding the first one)
   const removeArea = (id) => {
     setAreas(areas.filter((area) => area.id !== id));
   };
 
-const [name,setName] = useState ("")
-const  [phoneNo,setPhoneNo] = useState("")
-const [place,setPlace] =useState("")
-const [district,setDistrict] =useState("")
-const [comments,setComments] = useState("")
-const [isSubmitting, setIsSubmitting] = useState(false);
-
-const validateForm = () => {
-  if (!name || !phoneNo || !place || !district) {
-    toast.error("Please fill in all required fields.");
-    return false;
-  }
-  return true;
-};
-
-const handleSubmit = async (e) => {
-  e.preventDefault();
-
-  if (!validateForm()) {
-    return;
-  }
-
-  setIsSubmitting(true);
-  const formData = { name, phoneNo, place, district, comments };
-
-  try {
-    const response = await addNewclient(formData); // Ensure AddNewclient is imported and defined
-    if (response?.data) {
-      // Reset all fields after successful submission
-      setName("");
-      setPhoneNo("");
-      setPlace("");
-      setDistrict("");
-      setComments("");
-      toast.success("client added successfully!");
-    }
-  } catch (error) {
-    toast.error("Failed to add client. Please try again.");
-    console.error("Error adding client:", error);
-  } finally {
-    setIsSubmitting(false);
-  }
-};
-
-
-const [clientList, setClientList] = useState([]);
-const [searchTerm, setSearchTerm] = useState("");
-const [filteredClients, setFilteredClients] = useState([]);
-
-useEffect(() => {
-  const fetchClients = async () => {
-    try {
-      const response = await getClient();
-      console.log("API Data:", response); // Debugging
-
-      if (Array.isArray(response?.data)) {
-        setClientList(response.data);
-      } else if (response?.data?.clients && Array.isArray(response.data.clients)) {
-        setClientList(response.data.clients);
-      } else {
-        console.error("Invalid API response:", response);
-        setClientList([]); // Fallback to avoid errors
-      }
-    } catch (error) {
-      console.error("Error fetching clients:", error);
-      setClientList([]);
-    }
-  };
-
-  fetchClients();
-}, []);
-
-
-
-useEffect(() => {
-  if (!searchTerm) {
-    setFilteredClients([]); // If search is empty, reset suggestions
-    return;
-  }
-
-  if (Array.isArray(clientList)) {
-    const filtered = clientList.filter((client) =>
-      client?.name?.toLowerCase().includes(searchTerm.toLowerCase())
+  const updateAreaField = (areaId, field, value) => {
+    const updatedAreas = areas.map((area) =>
+      area.id === areaId ? { ...area, [field]: value } : area
     );
-    setFilteredClients(filtered);
-  } else {
-    setFilteredClients([]);
-  }
-}, [searchTerm, clientList]);
-
-// -------------------------------------------------------
-
-const [projectTypes, setProjectTypes] = useState([]);
-
-useEffect(() => {
-  const fetchProjectTypes = async () => {
-    try {
-      const response = await getAllProjectType(); // Check API response
-      console.log(response); // Debug API response
-      setProjectTypes(response.projectTypes || []); // Ensure response contains projectTypes array
-    } catch (error) {
-      console.error("Error fetching project types:", error);
-    }
+    setAreas(updatedAreas);
   };
-
-  fetchProjectTypes();
-}, []);
-
-
-// ---------------------------------------------------------------------
-
-const [categories, setCategories] = useState([]);
-useEffect(() => {
-  const fetchCategories = async () => {
-    try {
-      const response = await getAllCategories(); // Fetch categories from API
-      console.log(response); // Debug API response
-      setCategories(response.categories || []); // Ensure response contains categories array
-    } catch (error) {
-      console.error("Error fetching categories:", error);
-    }
-  };
-
-  fetchCategories();
-}, []);
-
-
-
 
   
- 
-  const OngoingProject = [
-    {
-      id: 1,
-      name: "Kevin",
-      phone: "+91 9867 5433 33",
-      location: "Kochi",
-      roof: "Car Porch",
-      status: "site visit",
-    },
-    {
-      id: 2,
-      name: "Marley",
-      phone: "+91 8990 3444 89",
-      location: "Kollam",
-      roof: "Warehouse",
-      status: "pending",
-    },
-    {
-      id: 3,
-      name: "Gustavo",
-      phone: "+91 9867 5433 33",
-      location: "Thrissur",
-      roof: "Car Porch",
-      status: "in-progress",
-    },
-    {
-      id: 4,
-      name: "Chance",
-      phone: "+91 8843 8943 32",
-      location: "Palakkad",
-      roof: "Car Porch",
-      status: "discussion",
-    },
-    {
-      id: 5,
-      name: "Marley",
-      phone: "+91 9867 5433 33",
-      location: "Aluva",
-      roof: "Auditorium",
-      status: "inprogress",
-    },
-    {
-      id: 6,
-      name: "Miracle",
-      phone: "+91 7887 6464 55",
-      location: "Kochi",
-      roof: "Auditorium",
-      status: "pending",
-    },
- 
-    {
-      id: 7,
-      name: "Ashlynn",
-      phone: "+91 9876 6789 23",
-      location: "Kochi",
-      roof: "Car Porch",
-      status: "sitevisit",
-    },
-    {
-      id: 8,
-      name: "James",
-      phone: "+91 9867 5433 33",
-      location: "Kochi",
-      roof: "Auditorium",
-      status: "declined",
-    },
-    {
-      id: 9,
-      name: "george",
-      phone: "+91 9867 5433 33",
-      location: "Kochi",
-      roof: "Auditorium",
-      status: "discussion",
-    },
-    {
-      id: 10,
-      name: "xavi",
-      phone: "+91 9867 5433 33",
-      location: "Kochi",
-      roof: "Auditorium",
-      status: "progress ",
-    },
-    {
-      id: 11,
-      name: "pedri",
-      phone: "+91 9867 5433 33",
-      location: "Kochi",
-      roof: "Auditorium",
-      status: "declined",
-    },
-    {
-      id: 12,
-      name: "rodrigo",
-      phone: "+91 9867 5433 33",
-      location: "Kochi",
-      roof: "Auditorium",
-      status: "progress",
-    },
-  ];
-  const [dropdownOpen, setDropdownOpen] = useState(null);
-  const [data, setData] = useState(OngoingProject);
-  const [search, setSearch] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
-  const [selectedItems, setSelectedItems] = useState([]);
-  const itemsPerPage = 8;
-
- 
-  const handleSearch = (event) => setSearch(event.target.value);
- 
-  const handlePageChange = (page) => setCurrentPage(page);
- 
-  const handleCheckboxChange = (id) =>
-    setSelectedItems((prev) =>
-      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+  // Form Submission
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+  
+    // Validate form data
+    const isValid = areas.every((area) => 
+      area.clientId && area.projectType && area.roofModel
     );
- 
-  const handleDelete = (id) => setData(data.filter((item) => item.id !== id));
- 
-  const handleStatusChange = (id, newStatus) => {
-    const updatedData = data.map((item) =>
-      item.id === id ? { ...item, status: newStatus } : item
-    );
-    setData(updatedData);
-  };
- 
-  const filteredData = data.filter((item) =>
-    item.name.toLowerCase().includes(search.toLowerCase())
-  );
- 
-  const paginatedData = filteredData.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
- 
-  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
- 
- 
- 
-  const getStatusColor = (status) => {
-    switch (status.toLowerCase().replace(/\s+/g, "")) {
-      case "sitevisit":
-      case "site visit":
-        return "bg-[#CF7933] text-white";
-      case "discussion":
-        return "bg-[#3C3EC3] text-white";
-      case "pending":
-        return "bg-yellow-500 text-white";
-      case "inprogress":
-      case "in-progress":
-      case "progress":
-        return "bg-green-500 text-white";
-      case "declined":
-        return "bg-red-500 text-white";
-      default:
-        return "bg-gray-500 text-white";
+  
+    if (!isValid) {
+      toast.error('Please fill in all required fields for each area');
+      return;
+    }
+    try {
+      // Prepare submission data
+      const submissionData = {
+        siteVisitorId: selectedSiteVisitor,
+        areas: areas.map((area) => ({
+          clientId: area.clientId,
+          projectType: area.projectType,
+          roofModel: area.roofModel,
+          roofPreference: area.roofPreference,
+          dimensions: {
+            span: area.span,
+            length: area.length,
+            height: area.height
+          },
+          typeOfPanel: area.typeOfPanel,
+          offset: area.offset,
+          sheetThickness: area.sheetThickness,
+          numberofbay: area.numberofbay,
+          extrapanel: area.extrapanel,
+          materials: area.materials
+        }))
+      };
+      
+      // Call finalEstimate API with submission data
+      const response = await finalEstimate(submissionData);
+      
+      if (response.success) {
+        toast.success('Custom Measurement submitted successfully!');;
+      } else {
+        toast.error(response.message || 'Failed to submit custom measurement');
+      }
+    } catch (error) {
+      toast.error('Failed to submit custom measurement');
+      console.error('Submission error:', error);
     }
   };
- 
-  const toggleDropdown = (id) => {
-    setDropdownOpen(dropdownOpen === id ? null : id); // Toggle dropdown visibility
-  };
- 
+  useEffect(() => {
+    
+      fetchRoofModels();
+     
+    }, []);
+   const fetchRoofModels = async () => {
+      try {
+        const response = await getAllCategories();
+        setRoofModels(response.categories || []);
+      } catch (error) {
+        console.error("Error fetching roof models:", error);
+      }
+    };
+
+    const [showDropdown, setShowDropdown] = useState(null);
+    const [allMaterials, setAllMaterials] = useState([]);
+  
+    useEffect(() => {
+      const getAllMaterialItems = async () => {
+        try {
+          const response = await getAllMaterialItem();
+          console.log('Fetched material items:', response);
+          setAllMaterials(response.items || []);
+        } catch (error) {
+          console.error('Error fetching materials:', error);
+        }
+      };
+      getAllMaterialItems();
+    }, []);
+  
+    const selectMaterial = (index, material) => {
+      const selectedMaterial = {
+        itemId: material._id,
+        itemName: material.item,
+        unit: 1,
+      };
+  
+      setItemForm((prevState) => {
+        const updatedMaterials = [...prevState.materials];
+        updatedMaterials[index] = selectedMaterial;
+        return { ...prevState, materials: updatedMaterials };
+      });
+  
+      setShowDropdown(null);
+    };
+  
+// Update the material management functions
+const addNewMaterial = (areaId) => {
+  const updatedAreas = areas.map((area) =>
+    area.id === areaId
+      ? {
+          ...area,
+          materials: [...area.materials, { material: '', quantity: '' }]
+        }
+      : area
+  );
+  setAreas(updatedAreas);
+};
+
+const updateMaterial = (areaId, materialIndex, field, value) => {
+  const updatedAreas = areas.map((area) =>
+    area.id === areaId
+      ? {
+          ...area,
+          materials: area.materials.map((material, index) =>
+            index === materialIndex ? { ...material, [field]: value } : material
+          )
+        }
+      : area
+  );
+  setAreas(updatedAreas);
+};
+
   return (
-    <div className="min-h-screen flex bg-gray-100 w-full">
+    <div className="flex h-screen bg-gray-100">
       {/* Sidebar */}
       <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
- 
+
       {/* Main Content */}
-      <div className="flex-1 flex flex-col w-full">
+      <div className="flex-1 overflow-y-auto">
         <Header toggleSidebar={toggleSidebar} />
- 
-        <div className="space-y-8 bg-gray-100 py-5 px-5 w-full max-w-full">
-          <h1 className="text-3xl font-bold text-[#4c48a5]">Dashboard</h1>
- 
-          {/* Action Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 px-5 w-full">
-            <div className="p-4 bg-white rounded-2xl shadow-md flex items-center space-x-4 py-5 w-full">
-              <img src={addnew} alt="Add New Clients" className="w-12 h-12" />
-              <div onClick={() => navigate("/salesaddnewclient")} className="cursor-pointer">
-                <h2 className="text-lg font-normal">Add New Clients</h2>
-                <p className="text-gray-600">To register new clients</p>
-              </div>
-            </div>
-            <div className="p-4 bg-white rounded-2xl shadow-md flex items-center space-x-4 py-5 w-full">
-              <img src={addclients} alt="Existing Clients" className="w-12 h-12" />
-              <div>
-                <h2 className="text-lg font-normal">Existing Clients</h2>
-                <p className="text-gray-600">View existing clients</p>
-              </div>
-            </div>
-            <div className="p-4 bg-white rounded-2xl shadow-md flex items-center space-x-4 py-5 w-full">
-              <img src={addestimate} alt="Create an Estimate" className="w-12 h-12" />
-              <div>
-                <h2 className="text-lg font-normal">Create an Estimate</h2>
-                <p className="text-gray-600">Generate client estimates</p>
-              </div>
-            </div>
-          </div>
- 
-          {/* Customer Records Table */}
-          <div className="space-y-8 w-full">
-            {/* Add New Client Section */}
-            <div className="p-6 bg-white shadow-md rounded-lg w-full">
- 
-             
-            <h2 className="text-lg font-semibold text-indigo-900 flex items-center justify-between">
-  <span className="flex items-center gap-2">
-    Add New Client
-    {/* <input type="checkbox" className="w-4 h-4" /> */}
-    {/* <span className="text-gray-600">ABC 123</span> */}
-  </span>
-  <button className="flex items-center text-gray-600 hover:text-red-500">
-    <Trash2 className="w-4 h-4 mr-1" />
-    Delete
-  </button>
-</h2> <br />
- 
- {/* First Row - Three Input Fields */}
- <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-        <div className="flex items-center gap-2">
-          <label className="text-sm text-gray-600 w-24">Name:</label>
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Amal"
-            className="flex-1 bg-gray-200 text-gray-800 p-2 rounded-md focus:outline-none"
-          />
-        </div>
-        <div className="flex items-center gap-2">
-          <label className="text-sm text-gray-600 w-24">Phone:</label>
-          <input
-            type="text"
-            value={phoneNo}
-            onChange={(e) => setPhoneNo(e.target.value)}
-            placeholder="676876872"
-            className="flex-1 bg-gray-200 text-gray-800 p-2 rounded-md focus:outline-none"
-          />
-        </div>
-        <div className="flex items-center gap-2">
-          <label className="text-sm text-gray-600 w-24">Place:</label>
-          <input
-            type="text"
-            value={place}
-            onChange={(e) => setPlace(e.target.value)}
-            placeholder="Kochi"
-            className="flex-1 border border-gray-300 p-2 rounded-md focus:outline-indigo-500"
-          />
-        </div>
-      </div>
-
-      {/* Second Row - Two Input Fields */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="flex items-center gap-2">
-          <label className="text-sm text-gray-600 w-24">District:</label>
-          <input
-            type="text"
-            value={district}
-            onChange={(e) => setDistrict(e.target.value)}
-            placeholder="District"
-            className="flex-1 border border-gray-300 p-2 rounded-md focus:outline-indigo-500"
-          />
-        </div>
-        <div className="flex items-center gap-2">
-          <label className="text-sm text-gray-600 w-24">Comments:</label>
-          <input
-            type="text"
-            value={comments}
-            onChange={(e) => setComments(e.target.value)}
-            placeholder="Add comments"
-            className="flex-1 border border-gray-300 p-2 rounded-md focus:outline-indigo-500"
-          />
-        </div>
-      </div>
-
-      {/* Buttons */}
-      <div className="flex justify-center py-6 gap-5">
-        <button
-          className="bg-red-600 text-white px-6 py-3 text-lg rounded-lg shadow-md hover:bg-red-700 transition"
-          onClick={() => {
-            setName("");
-            setPhoneNo("");
-            setPlace("");
-            setDistrict("");
-            setComments("");
-          }}
-          disabled={isSubmitting}
-        >
-          Cancel
-        </button>
-        <button
-          className="bg-blue-600 text-white px-6 py-3 text-lg rounded-lg shadow-md hover:bg-blue-700 transition ml-4"
-          onClick={handleSubmit}
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? "Saving..." : "Save"}
-        </button>
-      </div>
- 
-
-
-
-      <div className="pt-5">
-      {areas.map((area, index) => (
-        <div key={area.id} className="p-6 border rounded-lg shadow-md mb-4 relative">
-          {/* Area Title & Remove Button (Only show remove for additional areas) */}
-          <div className="flex justify-between items-center">
-            <h2 className="text-lg font-semibold text-indigo-900 mb-6">{area.name}</h2>
-            {index !== 0 && (
-              <button
-                onClick={() => removeArea(area.id)}
-                className="bg-red-500 text-white py-1 px-3 rounded-md text-sm hover:bg-red-700"
-              >
-                Remove
-              </button>
-            )}
-          </div>
-
-          {/* Client Name */}
-          <div className="mt-5">
-  <label className="text-sm text-gray-600">Client Name:</label>
-  <input
-    type="text"
-    value={searchTerm}
-    onChange={(e) => setSearchTerm(e.target.value)}
-    placeholder="Search Client"
-    className="w-100 border border-gray-300 p-2 rounded-md focus:outline-indigo-500 bg-white"
-  />
-
-  {/* Show dropdown only if there are matching results */}
-  {filteredClients.length > 0 && (
-    <ul className="absolute top-full left-0 w-full bg-white border border-gray-300 rounded-md mt-1 max-h-48 overflow-y-auto shadow-lg">
-      {filteredClients.map((client) => (
-        <li
-        key={client._id}
-          onClick={() => {
-            setSearchTerm(client.name); // Set input value when clicked
-            setFilteredClients([]); // Hide dropdown after selection
-          }}
-          className="p-2 cursor-pointer hover:bg-gray-200"
-        >
-          {client.name}
-        </li>
-      ))}
-    </ul>
-  )}
-</div>
-
-
-          {/* Roof Details */}
-          <div className="grid grid-cols-3 gap-4 mt-4">
-            <div>
-              <label className="text-sm">Roof Type:</label>
-              <select className="w-full border border-gray-300 p-2 rounded-md text-black">
-                <option>Car Porch</option>
-              </select>
-            </div>
-            <div>
-              <label className="text-sm">Roof Model:</label>
-              <select className="w-full border border-gray-300 p-2 rounded-md text-black">
-                <option>Normal Cantilever</option>
-              </select>
-            </div>
-            <div>
-              <label className="text-sm">Parking Type:</label>
-              <select className="w-full border border-gray-300 p-2 rounded-md text-black">
-                <option>Double Car Parking</option>
-              </select>
-            </div>
-          </div>
-
-          {/* Dimensions */}
-          <div className="grid grid-cols-3 gap-4 mt-4">
-            <div>
-              <label className="text-sm">Span:</label>
-              <input type="text" placeholder="200m" className="w-full border p-2 rounded-md text-black" />
-            </div>
-            <div>
-              <label className="text-sm">Length:</label>
-              <input type="text" placeholder="250m" className="w-full border p-2 rounded-md text-black" />
-            </div>
-            <div>
-              <label className="text-sm">Height:</label>
-              <input type="text" placeholder="300m" className="w-full border p-2 rounded-md text-black" />
-            </div>
-          </div>
-
-          {/* Materials Section */}
-          {materials.map((item) => (
-            <div key={item.id} className="grid grid-cols-2 gap-4 mt-4">
-              <div>
-                <label className="text-sm">Material:</label>
-                <input type="text" className="w-full border p-2 rounded-md text-black" placeholder="Material Name" />
-              </div>
-              <div>
-                <label className="text-sm">Quantity:</label>
-                <input type="text" className="w-full border p-2 rounded-md text-black" placeholder="Meter" />
-              </div>
-            </div>
-          ))}
-          <button onClick={addNewMaterial} className="mt-4 text-blue-400 underline">
-            Add New Material
-          </button>
-
-          {/* Additional Inputs */}
-          <div className="grid grid-cols-3 gap-4 mt-4">
-            <input type="text" placeholder="Type of Panel" className="border p-2 rounded-md text-black" />
-            <input type="text" placeholder="Off Set" className="border p-2 rounded-md text-black" />
-            <input type="text" placeholder="Sheet Thickness" className="border p-2 rounded-md text-black" />
-          </div>
-          <div className="grid grid-cols-3 gap-4 mt-4">
-            <input type="text" placeholder="Center Height" className="border p-2 rounded-md text-black" />
-            <input type="text" placeholder="Extra Panel" className="border p-2 rounded-md text-black" />
-            <input type="text" placeholder="No of Bay" className="border p-2 rounded-md text-black" />
-          </div>
-          <div className="grid grid-cols-3 gap-4 mt-4">
-            <input type="text" placeholder="Cutting Length" className="border p-2 rounded-md text-black" />
-            <input type="text" placeholder="Final Cutting" className="border p-2 rounded-md text-black" />
-          </div>
-
-          {/* File Upload */}
-          <div className="mt-4">
-            <input type="file" className="border p-2 rounded-md w-full text-black" />
-          </div>
-        </div>
-      ))}
-
-      {/* Add New Area Button */}
-      <div className="mt-6">
-        <button onClick={addNewArea} className="bg-blue-500 text-white py-2 px-4 rounded-md">
-          Add New Area +
-        </button>
-      </div>
-    </div>
-
-
-
-
-
-
-
-
-
-
- 
-            <div className="p-6  ">
-  <h2 className="text-lg font-semibold text-indigo-900 mb-4">Estimate</h2>
- 
-  {/* First Row - Two Fields (Total sq. ft & Total Cost) */}
-  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-    {/* Total Square Feet */}
-    <div className="flex items-center gap-2">
-      <label className="text-sm text-gray-600 w-28">Total sq. ft:</label>
-      <input
-        type="text"
-        value="1023.54"
-        readOnly
-        className="flex-1 bg-gray-200 text-gray-800 p-2 rounded-md text-center"
-      />
-    </div>
- 
-    {/* Total Cost */}
-    <div className="flex items-center gap-2">
-      <label className="text-sm text-gray-600 w-28">Total Cost:</label>
-      <input
-        type="text"
-        value="₹57800/-"
-        readOnly
-        className="flex-1 bg-gray-200 text-gray-800 p-2 rounded-md text-center"
-      />
-    </div>
-  </div>
- 
-  {/* Second Row - Three Fields (Comments, Status, Other Info) */}
-  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-    {/* Comments */}
-    <div className="flex items-center gap-2">
-      <label className="text-sm text-gray-600 w-28">Comments:</label>
-      <input
-        type="text"
-        placeholder="Enter comments"
-        className="flex-1 border border-gray-300 p-2 rounded-md focus:outline-indigo-500"
-      />
-    </div>
- 
-    {/* Status Dropdown */}
-    <div className="flex items-center gap-2">
-      <label className="text-sm text-gray-600 w-28">Status:</label>
-      <select className="flex-1 border border-gray-300 p-2 rounded-md bg-white">
-        <option>Site Visit</option>
-        <option>Approved</option>
-        <option>Rejected</option>
-      </select>
-    </div>
- 
-    {/* Additional Field (if needed) */}
- 
-  </div>
-</div>
-            {/* New Layout Based on the Image */}
-            <div className="p-6">
-  <h2 className="text-lg font-semibold text-indigo-900 mb-4">Schedule Site Visit</h2>
- 
-  {/* First Row - Select Date, Time, Status */}
-  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-    {/* Select Date */}
-    <div className="flex items-center gap-2">
-      <label className="text-sm text-gray-600 w-28">Select Date:</label>
-      <div className="relative flex-1">
-        <input
-          type="date"
-          className="w-full border border-gray-300 p-2 pl-10 rounded-md focus:outline-indigo-500"
-        />
-        <Calendar className="absolute left-3 top-3 text-gray-500" size={16} />
-      </div>
-    </div>
- 
-    {/* Time Selection */}
-    <div className="flex items-center gap-2">
-      <label className="text-sm text-gray-600 w-28">Time:</label>
-      <div className="relative flex-1">
-        <input
-          type="time"
-          className="w-full border border-gray-300 p-2 pl-10 rounded-md focus:outline-indigo-500"
-        />
-        <Clock className="absolute left-3 top-3 text-gray-500" size={16} />
-      </div>
-    </div>
- 
-    {/* Status Dropdown */}
-    <div className="flex items-center gap-2">
-      <label className="text-sm text-gray-600 w-28">Status:</label>
-      <select className="w-full border border-gray-300 p-2 rounded-md bg-white">
-        <option>Site Visit</option>
-        <option>Approved</option>
-        <option>Rejected</option>
-      </select>
-    </div>
-  </div>
- 
-  {/* Second Row - Comments & Assign To */}
-  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-    {/* Comments */}
-    <div className="flex items-center gap-2">
-      <label className="text-sm text-gray-600 w-28">Comments:</label>
-      <input
-        type="text"
-        placeholder="Enter comments"
-        className="w-full border border-gray-300 p-2 rounded-md focus:outline-indigo-500"
-      />
-    </div>
- 
-    {/* Assign To */}
-    <div className="flex items-center gap-2">
-      <label className="text-sm text-gray-600 w-28">Assign To:</label>
-      <select className="w-full border border-gray-300 p-2 rounded-md bg-white">
-        <option>Select Name</option>
-        <option>John Doe</option>
-        <option>Jane Smith</option>
-      </select>
-    </div>
-  </div>
-<br />
-  {/* Buttons - Cancel & Add */}
-  <div className="flex justify-center gap-4">
-    <button className="bg-red-600 text-white px-6 py-2 rounded-md text-lg font-semibold">
-      Cancel
-    </button>
-    <button className="bg-blue-600 text-white px-6 py-2 rounded-md text-lg font-semibold">
-      Add
-    </button>
-  </div>
- 
- 
-  <div className="space-y-8 p-4">
-  {/*-----------------------Ongoing Projects----------------------- */}
-  <div className="bg-white rounded-xl shadow-md p-4 overflow-x-auto">
-    <div className="flex flex-col md:flex-row md:justify-between items-center mb-4">
-      <h2 className="text-xl font-medium text-[#4c48a5] mb-2 md:mb-0">
-        Customer Records
-      </h2>
-      <div className="flex flex-wrap gap-2">
-        <input
-          type="text"
-          placeholder="Search..."
-          value={search}
-          onChange={handleSearch}
-          className="border border-gray-300 rounded px-2 py-1 w-full sm:w-auto"
-        />
-        <button
-          onClick={() => handleDelete(item.id)}
-          className="bg-red-500 text-white px-3 py-1 rounded"
-        >
-          Delete
-        </button>
-        <button className="bg-gray-200 text-gray-700 px-3 py-1 rounded">
-          Filter
-        </button>
-        <button className="bg-gray-200 text-gray-700 px-3 py-1 rounded">
-          Export
-        </button>
-      </div>
-    </div>
- 
-    {/* Table */}
-    <div className="overflow-x-auto">
-      <table className="w-full border-collapse border-t border-b border-gray-300 text-left min-w-max">
-        <thead>
-          <tr>
-            <th className="p-2 border-b border-gray-300"></th>
-            <th className="p-2 border-b border-gray-300">SL No</th>
-            <th className="p-2 border-b border-gray-300">Client Name</th>
-            <th className="p-2 border-b border-gray-300">Phone Number</th>
-            <th className="p-2 border-b border-gray-300">Location</th>
-            <th className="p-2 border-b border-gray-300">Work Type</th>
-            <th className="p-2 border-b border-gray-300">Status</th>
-            <th className="p-2 border-b border-gray-300">Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {paginatedData.map((item, index) => (
-            <tr key={item.id} className="border-b border-gray-300">
-              <td className="p-2">
-                <input
-                  type="checkbox"
-                  checked={selectedItems.includes(item.id)}
-                  onChange={() => handleCheckboxChange(item.id)}
-                />
-              </td>
-              <td className="p-2">{index + 1 + (currentPage - 1) * itemsPerPage}</td>
-              <td className="p-2">{item.name}</td>
-              <td className="p-2">{item.phone}</td>
-              <td className="p-2">{item.location}</td>
-              <td className="p-2">{item.roof}</td>
-              <td className="p-2 relative">
-                <button
-                  className={`px-3 py-1 rounded-full ${getStatusColor(item.status)}`}
-                  onClick={() => toggleDropdown(item.id)}
-                  style={{ width: "150px", height: "40px" }}
-                >
-                  <div className="flex justify-center items-center gap-2">
-                    <div>{item.status}</div>
-                    <div>
-                      <img src={dropdown} alt="" />
-                    </div>
-                  </div>
-                </button>
-                {dropdownOpen === item.id && (
-                  <div className="absolute bg-white shadow-md rounded-md mt-2 w-48 z-10">
-                    <button
-                      onClick={() => handleStatusChange(item.id, "site visit")}
-                      className="w-full text-left p-2 hover:bg-gray-100"
-                    >
-                      Site Visit
-                    </button>
-                    <button
-                      onClick={() => handleStatusChange(item.id, "discussion")}
-                      className="w-full text-left p-2 hover:bg-gray-100"
-                    >
-                      Discussion
-                    </button>
-                    <button
-                      onClick={() => handleStatusChange(item.id, "in-progress")}
-                      className="w-full text-left p-2 hover:bg-gray-100"
-                    >
-                      In Progress
-                    </button>
-                    <button
-                      onClick={() => handleStatusChange(item.id, "declined")}
-                      className="w-full text-left p-2 hover:bg-gray-100"
-                    >
-                      Declined
-                    </button>
-                    <button
-                      onClick={() => handleStatusChange(item.id, "pending")}
-                      className="w-full text-left p-2 hover:bg-gray-100"
-                    >
-                      Pending
-                    </button>
-                  </div>
+    <div className="min-h-screen bg-gray-100 p-6">
+      <div className="container mx-auto">
+        <h1 className="text-3xl font-bold text-indigo-800 mb-6">
+          Custom Measurement Form
+        </h1>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Site Visitor Selection */}
+          {/* Areas Section */}
+          {areas.map((area, index) => (
+            <div 
+              key={area.id} 
+              className="bg-white shadow-md rounded-lg p-6 relative"
+            >
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-semibold text-indigo-700">
+                  Area {area.id}
+                </h2>
+                {index > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => removeArea(area.id)}
+                    className="text-red-500 hover:text-red-700"
+                  >
+                    <Trash2 className="w-5 h-5" />
+                  </button>
                 )}
-              </td>
-              <td className="p-2">
-                <button className="bg-blue-500 text-white px-3 py-1 rounded-full">
-                  See Details
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
- 
-    {/* Pagination */}
-    <div className="flex flex-col sm:flex-row justify-between items-center mt-4 space-y-2 sm:space-y-0">
-      <div>Page {currentPage} of {totalPages}</div>
-      <div className="flex space-x-2">
-        {[...Array(totalPages)].map((_, pageIndex) => (
-          <button
-            key={pageIndex}
-            onClick={() => handlePageChange(pageIndex + 1)}
-            className={`px-3 py-1 rounded ${
-              currentPage === pageIndex + 1
-                ? "bg-blue-500 text-white"
-                : "bg-gray-200 text-gray-700"
-            }`}
-          >
-            {pageIndex + 1}
-          </button>
+              </div>
+              {/* Client Search */}
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Client Search
+                </label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    placeholder="Search Client"
+                    className="w-full border border-gray-300 rounded-md p-2 pl-8"
+                  />
+                  <Search className="absolute left-2 top-3 w-4 h-4 text-gray-400" />
+                  {filteredClients.length > 0 && (
+                    <ul className="absolute z-10 w-full bg-white border border-gray-300 rounded-md mt-1 max-h-48 overflow-y-auto">
+                      {filteredClients.map((client) => (
+                        <li
+                          key={client._id}
+                          onClick={() => {
+                            updateAreaField(area.id, 'clientId', client._id);
+                            setSearchTerm(client.name);
+                            setFilteredClients([]);
+                          }}
+                          className="p-2 hover:bg-gray-100 cursor-pointer"
+                        >
+                          {client.name}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              </div>
+              {/* Project Details */}
+              <div className="grid grid-cols-3 gap-4 mb-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Project Type
+                  </label>
+                  <select
+                    value={area.projectType}
+                    onChange={(e) => updateAreaField(area.id, 'projectType', e.target.value)}
+                    className="w-full border border-gray-300 rounded-md p-2"
+                  >
+                    <option value="">Select Project Type</option>
+                    {projectTypes.map((type) => (
+                      <option key={type._id} value={type.projectType}>
+                        {type.projectType}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Roof Model
+                  </label>
+                  <select
+                    value={area.roofModel}
+                    onChange={(e) => updateAreaField(area.id, 'roofModel', e.target.value)}
+                    className="w-full border border-gray-300 rounded-md p-2"
+                  >
+                    <option value="">Select Roof Model</option>
+                    {roofModels.map((model) => (
+                      <option key={model._id} value={model.roofModel}>
+                        {model.roofModel}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Roof Preference
+                  </label>
+                  <select
+                    value={area.roofPreference}
+                    onChange={(e) => updateAreaField(area.id, 'roofPreference', e.target.value)}
+                    className="w-full border border-gray-300 rounded-md p-2"
+                  >
+                    <option value="">Select Preference</option>
+                    <option value="double-parking">custom</option>
+            
+                  </select>
+                </div>
+              </div>
+           {/* Dimensions */}
+              <div className="grid grid-cols-3 gap-4 mb-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Span
+                  </label>
+                  <input
+                    type="text"
+                    value={area.span}
+                    onChange={(e) => updateAreaField(area.id, 'span', e.target.value)}
+                    placeholder="Enter Span"
+                    className="w-full border border-gray-300 rounded-md p-2"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Length
+                  </label>
+                  <input
+                    type="text"
+                    value={area.length}
+                    onChange={(e) => updateAreaField(area.id, 'length', e.target.value)}
+                    placeholder="Enter Length"
+                    className="w-full border border-gray-300 rounded-md p-2"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Height
+                  </label>
+                  <input
+                    type="text"
+                    value={area.height}
+                    onChange={(e) => updateAreaField(area.id, 'height', e.target.value)}
+                    placeholder="Enter Height"
+                    className="w-full border border-gray-300 rounded-md p-2"
+                  />
+                </div>
+              </div>
+              <div className='grid grid-cols-3 gap-4 mb-4'>
+                         <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Type of Panel</label>
+                      <input
+                        type="text"
+                        value={area.typeOfPanel}
+                        onChange={(e) => updateAreaField(area.id, 'typeOfPanel', e.target.value)}
+                        className="w-full border border-gray-300 rounded-md p-2"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Offset</label>
+                      <input
+                        type="text"
+                        value={area.offset}
+                        onChange={(e) => updateAreaField(area.id, 'offset', e.target.value)}
+                        className="w-full border border-gray-300 rounded-md p-2"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Sheet Thickness</label>
+                      <input
+                        type="text"
+                        value={area.sheetThickness}
+                        onChange={(e) => updateAreaField(area.id, 'sheetThickness', e.target.value)}
+                        className="w-full border border-gray-300 rounded-md p-2"
+                      />
+                    </div>
+                    </div>
+{/* -------------------------------------------------------- */}
+                      <div className='grid grid-cols-2 gap-4 mb-4'>
+                         <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">No.of bay</label>
+                      <input
+                        type="text"
+                        value={area.numberofbay}
+                        onChange={(e) => updateAreaField(area.id, 'numberofbay', e.target.value)}
+                        className="w-full border border-gray-300 rounded-md p-2"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">extra panels</label>
+                      <input
+                        type="text"
+                        value={area.extrapanel}
+                        onChange={(e) => updateAreaField(area.id, 'extrapanel', e.target.value)}
+                        className="w-full border border-gray-300 rounded-md p-2"
+                      />
+                    </div> 
+                    </div>
+              {/* Materials Section */}
+              {area.materials.map((material, materialIndex) => (
+  <div key={materialIndex} className="grid grid-cols-2 gap-4 mb-4">
+    <div className="flex flex-col gap-2 relative">
+      <label className="text-sm font-medium text-[#15164A]">Material</label>
+      <select
+        value={material.material}
+        onChange={(e) => updateMaterial(area.id, materialIndex, 'material', e.target.value)}
+        className="w-full border border-gray-300 rounded-md p-2"
+      >
+        <option value="">Select Material</option>
+        {allMaterials.map((mat) => (
+          <option key={mat._id} value={mat._id}>
+            {mat.item}
+          </option>
         ))}
-      </div>
+      </select>
+    </div>
+    <div className="flex flex-col gap-2">
+      <label className="text-sm font-medium text-[#15164A]">Quantity</label>
+      <input
+        type="text"
+        className="p-2 border border-gray-300 rounded-md"
+        placeholder="Quantity"
+        value={material.quantity}
+        onChange={(e) => updateMaterial(area.id, materialIndex, 'quantity', e.target.value)}
+      />
     </div>
   </div>
-</div>
-</div>
- 
+))}
+             <button
+                type="button"
+                onClick={() => addNewMaterial(area.id)}
+                className="flex items-center text-blue-600 hover:text-blue-800 mt-2"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Add Material
+              </button>
             </div>
+          ))}
+          <div className="flex justify-between items-center">
+            <button
+              type="button"
+              onClick={addNewArea}
+              className="flex items-center bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Add Area
+            </button>
           </div>
-        </div>
+          <div className="bg-white shadow-md rounded-lg p-6">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Assign to Site Visitor
+            </label>
+            <select
+              value={selectedSiteVisitor}
+              onChange={(e) => setSelectedSiteVisitor(e.target.value)}
+              className="w-full border border-gray-300 rounded-md p-2"
+            >
+              <option value="">Select Site Visitor</option>
+              {siteVisitors.map((visitor) => (
+                <option key={visitor._id} value={visitor._id}>
+                  {visitor.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="p-6 bg-gray-50">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Total Square Feet
+                  </label>
+                  <input
+                    type="text"
+                    className="w-full p-3 border border-gray-300 rounded-md bg-gray-100 font-semibold text-gray-800"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Total Cost
+                  </label>
+                  <input
+                    type="text"
+                     className="w-full p-3 border border-gray-300 rounded-md bg-gray-100 font-semibold text-gray-800"
+                  />
+                </div>
+              </div>
+              <div className="flex justify-center mt-6">
+                <button type='submit'
+                  className="bg-green-600 text-white px-8 py-3 rounded-md text-lg font-semibold hover:bg-green-700 transition-colors">
+                  Create Estimate
+                </button>
+              </div>
+            </div>
+        </form>
       </div>
+    </div>
+    </div>
     </div>
   );
 };
- 
+
 export default CustomMeasurement;
- 
-
-

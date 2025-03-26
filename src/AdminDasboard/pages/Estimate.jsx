@@ -2,618 +2,760 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../../AdminDasboard/components/Header";
 import Sidebar from "../../AdminDasboard/components/SideNav";
-import { fetchAllProjectType, getAllCategories,  } from "../../api/admin/product/getAllCategories";
-import { getFilteredProducts, updateProduct } from "../../api/admin/product/updateProduct";
- 
- 
+import { getSitevisitor } from "../../api/admin/employee/sitevistor";
+import {
+  fetchAllProjectType,
+  getAllCategories,
+} from "../../api/admin/product/getAllCategories";
+import { getFilteredProducts } from "../../api/admin/product/updateProduct";
+import { getClient } from "../../api/admin/client/getClient";
+import { finalEstimate } from "../../api/admin/estimate/createEstimate";
+
 const Estimate = () => {
+  const navigate = useNavigate();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const toggleSidebar = () => setIsSidebarOpen((prev) => !prev);
-  const navigate = useNavigate();
-  const [showForm, setShowForm] = useState(false);
-  const [areas, setAreas] = useState([
-    { id: 1, name: "Area 1", itemForm: { roofType: "", roofModel: "", roofPreference: "" } }
-  ]);
- 
- 
-  const [projectTypeData, setProjectTypeData] = useState([]);
-  const [roofModelData, setRoofModelData] = useState([]);
-  const [productData, setProductData] = useState(null);
-  const [areaProductData, setAreaProductData] = useState({});
-  const [totalSqFt, setTotalSqFt] = useState(0);
-  const [totalCost, setTotalCost] = useState(0);
- 
-  const calculateTotals = () => {
-    let totalSqFtSum = 0;
-    let totalCostSum = 0;
- 
-    Object.values(areaProductData).forEach((area) => {
-      const areaSqFt = parseFloat(area.totalArea) || 0;
-      const sheetRate = parseFloat(area.sheetRate) || 0;
- 
-      totalSqFtSum += areaSqFt;
-      totalCostSum += sheetRate;
-    });
- 
-    setTotalSqFt(totalSqFtSum.toFixed(2));
-    setTotalCost(totalCostSum.toFixed(2));
-  };
- 
-  useEffect(() => {
-    calculateTotals();
-  }, [areaProductData]);
- 
- 
-  const addNewArea = () => {
-    const newArea = {
-      id: areas.length + 1,
-      name: `Area ${areas.length + 1}`,
-      itemForm: { roofType: "", roofModel: "", roofPreference: "" },
-    };
-    setAreas([...areas, newArea]);
-  };
- 
- 
-  const removeArea = (id) => {
-    const updatedAreas = areas.filter((area) => area.id !== id);
-    setAreas(updatedAreas);
-  };
- 
-  const handleSubmit = () => {
-    alert("Form submitted!");
-  };
- 
-   const [materials, setMaterials] = useState([{ material: "", quantity: "" }]);
-    const addNewMaterial = () => {
-    setMaterials([...materials, { material: "", quantity: "" }]);
-    };
-   
-    const handleMaterialChange = (index, field, value) => {
-    const updatedMaterials = [...materials];
-      updatedMaterials[index] = { ...updatedMaterials[index], [field]: value };
-      setMaterials(updatedMaterials);
-    };
- 
-    const handleAreaChange = async (id, field, value) => {
-      const updatedAreas = areas.map((area) =>
-        area.id === id
-          ? {
-              ...area,
-              itemForm: { ...area.itemForm, [field]: value },
-            }
-          : area
-      );
-      setAreas(updatedAreas);
-   
-     
-      const selectedArea = updatedAreas.find((area) => area.id === id);
-      const filters = {
-        roofType: selectedArea.itemForm.roofType,
-        roofModel: selectedArea.itemForm.roofModel,
-        roofPreference: selectedArea.itemForm.roofPreference,
-      };
-   
-      if (
-        filters.roofType !== "" &&
-        filters.roofModel !== "" &&
-        filters.roofPreference !== ""
-      ) {
-        await fetchProducts(id, filters);
-      }
-    };
-   
-   
-   
-      const [itemForm, setItemForm] = useState({
-        roofType: "",
+
+  // Form data state
+  const [formData, setFormData] = useState({
+    clientId: "",
+    clientName: "",
+    siteVisitorId: "",
+    areas: [
+      {
+        id: 1,
+        name: "Area 1",
+        projectType: "",
         roofModel: "",
         roofPreference: "",
-        uploadImage: null,
-        materials: [],
         span: "",
         length: "",
         height: "",
-        typeOfPanel: "",
-        sheetThickness: "",
-        numberOfPanels: "",
-        newLength: "",
-        centerHeight: "",
-        finalCuttingLength: "",
+        typeOfPanel: 0.305,
+        offset: 0,
+        sheetThickness: 0.6,
+        noOfBay: 1,
+        noOfWorkingDays: 5,
+        extraPanel: 2,
+        materialItems: [],
         totalArea: "",
         sheetRate: "",
+      },
+    ],
+    totalSqFt: 0,
+    totalCost: 0,
+  });
+
+  // Reference data
+  const [projectTypes, setProjectTypes] = useState([]);
+  const [roofModels, setRoofModels] = useState([]);
+  const [siteVisitors, setSiteVisitors] = useState([]);
+  const [areaProductData, setAreaProductData] = useState({});
+
+  // Client search
+  const [clientList, setClientList] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filteredClients, setFilteredClients] = useState([]);
+
+  // Fetch initial data
+  useEffect(() => {
+    fetchProjectTypes();
+    fetchRoofModels();
+    fetchSiteVisitors();
+    fetchClients();
+  }, []);
+
+  // Calculate totals whenever area data changes
+  useEffect(() => {
+    calculateTotals();
+  }, [formData.areas]);
+
+  // Update filtered clients when search term changes
+  useEffect(() => {
+    if (!searchTerm) {
+      setFilteredClients([]);
+      return;
+    }
+
+    if (Array.isArray(clientList)) {
+      const filtered = clientList.filter((client) =>
+        client?.name?.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      setFilteredClients(filtered);
+    } else {
+      setFilteredClients([]);
+    }
+  }, [searchTerm, clientList]);
+
+  // API fetch functions
+  const fetchProjectTypes = async () => {
+    try {
+      const response = await fetchAllProjectType();
+      setProjectTypes(response.projectTypes || []);
+    } catch (error) {
+      console.error("Error fetching project types:", error);
+    }
+  };
+
+  const fetchRoofModels = async () => {
+    try {
+      const response = await getAllCategories();
+      setRoofModels(response.categories || []);
+    } catch (error) {
+      console.error("Error fetching roof models:", error);
+    }
+  };
+
+  const fetchSiteVisitors = async () => {
+    try {
+      const response = await getSitevisitor();
+      setSiteVisitors(response.data || []);
+    } catch (error) {
+      console.error("Error fetching site visitors:", error);
+    }
+  };
+
+  const fetchClients = async () => {
+    try {
+      const response = await getClient();
+      if (Array.isArray(response?.data)) {
+        setClientList(response.data);
+      } else if (
+        response?.data?.clients &&
+        Array.isArray(response.data.clients)
+      ) {
+        setClientList(response.data.clients);
+      } else {
+        setClientList([]);
+      }
+    } catch (error) {
+      console.error("Error fetching clients:", error);
+      setClientList([]);
+    }
+  };
+
+  const fetchProductForArea = async (areaId, filters) => {
+    try {
+      const response = await getFilteredProducts(filters);
+
+      if (response?.products?.length > 0) {
+        const productData = response.products[0];
+
+        // Update the specific area with product data
+        updateAreaWithProductData(areaId, productData);
+
+        // Store in separate state for reference
+        setAreaProductData((prevData) => ({
+          ...prevData,
+          [areaId]: productData,
+        }));
+      }
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    }
+  };
+
+  // Form manipulation functions
+  const updateAreaWithProductData = (areaId, productData) => {
+    setFormData((prevData) => {
+      const updatedAreas = prevData.areas.map((area) => {
+        if (area.id === areaId) {
+          return {
+            ...area,
+            span: productData.span || area.span,
+            length: productData.length || area.length,
+            height: productData.height || area.height,
+            materials: productData.materials || area.materials,
+            totalArea: productData.totalArea || area.totalArea,
+            sheetRate: productData.sheetRate || area.sheetRate,
+          };
+        }
+        return area;
       });
-   
- 
-       
-            useEffect(() => {
-              const fetchAllProjectTypes = async () => {
-                try {
-                  const categoriesData = await fetchAllProjectType();
-                  console.log("Fetched project types:", categoriesData);
-                  setProjectTypeData(categoriesData.projectTypes || []);
-                } catch (error) {
-                  console.error("Error fetching project types:", error);
-                }
-              };
-     
-              fetchAllProjectTypes();
-        }, []);
-     
-     
-           
-      useEffect(() => {
-        const fetchCategories = async () => {
-          try {
-            const response = await getAllCategories();
-            setRoofModelData(response.categories || []);
-            console.log("Fetched categories:", response.categories);
-          } catch (error) {
-            console.error("Error fetching categories:", error);
-          }
-        };
-     
-        fetchCategories();
-      }, []);
-     
-     
-     
-      const handleFilter = async () => {
-        if (filters.roofModel !== "" && filters.roofType !== "" && filters.roofPreference !== "")
-         
-          console.log("hiiiiiiiiiiiiii");
-           fetchProducts()
-       
-        }
-        const fetchProducts = async (areaId, filters) => {
-          try {
-            const response = await getFilteredProducts(filters);
-            console.log("Fetched Products:", response);
-       
-            if (response?.products?.length > 0) {
-              setAreaProductData((prevData) => ({
-                ...prevData,
-                [areaId]: response.products[0], // Store product data by area ID
-              }));
-            }
-          } catch (error) {
-            console.error("Error fetching Products:", error);
-          }
-        };
-       
-     
-     
+
+      return {
+        ...prevData,
+        areas: updatedAreas,
+      };
+    });
+  };
+
+  // Modify addNewArea to match the new structure
+  const addNewArea = () => {
+    const newAreaId = formData.areas.length + 1;
+    const newArea = {
+      id: newAreaId,
+      name: `Area ${newAreaId}`,
+      projectType: "",
+      roofModel: "",
+      roofPreference: "",
+      span: "",
+      length: "",
+      height: "",
+      typeOfPanel: 0.305,
+      offset: 0,
+      sheetThickness: 0.6,
+      noOfBay: 1,
+      noOfWorkingDays: 5,
+      extraPanel: 2,
+      materialItems: [],
+      totalArea: "",
+      sheetRate: "",
+    };
+
+    setFormData((prevData) => ({
+      ...prevData,
+      areas: [...prevData.areas, newArea],
+    }));
+  };
+
+  const removeArea = (areaId) => {
+    if (formData.areas.length <= 1) {
+      alert("You must have at least one area.");
+      return;
+    }
+
+    setFormData((prevData) => ({
+      ...prevData,
+      areas: prevData.areas.filter((area) => area.id !== areaId),
+    }));
+
+    // Also remove from areaProductData
+    setAreaProductData((prevData) => {
+      const newData = { ...prevData };
+      delete newData[areaId];
+      return newData;
+    });
+  };
+
+  // Modify the existing handleAreaChange to update projectType
+  const handleAreaChange = async (areaId, field, value) => {
+    // Update form data
+    setFormData((prevData) => {
+      const updatedAreas = prevData.areas.map((area) =>
+        area.id === areaId ? { ...area, [field]: value } : area
+      );
+
+      return {
+        ...prevData,
+        areas: updatedAreas,
+      };
+    });
+
+    // Check if we need to fetch product data
+    const area = formData.areas.find((a) => a.id === areaId);
+
+    // Create updated area with new field value
+    const updatedArea = { ...area, [field]: value };
+
+    if (
+      (field === "projectType" ||
+        field === "roofModel" ||
+        field === "roofPreference") &&
+      updatedArea.projectType &&
+      updatedArea.roofModel &&
+      updatedArea.roofPreference
+    ) {
       const filters = {
-        roofType: itemForm.roofType,
-        roofModel: itemForm.roofModel,
-        roofPreference: itemForm.roofPreference
+        roofType: updatedArea.projectType,
+        roofModel: updatedArea.roofModel,
+        roofPreference: updatedArea.roofPreference,
       };
-     
-      console.log(filters);
-     
-      const editProduct = async () => {
-        try {
-          const updatedProduct = { ...productData };
-          console.log("Updating Product with data:", updatedProduct);
-     
-         
-         const response = await updateProduct(updatedProduct._id, updatedProduct);
-      console.log(response);
-     
-          alert("Product updated successfully!");
-          fetchProducts();
-        } catch (error) {
-          console.error("Error updating product:", error);
+
+      await fetchProductForArea(areaId, filters);
+    }
+  };
+
+  const handleMaterialChange = (areaId, materialIndex, value) => {
+    setFormData((prevData) => {
+      const updatedAreas = prevData.areas.map((area) => {
+        if (area.id === areaId) {
+          const updatedMaterials = [...area.materials];
+          updatedMaterials[materialIndex].unit = value;
+
+          return {
+            ...area,
+            materials: updatedMaterials,
+          };
         }
+        return area;
+      });
+
+      return {
+        ...prevData,
+        areas: updatedAreas,
       };
- 
-     
- 
+    });
+  };
+
+  const handleClientSelect = (client) => {
+    setSearchTerm(client.name);
+    setFilteredClients([]);
+
+    setFormData((prevData) => ({
+      ...prevData,
+      clientId: client._id,
+      clientName: client.name,
+    }));
+  };
+
+  const handleSiteVisitorChange = (visitorId) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      siteVisitorId: visitorId,
+    }));
+  };
+
+  const calculateTotals = () => {
+    let totalSqFtSum = 0;
+    let totalCostSum = 0;
+
+    formData.areas.forEach((area) => {
+      const areaSqFt = parseFloat(area.totalArea) || 0;
+      const areaRate = parseFloat(area.sheetRate) || 0;
+
+      totalSqFtSum += areaSqFt;
+      totalCostSum += areaRate;
+    });
+
+    setFormData((prevData) => ({
+      ...prevData,
+      totalSqFt: totalSqFtSum.toFixed(2),
+      totalCost: totalCostSum.toFixed(2),
+    }));
+  };
+
+  const handleAreaInputChange = (areaId, field, value) => {
+    setFormData((prevData) => {
+      const updatedAreas = prevData.areas.map((area) =>
+        area.id === areaId ? { ...area, [field]: value } : area
+      );
+
+      return {
+        ...prevData,
+        areas: updatedAreas,
+      };
+    });
+  };
+
+  const handleSubmit = async () => {
+    // Validate form data
+    if (!formData.clientId) {
+      alert("Please select a client");
+      return;
+    }
+  
+    if (!formData.siteVisitorId) {
+      alert("Please select a site visitor");
+      return;
+    }
+  
+    // Prepare data for submission
+    const submitData = {
+      clientId: formData.clientId,
+      siteVisitorId: formData.siteVisitorId,
+      status: "Finished",
+      areas: formData.areas.map((area) => ({
+        span: parseFloat(area.span) || 0,
+        length: parseFloat(area.length) || 0,
+        height: parseFloat(area.height) || 0,
+        projectType: area.projectType,
+        roofModel: area.roofModel,
+        roofPreference: area.roofPreference,
+        typeOfPanel: area.typeOfPanel,
+        offset: area.offset,
+        sheetThickness: area.sheetThickness,
+        noOfBay: area.noOfBay,
+        noOfWorkingDays: area.noOfWorkingDays,
+        extraPanel: area.extraPanel,
+        materialItems: [
+          ...(area.materials ? 
+            area.materials.map((material) => ({
+              itemId: material.itemId?._id || material.itemId,
+              unit: parseFloat(material.unit) || 0,
+            })) : 
+            []),
+          ...(area.materialItems || [])
+        ],
+      })),
+    };
+  
+    try {
+      const response = await finalEstimate(submitData);
+      console.log("API Response:", response);
+  
+      if (response.data && response.data.success) {
+        alert("Estimate created successfully!");
+        navigate("/estimates");
+      } else {
+        const errorMsg =
+          response.data?.message ||
+          "Failed to create estimate. Please try again.";
+        alert(errorMsg);
+      }
+    } catch (error) {
+      console.error("Error creating estimate:", error);
+      const errorMessage =
+        error.message ||
+        (typeof error === "object" ? JSON.stringify(error) : error) ||
+        "Unknown error";
+      alert(`Failed to create estimate: ${errorMessage}`);
+    }
+  };
+
   return (
-    <div className="min-h-screen flex bg-gray-100 w-full ">
+    <div className="flex h-screen bg-gray-100">
       {/* Sidebar */}
       <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
- 
+
       {/* Main Content */}
-      <div className="flex-1 flex flex-col w-full">
+      <div className="flex-1 overflow-y-auto">
         <Header toggleSidebar={toggleSidebar} />
- 
- 
-          {/* Action Cards */}
-         
- 
-          {/* Customer Records Table */}
-          <div className=" w-full">
-            {/* Add New Client Section */}
-            <div className="px-6 bg-white shadow-md rounded-lg w-full">
-             
-              {/* First Row - Three Input Fields */}
-             
- 
-              {/* Second Row - Two Input Fields */}
-             
-           
- 
-           <div className="bg-white shadow-lg">
- 
-           {areas.map((area) => (
-  <div key={area.id} className="px-6 ">
-    <h2 className="text-lg font-semibold text-indigo-900 mb-6">{area.name}</h2>
-           
-    <div className="flex items-center gap-2 justify-end">
-    {/* Export Button */}
-    {/* <button className="flex items-center gap-1 border border-gray-300 px-3 py-1 rounded-md text-gray-700 hover:bg-gray-100 transition">
-      <Upload size={16} />
-      Export
-    </button> */}
- 
-    {/* Delete Button */}
-    {/* <button className="flex items-center gap-1 text-gray-600 hover:text-red-600 transition">
-      <Trash2 size={18} />
-      Delete
-    </button> */}
-  </div> <br /><br />
- 
-  <div className="grid grid-cols-1 md:grid-cols-3 gap-2 mb-4">
-  {/* Roof Type */}
-  <div className="flex flex-col gap-2">
-    <label className="text-sm font-medium text-[#15164A]">Project Type</label>
-    <select
-      className="p-2 border border-gray-300 rounded-md"
-      onChange={(e) => handleAreaChange(area.id, "roofType", e.target.value)}
-      value={area.itemForm.roofType}
-    >
-      <option value="">Select</option>
-      {projectTypeData?.map((category) => (
-        <option key={category._id} value={category._id}>
-          {category.projectType}
-        </option>
-      ))}
-    </select>
-  </div>
- 
-  {/* Roof Model */}
-  <div className="flex flex-col gap-2">
-    <label className="text-sm font-medium text-[#15164A]">Roof Model</label>
-    <select
-      className="p-2 border border-gray-300 rounded-md"
-      onChange={(e) => handleAreaChange(area.id, "roofModel", e.target.value)}
-      value={area.itemForm.roofModel}
-    >
-      <option value="">Select Category</option>
-      {roofModelData.map((roofModel) => (
-        <option key={roofModel._id} value={roofModel._id}>
-          {roofModel.roofModel}
-        </option>
-      ))}
-    </select>
-  </div>
- 
-  {/* Roof Preference */}
-  <div className="flex flex-col gap-2">
-    <label className="text-sm font-medium text-[#15164A]">Roof Preference</label>
-    <select
-      className="p-2 border border-gray-300 rounded-md"
-      onChange={(e) => handleAreaChange(area.id, "roofPreference", e.target.value)}
-      value={area.itemForm.roofPreference}
-    >
-      <option value="">Select</option>
-      <option value="Single Car Parking">Single Car Parking</option>
-      <option value="Double Car Parking">Double Car Parking</option>
-    </select>
-  </div>
-</div>
- 
- 
-             
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-2 mb-4 md:py-5">
-  {/* Roof Type */}
-  <div className="flex flex-col gap-2">
-                  <label className="text-sm font-medium text-[#15164A]">
-                    Span
-                  </label>
-                  <input
-  type="text"
-  className="p-2 border border-gray-300 rounded-md"
-  placeholder="200m"
-  value={areaProductData[area.id]?.span || ""}
-  onChange={(e) => {
-    const updatedData = { ...areaProductData[area.id], span: e.target.value };
-    setAreaProductData((prevData) => ({ ...prevData, [area.id]: updatedData }));
-  }}
-/>
- 
- 
- 
-                </div>
- 
-  {/* Roof Model */}
-  <div className="flex flex-col gap-2">
-                  <label className="text-sm font-medium text-[#15164A]">
-                    Length
-                  </label>
-                  <input
-  type="text"
-  className="p-2 border border-gray-300 rounded-md"
-  placeholder="200m"
-  value={areaProductData[area.id]?.length || ""}
-  onChange={(e) => {
-    const updatedData = { ...areaProductData[area.id], length: e.target.value };
-    setAreaProductData((prevData) => ({ ...prevData, [area.id]: updatedData }));
-  }}
-/>
-                </div>
- 
-  {/* Custom Field */}
-  <div className="flex flex-col gap-2">
-                  <label className="text-sm font-medium text-[#15164A]">
-                    Height
-                  </label>
-                  <input
-  type="text"
-  className="p-2 border border-gray-300 rounded-md"
-  placeholder="200m"
-  value={areaProductData[area.id]?.height || ""}
-  onChange={(e) => {
-    const updatedData = { ...areaProductData[area.id], height: e.target.value };
-    setAreaProductData((prevData) => ({ ...prevData, [area.id]: updatedData }));
-  }}
-/>
-                </div>
- 
- 
- 
-</div>
-<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-{areaProductData[area.id]?.materials?.map((item, index) => (
-  <div key={index} className="grid grid-cols-2 gap-4 col-span-2">
-    <div className="flex flex-col gap-2">
-      <label className="text-sm font-medium text-[#15164A]">Material</label>
-      <input
-        type="text"
-        className="p-2 border border-gray-300 rounded-md"
-        placeholder="Material"
-        value={item.itemId?.item || ""}
-        readOnly
-      />
-    </div>
-    <div className="flex flex-col gap-2">
-      <label className="text-sm font-medium text-[#15164A]">Quantity</label>
-      <input
-        type="text"
-        className="p-2 border border-gray-300 rounded-md"
-        placeholder="Quantity"
-        value={item.unit || ""}
-        onChange={(e) => {
-          const updatedMaterials = [...areaProductData[area.id].materials];
-          updatedMaterials[index].unit = e.target.value;
-          setAreaProductData((prevData) => ({
-            ...prevData,
-            [area.id]: { ...prevData[area.id], materials: updatedMaterials },
-          }));
-        }}
-      />
-    </div>
-  </div>
-))}
-      {/* <div className="flex flex-col items-end gap-2 mt-5">
-        <h1
-          className="text-lg font-medium underline cursor-pointer text-black-600"
-          onClick={addNewMaterial}
-        >
-          Add New Material
-        </h1>
-      </div> */}
-    </div>
- 
- 
-      {/* Button to Add More Rows */}
-      {/* <div className="flex flex-col items-end gap-2 mt-5">
-        <h1
-          className="text-lg font-medium underline cursor-pointer text-black-600"
-          onClick={addNewMaterial}
-        >
-          Add New Material
-        </h1>
-      </div> */}
- 
-   
- 
- 
-              <div className="mt-4">
-                <input type="file" className="border p-2 rounded-md w-full" />
+
+        <div className="p-6">
+          <div className="bg-white shadow-lg rounded-lg overflow-hidden">
+            {/* Client Selection Section */}
+            <div className="p-6 border-b border-gray-200">
+              <div className="flex justify-between items-center">
+                <h1 className="text-2xl font-bold text-gray-800">
+                  Create Estimate
+                </h1>
+                <p
+                  className="cursor-pointer text-blue-500"
+                  onClick={() => navigate("/admin/custommeasurement")}
+                >
+                  Custom Measurements
+                </p>
               </div>
- 
-              <div className="mt-4 text-right">
+              <div className="relative">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Client Name
+                </label>
+                <input
+                  type="text"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  placeholder="Search for client"
+                  className="w-full border border-gray-300 p-3 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                />
+
+                {filteredClients.length > 0 && (
+                  <ul className="absolute z-10 w-full bg-white border border-gray-300 rounded-md mt-1 max-h-60 overflow-y-auto shadow-lg">
+                    {filteredClients.map((client) => (
+                      <li
+                        key={client._id}
+                        onClick={() => handleClientSelect(client)}
+                        className="p-3 cursor-pointer hover:bg-gray-100 border-b border-gray-100 last:border-b-0"
+                      >
+                        {client.name}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+
+              {formData.clientId && (
+                <div className="mt-2 text-sm text-green-600">
+                  Client selected: {formData.clientName}
+                </div>
+              )}
+            </div>
+
+            {/* Areas Section */}
+            {formData.areas.map((area) => (
+              <div key={area.id} className="p-6 border-b border-gray-200">
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-xl font-semibold text-indigo-900">
+                    {area.name}
+                  </h2>
+                  <div>
+                    {formData.areas.length > 1 && (
+                      <button
+                        onClick={() => removeArea(area.id)}
+                        className="bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600 transition-colors"
+                      >
+                        Remove Area
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                {/* Roof Selection Row */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Project Type
+                    </label>
+                    <select
+                      value={area.projectType}
+                      onChange={(e) =>
+                        handleAreaChange(area.id, "projectType", e.target.value)
+                      }
+                    >
+                      <option value="">Select Project Type</option>
+                      {projectTypes.map((type) => (
+                        <option key={type._id} value={type._id}>
+                          {type.projectType}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Roof Model
+                    </label>
+                    <select
+                      className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500"
+                      value={area.roofModel}
+                      onChange={(e) =>
+                        handleAreaChange(area.id, "roofModel", e.target.value)
+                      }
+                    >
+                      <option value="">Select Roof Model</option>
+                      {roofModels.map((model) => (
+                        <option key={model._id} value={model._id}>
+                          {model.roofModel}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Roof Preference
+                    </label>
+                    <select
+                      className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500"
+                      value={area.roofPreference}
+                      onChange={(e) =>
+                        handleAreaChange(
+                          area.id,
+                          "roofPreference",
+                          e.target.value
+                        )
+                      }
+                    >
+                      <option value="">Select Preference</option>
+                      <option value="Single Car Parking">
+                        Single Car Parking
+                      </option>
+                      <option value="Double Car Parking">
+                        Double Car Parking
+                      </option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Measurements Row */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Span
+                    </label>
+                    <input
+                      type="text"
+                      className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500"
+                      placeholder="Enter span"
+                      value={area.span}
+                      onChange={(e) =>
+                        handleAreaInputChange(area.id, "span", e.target.value)
+                      }
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Length
+                    </label>
+                    <input
+                      type="text"
+                      className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500"
+                      placeholder="Enter length"
+                      value={area.length}
+                      onChange={(e) =>
+                        handleAreaInputChange(area.id, "length", e.target.value)
+                      }
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Height
+                    </label>
+                    <input
+                      type="text"
+                      className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500"
+                      placeholder="Enter height"
+                      value={area.height}
+                      onChange={(e) =>
+                        handleAreaInputChange(area.id, "height", e.target.value)
+                      }
+                    />
+                  </div>
+                </div>
+
+                {/* Materials Section */}
+                {area.materials && area.materials.length > 0 && (
+                  <div className="mb-6">
+                    <h3 className="text-lg font-medium text-gray-800 mb-3">
+                      Materials
+                    </h3>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {area.materials.map((material, index) => (
+                        <div key={index} className="flex space-x-4">
+                          <div className="flex-1">
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                              Material
+                            </label>
+                            <input
+                              type="text"
+                              className="w-full p-3 border border-gray-300 rounded-md bg-gray-100"
+                              value={material.itemId?.item || ""}
+                              readOnly
+                            />
+                          </div>
+
+                          <div className="flex-1">
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                              Quantity
+                            </label>
+                            <input
+                              type="text"
+                              className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500"
+                              placeholder="Enter quantity"
+                              value={material.unit || ""}
+                              onChange={(e) =>
+                                handleMaterialChange(
+                                  area.id,
+                                  index,
+                                  e.target.value
+                                )
+                              }
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Area Calculations */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Area Sq. Ft
+                    </label>
+                    <input
+                      type="text"
+                      className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500"
+                      placeholder="Total area"
+                      value={area.totalArea}
+                      onChange={(e) =>
+                        handleAreaInputChange(
+                          area.id,
+                          "totalArea",
+                          e.target.value
+                        )
+                      }
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Sheet Rate
+                    </label>
+                    <input
+                      type="text"
+                      className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500"
+                      placeholder="Rate per sq ft"
+                      value={area.sheetRate}
+                      onChange={(e) =>
+                        handleAreaInputChange(
+                          area.id,
+                          "sheetRate",
+                          e.target.value
+                        )
+                      }
+                    />
+                  </div>
+                </div>
+              </div>
+            ))}
+
+            {/* Add New Area Button */}
+            <div className="p-6 border-b border-gray-200">
               <button
-        onClick={addNewArea}
-        className="bg-blue-500 text-white py-2 px-4 rounded-md mb-4"
-      >
-        Add New Area +
-      </button>
-      <button onClick={() => removeArea(area.id)} className="bg-red-500 text-white py-2 px-4 rounded-md ml-4">Remove Area</button>
-              </div>
-           
- 
- 
- 
-              <div className="flex justify-start items-center gap-4">
-  {/* Comments */}
-  <div className="flex flex-col gap-2">
-                  <label className="text-sm font-medium text-[#15164A]">
-                  Area Sq. Ft
+                onClick={addNewArea}
+                className="bg-indigo-600 text-white py-2 px-6 rounded-md hover:bg-indigo-700 transition-colors"
+              >
+                Add New Area +
+              </button>
+            </div>
+
+            {/* Site Visitor Assignment */}
+            <div className="p-6 border-b border-gray-200">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Assign To Site Visitor
+              </label>
+              <select
+                className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500"
+                value={formData.siteVisitorId}
+                onChange={(e) => handleSiteVisitorChange(e.target.value)}
+              >
+                <option value="">Select Site Visitor</option>
+                {siteVisitors.map((visitor) => (
+                  <option key={visitor._id} value={visitor._id}>
+                    {visitor.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Totals and Submit Section */}
+            <div className="p-6 bg-gray-50">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Total Square Feet
                   </label>
                   <input
-    type="text"
-    className="p-2 border border-gray-300 rounded-md"
-    placeholder="200m"
-    value={areaProductData[area.id]?.totalArea || ""}
-    onChange={(e) => {
-      const updatedData = {
-        ...areaProductData[area.id],
-        totalArea: e.target.value,
-      };
-      setAreaProductData((prevData) => ({
-        ...prevData,
-        [area.id]: updatedData,
-      }));
-    }}
-  /></div>
- 
-  {/* Status Dropdown */}
-  <div className="flex flex-col gap-2">
-                  <label className="text-sm font-medium text-[#15164A]  ">
-                    Sheet Rate
+                    type="text"
+                    value={formData.totalSqFt}
+                    readOnly
+                    className="w-full p-3 border border-gray-300 rounded-md bg-gray-100 font-semibold text-gray-800"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Total Cost
                   </label>
                   <input
-    type="text"
-    className="p-2 border border-gray-300 rounded-md"
-    placeholder="200m"
-    value={areaProductData[area.id]?.sheetRate || ""}
-    onChange={(e) => {
-      const updatedData = {
-        ...areaProductData[area.id],
-        sheetRate: e.target.value,
-      };
-      setAreaProductData((prevData) => ({
-        ...prevData,
-        [area.id]: updatedData,
-      }));
-    }}
-  /></div>
-</div> <br /><br />
- 
-     
- 
- 
- 
- 
-</div>
-))}
-            </div>
- 
- 
-            <div className="p-6 bg-white shadow-lg  ">
-  <h2 className="text-lg font-semibold text-indigo-900 mb-4">Estimate</h2>
- 
-  {/* First Row - Two Fields (Total sq. ft & Total Cost) */}
- {/* First Row - Two Fields (Total sq. ft & Total Cost) */}
-<div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-  {/* Total Square Feet */}
-  <div className="flex items-center gap-2">
-    <label className="text-sm text-gray-600 w-28">Total sq. ft:</label>
-    <input
-      type="text"
-      value={totalSqFt}
-      readOnly
-      className="flex-1 bg-gray-200 text-gray-800 p-2 rounded-md text-center"
-    />
-  </div>
- 
-  {/* Total Cost */}
-  <div className="flex items-center gap-2">
-    <label className="text-sm text-gray-600 w-28">Total Cost:</label>
-    <input
-      type="text"
-      value={`₹${totalCost}/-`}
-      readOnly
-      className="flex-1 bg-gray-200 text-gray-800 p-2 rounded-md text-center"
-    />
-  </div>
-</div>
- 
- 
-  {/* Second Row - Three Fields (Comments, Status, Other Info) */}
- 
-</div>
-            {/* New Layout Based on the Image */}
-            <div className="p-6">
-      {!showForm ? (
-        <>
-          <h2 className="text-lg font-semibold text-[#15164A] mb-4">Add New Client</h2>
-          <div className="flex gap-4">
-            <button
-              className="text-white bg-[#3C3EC3] px-6 py-2 rounded-md"
-              onClick={() => setShowForm(true)}
-            >
-              Add
-            </button>
-            <button className="text-white bg-[#C33C4C] px-6 py-2 rounded-md">
-              Cancel
-            </button>
-          </div>
-        </>
-      ) : (
-        <div className="bg-white p-6 rounded-lg shadow-md relative w-full">
-          {/* Title with Close Button */}
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg font-bold text-[#15164A]">Add New Client</h2>
-            <button
-              className="text-white bg-[#C33C4C] px-3 py-1 rounded-md"
-              onClick={() => setShowForm(false)}
-            >
-             Delete
-            </button>
-          </div>
- 
-          {/* Form Fields */}
-          <div className="w-full flex flex-col gap-4">
-            {/* First Row */}
-            <div className="flex gap-4 w-full">
-              <div className="flex flex-col flex-1">
-                <label className="text-[#15164A]">Name</label>
-                <input className="border p-2 rounded-md w-full" defaultValue="Amal" />
+                    type="text"
+                    value={`₹${formData.totalCost}/-`}
+                    readOnly
+                    className="w-full p-3 border border-gray-300 rounded-md bg-gray-100 font-semibold text-gray-800"
+                  />
+                </div>
               </div>
-              <div className="flex flex-col flex-1">
-                <label className="text-[#15164A]">Phone No</label>
-                <input className="border p-2 rounded-md w-full" defaultValue="98765543322" />
-              </div>
-              <div className="flex flex-col flex-1">
-                <label className="text-[#15164A]">Place</label>
-                <input className="border p-2 rounded-md w-full" defaultValue="Kochi" />
+
+              <div className="flex justify-center mt-6">
+                <button
+                  onClick={handleSubmit}
+                  className="bg-green-600 text-white px-8 py-3 rounded-md text-lg font-semibold hover:bg-green-700 transition-colors"
+                  disabled={!formData.clientId || !formData.siteVisitorId}
+                >
+                  Create Estimate
+                </button>
               </div>
             </div>
- 
-            {/* Second Row */}
-            <div className="flex gap-4 w-full">
-              <div className="flex flex-col flex-1">
-                <label className="text-[#15164A]">District</label>
-                <input className="border p-2 rounded-md w-full" defaultValue="Ernakulam" />
-              </div>
-              <div className="flex flex-col flex-[2]">
-                <label className="text-[#15164A]">Comments</label>
-                <input className="border p-2 rounded-md w-full" defaultValue="Home near Mg road" />
-              </div>
-            </div>
-          </div>
- 
-          {/* Submit Button */}
-          <div className="flex justify-center mt-4 gap-4">
-            <button
-              className="text-white bg-[#3C3EC3] px-6 py-2 rounded-md"
-              onClick={handleSubmit}
-            >
-              Submit
-            </button>
-            <button
-              className="text-white  bg-[#C33C4C] px-6 py-2 rounded-md"
-              onClick={() => setShowForm(false)}
-            >
-              close
-            </button>
           </div>
         </div>
-      )}
-    </div>
- 
-            </div>
-          </div>
-     
       </div>
     </div>
   );
 };
- 
+
 export default Estimate;
-
-
-
