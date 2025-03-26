@@ -354,7 +354,6 @@ const Estimate = () => {
     const submitData = {
       clientId: formData.clientId,
       siteVisitorId: formData.siteVisitorId,
-      status: "Finished",
       areas: formData.areas.map((area) => ({
         span: parseFloat(area.span) || 0,
         length: parseFloat(area.length) || 0,
