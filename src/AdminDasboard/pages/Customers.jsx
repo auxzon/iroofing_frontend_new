@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-import Header from "..components/Header";
+import Header from "../components/Header";
 import Sidebar from "../components/SideNav"
 
 import { getClient } from "../../api/admin/client/getClient";
