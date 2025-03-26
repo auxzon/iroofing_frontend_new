@@ -413,22 +413,22 @@ const Estimate = () => {
         <Header toggleSidebar={toggleSidebar} />
 
         <div className="p-6">
-          <div className="bg-white shadow-lg rounded-lg overflow-hidden">
+          <div className="overflow-hidden bg-white rounded-lg shadow-lg">
             {/* Client Selection Section */}
             <div className="p-6 border-b border-gray-200">
-              <div className="flex justify-between items-center">
+              <div className="flex items-center justify-between">
                 <h1 className="text-2xl font-bold text-gray-800">
                   Create Estimate
                 </h1>
                 <p
-                  className="cursor-pointer text-blue-500"
+                  className="text-blue-500 cursor-pointer"
                   onClick={() => navigate("/admin/custommeasurement")}
                 >
                   Custom Measurements
                 </p>
               </div>
               <div className="relative">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block mb-2 text-sm font-medium text-gray-700">
                   Client Name
                 </label>
                 <input
@@ -436,16 +436,16 @@ const Estimate = () => {
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   placeholder="Search for client"
-                  className="w-full border border-gray-300 p-3 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                 />
 
                 {filteredClients.length > 0 && (
-                  <ul className="absolute z-10 w-full bg-white border border-gray-300 rounded-md mt-1 max-h-60 overflow-y-auto shadow-lg">
+                  <ul className="absolute z-10 w-full mt-1 overflow-y-auto bg-white border border-gray-300 rounded-md shadow-lg max-h-60">
                     {filteredClients.map((client) => (
                       <li
                         key={client._id}
                         onClick={() => handleClientSelect(client)}
-                        className="p-3 cursor-pointer hover:bg-gray-100 border-b border-gray-100 last:border-b-0"
+                        className="p-3 border-b border-gray-100 cursor-pointer hover:bg-gray-100 last:border-b-0"
                       >
                         {client.name}
                       </li>
@@ -464,7 +464,7 @@ const Estimate = () => {
             {/* Areas Section */}
             {formData.areas.map((area) => (
               <div key={area.id} className="p-6 border-b border-gray-200">
-                <div className="flex justify-between items-center mb-4">
+                <div className="flex items-center justify-between mb-4">
                   <h2 className="text-xl font-semibold text-indigo-900">
                     {area.name}
                   </h2>
@@ -472,7 +472,7 @@ const Estimate = () => {
                     {formData.areas.length > 1 && (
                       <button
                         onClick={() => removeArea(area.id)}
-                        className="bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600 transition-colors"
+                        className="px-4 py-2 text-white transition-colors bg-red-500 rounded-md hover:bg-red-600"
                       >
                         Remove Area
                       </button>
@@ -481,9 +481,9 @@ const Estimate = () => {
                 </div>
 
                 {/* Roof Selection Row */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                <div className="grid grid-cols-1 gap-6 mb-6 md:grid-cols-3">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block mb-2 text-sm font-medium text-gray-700">
                       Project Type
                     </label>
                     <select
@@ -502,7 +502,7 @@ const Estimate = () => {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block mb-2 text-sm font-medium text-gray-700">
                       Roof Model
                     </label>
                     <select
@@ -522,7 +522,7 @@ const Estimate = () => {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block mb-2 text-sm font-medium text-gray-700">
                       Roof Preference
                     </label>
                     <select
@@ -548,9 +548,9 @@ const Estimate = () => {
                 </div>
 
                 {/* Measurements Row */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                <div className="grid grid-cols-1 gap-6 mb-6 md:grid-cols-3">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block mb-2 text-sm font-medium text-gray-700">
                       Span
                     </label>
                     <input
@@ -565,7 +565,7 @@ const Estimate = () => {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block mb-2 text-sm font-medium text-gray-700">
                       Length
                     </label>
                     <input
@@ -580,7 +580,7 @@ const Estimate = () => {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block mb-2 text-sm font-medium text-gray-700">
                       Height
                     </label>
                     <input
@@ -598,27 +598,27 @@ const Estimate = () => {
                 {/* Materials Section */}
                 {area.materials && area.materials.length > 0 && (
                   <div className="mb-6">
-                    <h3 className="text-lg font-medium text-gray-800 mb-3">
+                    <h3 className="mb-3 text-lg font-medium text-gray-800">
                       Materials
                     </h3>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                       {area.materials.map((material, index) => (
                         <div key={index} className="flex space-x-4">
                           <div className="flex-1">
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block mb-2 text-sm font-medium text-gray-700">
                               Material
                             </label>
                             <input
                               type="text"
-                              className="w-full p-3 border border-gray-300 rounded-md bg-gray-100"
+                              className="w-full p-3 bg-gray-100 border border-gray-300 rounded-md"
                               value={material.itemId?.item || ""}
                               readOnly
                             />
                           </div>
 
                           <div className="flex-1">
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block mb-2 text-sm font-medium text-gray-700">
                               Quantity
                             </label>
                             <input
@@ -642,9 +642,9 @@ const Estimate = () => {
                 )}
 
                 {/* Area Calculations */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                <div className="grid grid-cols-1 gap-6 mt-6 md:grid-cols-2">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block mb-2 text-sm font-medium text-gray-700">
                       Area Sq. Ft
                     </label>
                     <input
@@ -663,7 +663,7 @@ const Estimate = () => {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block mb-2 text-sm font-medium text-gray-700">
                       Sheet Rate
                     </label>
                     <input
@@ -688,7 +688,7 @@ const Estimate = () => {
             <div className="p-6 border-b border-gray-200">
               <button
                 onClick={addNewArea}
-                className="bg-indigo-600 text-white py-2 px-6 rounded-md hover:bg-indigo-700 transition-colors"
+                className="px-6 py-2 text-white transition-colors bg-indigo-600 rounded-md hover:bg-indigo-700"
               >
                 Add New Area +
               </button>
@@ -696,7 +696,7 @@ const Estimate = () => {
 
             {/* Site Visitor Assignment */}
             <div className="p-6 border-b border-gray-200">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block mb-2 text-sm font-medium text-gray-700">
                 Assign To Site Visitor
               </label>
               <select
@@ -715,28 +715,28 @@ const Estimate = () => {
 
             {/* Totals and Submit Section */}
             <div className="p-6 bg-gray-50">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+              <div className="grid grid-cols-1 gap-6 mb-6 md:grid-cols-2">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block mb-2 text-sm font-medium text-gray-700">
                     Total Square Feet
                   </label>
                   <input
                     type="text"
                     value={formData.totalSqFt}
                     readOnly
-                    className="w-full p-3 border border-gray-300 rounded-md bg-gray-100 font-semibold text-gray-800"
+                    className="w-full p-3 font-semibold text-gray-800 bg-gray-100 border border-gray-300 rounded-md"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block mb-2 text-sm font-medium text-gray-700">
                     Total Cost
                   </label>
                   <input
                     type="text"
                     value={`₹${formData.totalCost}/-`}
                     readOnly
-                    className="w-full p-3 border border-gray-300 rounded-md bg-gray-100 font-semibold text-gray-800"
+                    className="w-full p-3 font-semibold text-gray-800 bg-gray-100 border border-gray-300 rounded-md"
                   />
                 </div>
               </div>
@@ -744,7 +744,7 @@ const Estimate = () => {
               <div className="flex justify-center mt-6">
                 <button
                   onClick={handleSubmit}
-                  className="bg-green-600 text-white px-8 py-3 rounded-md text-lg font-semibold hover:bg-green-700 transition-colors"
+                  className="px-8 py-3 text-lg font-semibold text-white transition-colors bg-green-600 rounded-md hover:bg-green-700"
                   disabled={!formData.clientId || !formData.siteVisitorId}
                 >
                   Create Estimate

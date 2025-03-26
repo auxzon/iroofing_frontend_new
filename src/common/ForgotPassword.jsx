@@ -5,7 +5,7 @@ import { message } from "antd"; // Import message if using Ant Design
 import logo from "../assets/images/logo.png";
 import { Link } from "react-router-dom";
 import { forgotpassword } from "../api/admin/auth/auth";
-import { setUserInfo } from "../redux/slices/auth"; // Import setUserInfo if using Redux
+import { setUserInfo } from "../redux/slices/authSlice"; // Import setUserInfo if using Redux
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState(""); // Ensure state is properly used

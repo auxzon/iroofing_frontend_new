@@ -3,7 +3,7 @@ import AdminRoutes from './adminRoutes/AdminRoutes'
 import SalesRoutes from './salesRoutes/SalesRoutes'
 import { ProtectedRoute } from './ProtectedRoutes';
 import { useSelector } from 'react-redux';
-import { selectIsAuthenticated } from '../redux/slices/auth';
+import { selectIsAuthenticated } from '../redux/slices/authSlice';
 import RatesRoutes from './rateRoutes/rateRoutes';
 
 import ForgotPassword from '../common/ForgotPassword';

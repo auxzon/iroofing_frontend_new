@@ -92,7 +92,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import logo from "../assets/images/logo.png";
 import { verifyotp } from "../api/admin/auth/auth";
-import { setUserInfo } from "../redux/slices/auth"; 
+import { setUserInfo } from "../redux/slices/authSlice"; 
 const Otp = () => {
   const [otp, setOtp] = useState("");
   const [sentOtp, setSentOtp] = useState("123456"); // Mock OTP sent via email
