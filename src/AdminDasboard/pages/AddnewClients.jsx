@@ -1,5 +1,4 @@
-
-import { useState,useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Calendar, Clock } from "lucide-react";
 import Header from "../../AdminDasboard/components/Header";
@@ -9,10 +8,10 @@ import addnew from "../../SalesDashboard/assets/icons/adduser.png";
 import addclients from "../../SalesDashboard/assets/icons/addclients.png";
 import addestimate from "../../SalesDashboard/assets/icons/addestimate.png";
 import dropdown from "../../SalesDashboard/assets/icons/dropdown.png";
-import {addNewclient} from "../../api/admin/client/addClient";
+import { addNewclient } from "../../api/admin/client/addClient";
 import { getClient } from "../../api/admin/client/getClient";
 import { getAllProjectType } from "../../api/sales/project/project";
-import {getAllCategories} from "../../api/sales/project/project"
+import { getAllCategories } from "../../api/sales/project/project";
 import { toast } from "react-toastify";
 import { fetchAllProjectType } from "../../api/admin/product/getAllCategories";
 import { getFilteredProducts } from "../../api/admin/product/updateProduct";
@@ -22,15 +21,14 @@ const AddnewClients = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const toggleSidebar = () => setIsSidebarOpen((prev) => !prev);
   const navigate = useNavigate();
- 
- 
-//  const [areas, setAreas] = useState([{ id: 1, name: "Area 1" }]);
+
+  //  const [areas, setAreas] = useState([{ id: 1, name: "Area 1" }]);
   const [showMeasurements, setShowMeasurements] = useState(false);
- 
+
   const [materials, setMaterials] = useState([{ material: "", quantity: "" }]);
- 
+
   const addNewMaterial = () => {
-  setMaterials([...materials, { material: "", quantity: "" }]);
+    setMaterials([...materials, { material: "", quantity: "" }]);
   };
   // Function to add a new area
   // const addNewArea = () => {
@@ -39,190 +37,162 @@ const AddnewClients = () => {
   // };
   // Function to remove an area
 
- 
+  const [name, setName] = useState("");
+  const [phoneNo, setPhoneNo] = useState("");
+  const [place, setPlace] = useState("");
+  const [district, setDistrict] = useState("");
+  const [comments, setComments] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-const [name,setName] = useState ("")
-const  [phoneNo,setPhoneNo] = useState("")
-const [place,setPlace] =useState("")
-const [district,setDistrict] =useState("")
-const [comments,setComments] = useState("")
-const [isSubmitting, setIsSubmitting] = useState(false);
-
-const validateForm = () => {
-  if (!name || !phoneNo || !place || !district) {
-    toast.error("Please fill in all required fields.");
-    return false;
-  }
-  return true;
-};
-
-const handleSubmit = async (e) => {
-  e.preventDefault();
-
-  if (!validateForm()) {
-    return;
-  }
-
-  setIsSubmitting(true);
-  const formData = { name, phoneNo, place, district, comments };
-
-  try {
-    const response = await addNewclient(formData); // Ensure AddNewclient is imported and defined
-    if (response?.data) {
-      // Reset all fields after successful submission
-      setName("");
-      setPhoneNo("");
-      setPlace("");
-      setDistrict("");
-      setComments("");
-      toast.success("client added successfully!");
+  const validateForm = () => {
+    if (!name || !phoneNo || !place || !district) {
+      toast.error("Please fill in all required fields.");
+      return false;
     }
-  } catch (error) {
-    toast.error("Failed to add client. Please try again.");
-    console.error("Error adding client:", error);
-  } finally {
-    setIsSubmitting(false);
-  }
-};
+    return true;
+  };
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-const [clientList, setClientList] = useState([]);
-const [searchTerm, setSearchTerm] = useState("");
-const [filteredClients, setFilteredClients] = useState([]);
+    if (!validateForm()) {
+      return;
+    }
 
-useEffect(() => {
-  const fetchClients = async () => {
+    setIsSubmitting(true);
+    const formData = { name, phoneNo, place, district, comments };
+
     try {
-      const response = await getClient();
-      console.log("API Data:", response); // Debugging
-
-      if (Array.isArray(response?.data)) {
-        setClientList(response.data);
-      } else if (response?.data?.clients && Array.isArray(response.data.clients)) {
-        setClientList(response.data.clients);
-      } else {
-        console.error("Invalid API response:", response);
-        setClientList([]); // Fallback to avoid errors
+      const response = await addNewclient(formData); // Ensure AddNewclient is imported and defined
+      if (response?.data) {
+        // Reset all fields after successful submission
+        setName("");
+        setPhoneNo("");
+        setPlace("");
+        setDistrict("");
+        setComments("");
+        toast.success("client added successfully!");
       }
     } catch (error) {
-      console.error("Error fetching clients:", error);
-      setClientList([]);
+      toast.error("Failed to add client. Please try again.");
+      console.error("Error adding client:", error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  fetchClients();
-}, []);
+  const [clientList, setClientList] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filteredClients, setFilteredClients] = useState([]);
 
+  useEffect(() => {
+    const fetchClients = async () => {
+      try {
+        const response = await getClient();
+        console.log("API Data:", response); // Debugging
 
+        if (Array.isArray(response?.data)) {
+          setClientList(response.data);
+        } else if (
+          response?.data?.clients &&
+          Array.isArray(response.data.clients)
+        ) {
+          setClientList(response.data.clients);
+        } else {
+          console.error("Invalid API response:", response);
+          setClientList([]); // Fallback to avoid errors
+        }
+      } catch (error) {
+        console.error("Error fetching clients:", error);
+        setClientList([]);
+      }
+    };
 
-useEffect(() => {
-  if (!searchTerm) {
-    setFilteredClients([]); // If search is empty, reset suggestions
-    return;
-  }
+    fetchClients();
+  }, []);
 
-  if (Array.isArray(clientList)) {
-    const filtered = clientList.filter((client) =>
-      client?.name?.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    setFilteredClients(filtered);
-  } else {
-    setFilteredClients([]);
-  }
-}, [searchTerm, clientList]);
+  useEffect(() => {
+    if (!searchTerm) {
+      setFilteredClients([]); // If search is empty, reset suggestions
+      return;
+    }
 
+    if (Array.isArray(clientList)) {
+      const filtered = clientList.filter((client) =>
+        client?.name?.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      setFilteredClients(filtered);
+    } else {
+      setFilteredClients([]);
+    }
+  }, [searchTerm, clientList]);
 
-// -------------------------------------------------------
+  // -------------------------------------------------------
 
-const [siteVisitors, setSiteVisitors] = useState([]);
+  const [siteVisitors, setSiteVisitors] = useState([]);
 
-
-
-
-
-const fetchSiteVisitors = async () => {
-  try {
-    const response = await getSitevisitor();
-    console.log("Site Visitors:", response);
-    setSiteVisitors(response.data)
-   
-  } catch (error) {
-    console.error("Error fetching site visitors:", error);
-  }
-};
-
-useEffect(() => {
- 
-
-  fetchSiteVisitors();
-}, []);
-
-
-
-
-
-
-
-const [projectTypes, setProjectTypes] = useState([]);
-
- 
-
-useEffect(() => {
-  const fetchProjectTypes = async () => {
+  const fetchSiteVisitors = async () => {
     try {
-      const response = await getAllProjectType(); // Check API response
-      console.log(response); // Debug API response
-      setProjectTypes(response.projectTypes || []); // Ensure response contains projectTypes array
+      const response = await getSitevisitor();
+      console.log("Site Visitors:", response);
+      setSiteVisitors(response.data);
     } catch (error) {
-      console.error("Error fetching project types:", error);
+      console.error("Error fetching site visitors:", error);
     }
   };
 
-  fetchProjectTypes();
-}, []);
+  useEffect(() => {
+    fetchSiteVisitors();
+  }, []);
 
+  const [projectTypes, setProjectTypes] = useState([]);
 
-// ---------------------------------------------------------------------
+  useEffect(() => {
+    const fetchProjectTypes = async () => {
+      try {
+        const response = await getAllProjectType(); // Check API response
+        console.log(response); // Debug API response
+        setProjectTypes(response.projectTypes || []); // Ensure response contains projectTypes array
+      } catch (error) {
+        console.error("Error fetching project types:", error);
+      }
+    };
 
-const [categories, setCategories] = useState([]);
-useEffect(() => {
-  const fetchCategories = async () => {
-    try {
-      const response = await getAllCategories(); // Fetch categories from API
-      console.log(response); // Debug API response
-      setCategories(response.categories || []); // Ensure response contains categories array
-    } catch (error) {
-      console.error("Error fetching categories:", error);
-    }
-  };
+    fetchProjectTypes();
+  }, []);
 
+  // ---------------------------------------------------------------------
 
-  fetchCategories();
-}, []);
+  const [categories, setCategories] = useState([]);
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await getAllCategories(); // Fetch categories from API
+        console.log(response); // Debug API response
+        setCategories(response.categories || []); // Ensure response contains categories array
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
+    };
 
+    fetchCategories();
+  }, []);
 
+  // const handleEstimate = (itemForm)=>{
 
-// const handleEstimate = (itemForm)=>{
+  //   try {
+  // const response =
 
+  //   } catch (error) {
 
+  //   }
 
-//   try {
-// const response = 
-    
-//   } catch (error) {
-    
-//   }
+  // }
 
-// }
-
-
-
-  
- 
   const OngoingProject = [
     {
       id: 1,
-      name: "Kevin",  
+      name: "Kevin",
       phone: "+91 9867 5433 33",
       location: "Kochi",
       roof: "Car Porch",
@@ -268,7 +238,7 @@ useEffect(() => {
       roof: "Auditorium",
       status: "pending",
     },
- 
+
     {
       id: 7,
       name: "Ashlynn",
@@ -324,42 +294,40 @@ useEffect(() => {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedItems, setSelectedItems] = useState([]);
   const itemsPerPage = 8;
- 
+
   const removeArea = (id) => {
     setAreas(areas.filter((area) => area.id !== id));
   };
- 
+
   const handleSearch = (event) => setSearch(event.target.value);
- 
+
   const handlePageChange = (page) => setCurrentPage(page);
- 
+
   const handleCheckboxChange = (id) =>
     setSelectedItems((prev) =>
       prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
     );
- 
-  const handleDelete = (id) => setData(data.filter((item) => item.id !== id));
- 
+
+  // const handleDelete = (id) => setData(data.filter((item) => item.id !== id));
+
   const handleStatusChange = (id, newStatus) => {
     const updatedData = data.map((item) =>
       item.id === id ? { ...item, status: newStatus } : item
     );
     setData(updatedData);
   };
- 
+
   const filteredData = data.filter((item) =>
     item.name.toLowerCase().includes(search.toLowerCase())
   );
- 
+
   const paginatedData = filteredData.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
- 
+
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
- 
- 
- 
+
   const getStatusColor = (status) => {
     switch (status.toLowerCase().replace(/\s+/g, "")) {
       case "sitevisit":
@@ -379,17 +347,19 @@ useEffect(() => {
         return "bg-gray-500 text-white";
     }
   };
- 
+
   const toggleDropdown = (id) => {
     setDropdownOpen(dropdownOpen === id ? null : id); // Toggle dropdown visibility
   };
- 
-
 
   const [areas, setAreas] = useState([
-    { id: 1, name: "Area 1", itemForm: { roofType: "", roofModel: "", roofPreference: "" } }
+    {
+      id: 1,
+      name: "Area 1",
+      itemForm: { roofType: "", roofModel: "", roofPreference: "" },
+    },
   ]);
- 
+
   const [showDropdown, setShowDropdown] = useState(null);
   const [projectTypeData, setProjectTypeData] = useState([]);
   const [roofModelData, setRoofModelData] = useState([]);
@@ -398,30 +368,29 @@ useEffect(() => {
   const [areaProductData, setAreaProductData] = useState({});
   const [totalSqFt, setTotalSqFt] = useState(0);
   const [totalCost, setTotalCost] = useState(0);
- 
+
   console.log(projectTypeData);
-  
+
   const calculateTotals = () => {
     let totalSqFtSum = 0;
     let totalCostSum = 0;
- 
+
     Object.values(areaProductData).forEach((area) => {
       const areaSqFt = parseFloat(area.totalArea) || 0;
       const sheetRate = parseFloat(area.sheetRate) || 0;
- 
+
       totalSqFtSum += areaSqFt;
       totalCostSum += sheetRate; // Sum of all sheetRate values
     });
- 
+
     setTotalSqFt(totalSqFtSum.toFixed(2)); // Round to 2 decimal places
     setTotalCost(totalCostSum.toFixed(2)); // Sum of all sheetRate values
   };
- 
+
   useEffect(() => {
     calculateTotals();
   }, [areaProductData]);
- 
- 
+
   // Function to add a new area
   const addNewArea = () => {
     const newArea = {
@@ -432,485 +401,299 @@ useEffect(() => {
     setAreas([...areas, newArea]);
   };
 
-
-
-
   const handleMaterialChange = (index, field, value) => {
     const updatedMaterials = [...materials];
-      updatedMaterials[index] = { ...updatedMaterials[index], [field]: value };
-      setMaterials(updatedMaterials);
+    updatedMaterials[index] = { ...updatedMaterials[index], [field]: value };
+    setMaterials(updatedMaterials);
+  };
+
+  const handleAreaChange = async (id, field, value) => {
+    const updatedAreas = areas.map((area) =>
+      area.id === id
+        ? {
+            ...area,
+            itemForm: { ...area.itemForm, [field]: value },
+          }
+        : area
+    );
+    setAreas(updatedAreas);
+
+    // Fetch product data only if all fields are filled
+    const selectedArea = updatedAreas.find((area) => area.id === id);
+    const filters = {
+      roofType: selectedArea.itemForm.roofType,
+      roofModel: selectedArea.itemForm.roofModel,
+      roofPreference: selectedArea.itemForm.roofPreference,
     };
- 
-    const handleAreaChange = async (id, field, value) => {
-      const updatedAreas = areas.map((area) =>
-        area.id === id
-          ? {
-              ...area,
-              itemForm: { ...area.itemForm, [field]: value },
-            }
-          : area
-      );
-      setAreas(updatedAreas);
-   
-      // Fetch product data only if all fields are filled
-      const selectedArea = updatedAreas.find((area) => area.id === id);
-      const filters = {
-        roofType: selectedArea.itemForm.roofType,
-        roofModel: selectedArea.itemForm.roofModel,
-        roofPreference: selectedArea.itemForm.roofPreference,
-      };
-   
-      if (
-        filters.roofType !== "" &&
-        filters.roofModel !== "" &&
-        filters.roofPreference !== ""
-      ) {
-        await fetchProducts(id, filters); // Pass area ID to fetch data
+
+    if (
+      filters.roofType !== "" &&
+      filters.roofModel !== "" &&
+      filters.roofPreference !== ""
+    ) {
+      await fetchProducts(id, filters); // Pass area ID to fetch data
+    }
+  };
+
+  const [itemForm, setItemForm] = useState({
+    roofType: "",
+    roofModel: "",
+    roofPreference: "",
+    uploadImage: null,
+    materials: [],
+    span: "",
+    length: "",
+    height: "",
+    typeOfPanel: "",
+    sheetThickness: "",
+    numberOfPanels: "",
+    newLength: "",
+    centerHeight: "",
+    finalCuttingLength: "",
+    totalArea: "",
+    sheetRate: "",
+  });
+
+  useEffect(() => {
+    const fetchAllProjectTypes = async () => {
+      try {
+        const categoriesData = await fetchAllProjectType();
+        console.log("Fetched project types:", categoriesData);
+        setProjectTypeData(categoriesData.projectTypes || []);
+      } catch (error) {
+        console.error("Error fetching project types:", error);
       }
     };
-   
-   
-   
-      const [itemForm, setItemForm] = useState({
-        roofType: "",
-        roofModel: "",
-        roofPreference: "",
-        uploadImage: null,
-        materials: [],
-        span: "",
-        length: "",
-        height: "",
-        typeOfPanel: "",
-        sheetThickness: "",
-        numberOfPanels: "",
-        newLength: "",
-        centerHeight: "",
-        finalCuttingLength: "",
-        totalArea: "",
-        sheetRate: "",
-      });
-   
- 
-       
-            useEffect(() => {
-              const fetchAllProjectTypes = async () => {
-                try {
-                  const categoriesData = await fetchAllProjectType();
-                  console.log("Fetched project types:", categoriesData);
-                  setProjectTypeData(categoriesData.projectTypes || []);
-                } catch (error) {
-                  console.error("Error fetching project types:", error);
-                }
-              };
-     
-              fetchAllProjectTypes();
-        }, []);
-     
-     
-           
-      useEffect(() => {
-        const fetchCategories = async () => {
-          try {
-            const response = await getAllCategories();
-            setRoofModelData(response.categories || []);
-            console.log("Fetched categories:", response.categories);
-          } catch (error) {
-            console.error("Error fetching categories:", error);
-          }
-        };
-     
-        fetchCategories();
-      }, []);
-     
-     
-     
-      const handleFilter = async () => {
-        if (filters.roofModel !== "" && filters.roofType !== "" && filters.roofPreference !== "")
-         
-          console.log("hiiiiiiiiiiiiii");
-           fetchProducts()
-       
-        }
-        const fetchProducts = async (areaId, filters) => {
-          try {
-            const response = await getFilteredProducts(filters);
-            console.log("Fetched Products:", response);
-       
-            if (response?.products?.length > 0) {
-              setAreaProductData((prevData) => ({
-                ...prevData,
-                [areaId]: response.products[0], // Store product data by area ID
-              }));
-            }
-          } catch (error) {
-            console.error("Error fetching Products:", error);
-          }
-        };
-       
-     
-     
-      const filters = {
-        roofType: itemForm.roofType,
-        roofModel: itemForm.roofModel,
-        roofPreference: itemForm.roofPreference
-      };
-     
-      console.log(filters);
-     
-      const editProduct = async () => {
-        try {
-          const updatedProduct = { ...productData };
-          console.log("Updating Product with data:", updatedProduct);
-     
-         
-         const response = await updateProduct(updatedProduct._id, updatedProduct);
+
+    fetchAllProjectTypes();
+  }, []);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await getAllCategories();
+        setRoofModelData(response.categories || []);
+        console.log("Fetched categories:", response.categories);
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
+  const handleFilter = async () => {
+    if (
+      filters.roofModel !== "" &&
+      filters.roofType !== "" &&
+      filters.roofPreference !== ""
+    )
+      console.log("hiiiiiiiiiiiiii");
+    fetchProducts();
+  };
+  const fetchProducts = async (areaId, filters) => {
+    try {
+      const response = await getFilteredProducts(filters);
+      console.log("Fetched Products:", response);
+
+      if (response?.products?.length > 0) {
+        setAreaProductData((prevData) => ({
+          ...prevData,
+          [areaId]: response.products[0], // Store product data by area ID
+        }));
+      }
+    } catch (error) {
+      console.error("Error fetching Products:", error);
+    }
+  };
+
+  const filters = {
+    roofType: itemForm.roofType,
+    roofModel: itemForm.roofModel,
+    roofPreference: itemForm.roofPreference,
+  };
+
+  console.log(filters);
+
+  const editProduct = async () => {
+    try {
+      const updatedProduct = { ...productData };
+      console.log("Updating Product with data:", updatedProduct);
+
+      const response = await updateProduct(updatedProduct._id, updatedProduct);
       console.log(response);
-     
-          alert("Product updated successfully!");
-          fetchProducts();
-        } catch (error) {
-          console.error("Error updating product:", error);
-        }
-      };
- 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+      alert("Product updated successfully!");
+      fetchProducts();
+    } catch (error) {
+      console.error("Error updating product:", error);
+    }
+  };
 
   return (
     <div className="min-h-screen flex bg-gray-100 w-full">
       {/* Sidebar */}
       <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
- 
+
       {/* Main Content */}
       <div className="flex-1 flex flex-col w-full">
         <Header toggleSidebar={toggleSidebar} />
- 
+
         <div className="space-y-8 bg-gray-100 py-5 px-5 w-full max-w-full">
           <h1 className="text-3xl font-bold text-[#4c48a5]">Dashboard</h1>
- 
+
           {/* Action Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 px-5 w-full">
             <div className="p-4 bg-white rounded-2xl shadow-md flex items-center space-x-4 py-5 w-full">
               <img src={addnew} alt="Add New Clients" className="w-12 h-12" />
-              <div onClick={() => navigate("/salesaddnewclient")} className="cursor-pointer">
+              <div
+                onClick={() => navigate("/salesaddnewclient")}
+                className="cursor-pointer"
+              >
                 <h2 className="text-lg font-normal">Add New Clients</h2>
                 <p className="text-gray-600">To register new clients</p>
               </div>
             </div>
             <div className="p-4 bg-white rounded-2xl shadow-md flex items-center space-x-4 py-5 w-full">
-              <img src={addclients} alt="Existing Clients" className="w-12 h-12" />
+              <img
+                src={addclients}
+                alt="Existing Clients"
+                className="w-12 h-12"
+              />
               <div>
                 <h2 className="text-lg font-normal">Existing Clients</h2>
                 <p className="text-gray-600">View existing clients</p>
               </div>
             </div>
             <div className="p-4 bg-white rounded-2xl shadow-md flex items-center space-x-4 py-5 w-full">
-              <img src={addestimate} alt="Create an Estimate" className="w-12 h-12" />
+              <img
+                src={addestimate}
+                alt="Create an Estimate"
+                className="w-12 h-12"
+              />
               <div>
                 <h2 className="text-lg font-normal">Create an Estimate</h2>
                 <p className="text-gray-600">Generate client estimates</p>
               </div>
             </div>
           </div>
- 
+
           {/* Customer Records Table */}
           <div className="space-y-8 w-full">
             {/* Add New Client Section */}
             <div className="p-6 bg-white shadow-md rounded-lg w-full">
- 
+              <h2 className="text-lg font-semibold text-indigo-900 flex items-center justify-between">
+                <span className="flex items-center gap-2">
+                  Add New Client
+                  {/* <input type="checkbox" className="w-4 h-4" /> */}
+                  {/* <span className="text-gray-600">ABC 123</span> */}
+                </span>
              
-            <h2 className="text-lg font-semibold text-indigo-900 flex items-center justify-between">
-  <span className="flex items-center gap-2">
-    Add New Client
-    {/* <input type="checkbox" className="w-4 h-4" /> */}
-    {/* <span className="text-gray-600">ABC 123</span> */}
-  </span>
-  <button className="flex items-center text-gray-600 hover:text-red-500">
-    <Trash2 className="w-4 h-4 mr-1" />
-    Delete
-  </button>
-</h2> <br />
+              </h2>{" "}
+              <br />
+              {/* First Row - Three Input Fields */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                <div className="flex items-center gap-2">
+                  <label className="text-sm text-gray-600 w-24">Name:</label>
+                  <input
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                 
+                    className="flex-1 bg-gray-200 text-gray-800 p-2 rounded-md focus:outline-none"
+                  />
+                </div>
+                <div className="flex items-center gap-2">
+                <label className="text-sm text-gray-600 w-24">Phone:</label>
+<input
+  type="number"
+  value={phoneNo}
+  onChange={(e) => {
+    const value = e.target.value;
+    if (/^\d{0,10}$/.test(value)) {
+      setPhoneNo(value);
+    }
+  }}
  
- {/* First Row - Three Input Fields */}
- <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-        <div className="flex items-center gap-2">
-          <label className="text-sm text-gray-600 w-24">Name:</label>
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Amal"
-            className="flex-1 bg-gray-200 text-gray-800 p-2 rounded-md focus:outline-none"
-          />
-        </div>
-        <div className="flex items-center gap-2">
-          <label className="text-sm text-gray-600 w-24">Phone:</label>
-          <input
-            type="text"
-            value={phoneNo}
-            onChange={(e) => setPhoneNo(e.target.value)}
-            placeholder="676876872"
-            className="flex-1 bg-gray-200 text-gray-800 p-2 rounded-md focus:outline-none"
-          />
-        </div>
-        <div className="flex items-center gap-2">
-          <label className="text-sm text-gray-600 w-24">Place:</label>
-          <input
-            type="text"
-            value={place}
-            onChange={(e) => setPlace(e.target.value)}
-            placeholder="Kochi"
-            className="flex-1 border border-gray-300 p-2 rounded-md focus:outline-indigo-500"
-          />
-        </div>
-      </div>
+  className="flex-1 bg-gray-200 text-gray-800 p-2 rounded-md focus:outline-none"
+/>
 
-      {/* Second Row - Two Input Fields */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="flex items-center gap-2">
-          <label className="text-sm text-gray-600 w-24">District:</label>
-          <input
-            type="text"
-            value={district}
-            onChange={(e) => setDistrict(e.target.value)}
-            placeholder="District"
-            className="flex-1 border border-gray-300 p-2 rounded-md focus:outline-indigo-500"
-          />
-        </div>
-        <div className="flex items-center gap-2">
-          <label className="text-sm text-gray-600 w-24">Comments:</label>
-          <input
-            type="text"
-            value={comments}
-            onChange={(e) => setComments(e.target.value)}
-            placeholder="Add comments"
-            className="flex-1 border border-gray-300 p-2 rounded-md focus:outline-indigo-500"
-          />
-        </div>
-      </div>
-
-      {/* Buttons */}
-      <div className="flex justify-center py-6 gap-5">
-        <button
-          className="bg-red-600 text-white px-6 py-3 text-lg rounded-lg shadow-md hover:bg-red-700 transition"
-          onClick={() => {
-            setName("");
-            setPhoneNo("");
-            setPlace("");
-            setDistrict("");
-            setComments("");
-          }}
-          disabled={isSubmitting}
-        >
-          Cancel
-        </button>
-        <button
-          className="bg-blue-600 text-white px-6 py-3 text-lg rounded-lg shadow-md hover:bg-blue-700 transition ml-4"
-          onClick={handleSubmit}
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? "Saving..." : "Save"}
-        </button>
-      </div>
- 
-      <div className="pt-5">
-  
-    <div  className="p-6 ">
-      <h2 className="text-lg font-semibold text-indigo-900 mb-6"></h2>
-      
-    <div className="flex items-center gap-2 justify-end">
-    {/* Export Button */}
-    {/* <button className="flex items-center gap-1 border border-gray-300 px-3 py-1 rounded-md text-gray-700 hover:bg-gray-100 transition">
-      <Upload size={16} />
-      Export
-    </button> */}
- 
-    {/* Delete Button */}
-    {/* <button className="flex items-center gap-1 text-gray-600 hover:text-red-600 transition">
-      <Trash2 size={18} />
-      Delete
-    </button> */}
-  </div>
-              {/* < */}
- <br />
- 
- 
-
-
- {/*  */}
-
-
-  
-
- 
-            
-              
-
- 
- 
-
- 
- 
-</div>
-            </div>
- 
- 
-            <div>
-            {/* New Layout Based on the Image */}
-            
-  <div className="space-y-8 p-4">
-  {/*-----------------------Ongoing Projects----------------------- */}
-  <div className="bg-white rounded-xl shadow-md p-4 overflow-x-auto">
-    {/* <div className="flex flex-col md:flex-row md:justify-between items-center mb-4">
-      <h2 className="text-xl font-medium text-[#4c48a5] mb-2 md:mb-0">
-        Customer Records
-      </h2>
-      <div className="flex flex-wrap gap-2">
-        <input
-          type="text"
-          placeholder="Search..."
-          value={search}
-          onChange={handleSearch}
-          className="border border-gray-300 rounded px-2 py-1 w-full sm:w-auto"
-        />
-        <button
-          onClick={() => handleDelete(item.id)}
-          className="bg-red-500 text-white px-3 py-1 rounded"
-        >
-          Delete
-        </button>
-        <button className="bg-gray-200 text-gray-700 px-3 py-1 rounded">
-          Filter
-        </button>
-        <button className="bg-gray-200 text-gray-700 px-3 py-1 rounded">
-          Export
-        </button>
-      </div>
-    </div> */}
- 
-    {/* <div className="overflow-x-auto">
-      <table className="w-full border-collapse border-t border-b border-gray-300 text-left min-w-max">
-        <thead>
-          <tr>
-            <th className="p-2 border-b border-gray-300"></th>
-            <th className="p-2 border-b border-gray-300">SL No</th>
-            <th className="p-2 border-b border-gray-300">Client Name</th>
-            <th className="p-2 border-b border-gray-300">Phone Number</th>
-            <th className="p-2 border-b border-gray-300">Location</th>
-            <th className="p-2 border-b border-gray-300">Work Type</th>
-            <th className="p-2 border-b border-gray-300">Status</th>
-            <th className="p-2 border-b border-gray-300">Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {paginatedData.map((item, index) => (
-            <tr key={item.id} className="border-b border-gray-300">
-              <td className="p-2">
-                <input
-                  type="checkbox"
-                  checked={selectedItems.includes(item.id)}
-                  onChange={() => handleCheckboxChange(item.id)}
-                />
-              </td>
-              <td className="p-2">{index + 1 + (currentPage - 1) * itemsPerPage}</td>
-              <td className="p-2">{item.name}</td>
-              <td className="p-2">{item.phone}</td>
-              <td className="p-2">{item.location}</td>
-              <td className="p-2">{item.roof}</td>
-              <td className="p-2 relative">
+                </div>
+                <div className="flex items-center gap-2">
+                  <label className="text-sm text-gray-600 w-24">Place:</label>
+                  <input
+                    type="text"
+                    value={place}
+                    onChange={(e) => setPlace(e.target.value)}
+                  
+                    className="flex-1 border border-gray-300 p-2 rounded-md focus:outline-indigo-500"
+                  />
+                </div>
+              </div>
+              {/* Second Row - Two Input Fields */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="flex items-center gap-2">
+                  <label className="text-sm text-gray-600 w-24">
+                    District:
+                  </label>
+                  <input
+                    type="text"
+                    value={district}
+                    onChange={(e) => setDistrict(e.target.value)}
+                    
+                    className="flex-1 border border-gray-300 p-2 rounded-md focus:outline-indigo-500"
+                  />
+                </div>
+                <div className="flex items-center gap-2">
+                  <label className="text-sm text-gray-600 w-24">
+                    Comments:
+                  </label>
+                  <input
+                    type="text"
+                    value={comments}
+                    onChange={(e) => setComments(e.target.value)}
+                    placeholder="Add comments"
+                    className="flex-1 border border-gray-300 p-2 rounded-md focus:outline-indigo-500"
+                  />
+                </div>
+              </div>
+              {/* Buttons */}
+              <div className="flex justify-center py-6 gap-5">
                 <button
-                  className={`px-3 py-1 rounded-full ${getStatusColor(item.status)}`}
-                  onClick={() => toggleDropdown(item.id)}
-                  style={{ width: "150px", height: "40px" }}
+                  className="bg-red-600 text-white px-6 py-3 text-lg rounded-lg shadow-md hover:bg-red-700 transition"
+                  onClick={() => {
+                    setName("");
+                    setPhoneNo("");
+                    setPlace("");
+                    setDistrict("");
+                    setComments("");
+                  }}
+                  disabled={isSubmitting}
                 >
-                  <div className="flex justify-center items-center gap-2">
-                    <div>{item.status}</div>
-                    <div>
-                      <img src={dropdown} alt="" />
-                    </div>
-                  </div>
+                  Cancel
                 </button>
-                {dropdownOpen === item.id && (
-                  <div className="absolute bg-white shadow-md rounded-md mt-2 w-48 z-10">
-                    <button
-                      onClick={() => handleStatusChange(item.id, "site visit")}
-                      className="w-full text-left p-2 hover:bg-gray-100"
-                    >
-                      Site Visit
-                    </button>
-                    <button
-                      onClick={() => handleStatusChange(item.id, "discussion")}
-                      className="w-full text-left p-2 hover:bg-gray-100"
-                    >
-                      Discussion
-                    </button>
-                    <button
-                      onClick={() => handleStatusChange(item.id, "in-progress")}
-                      className="w-full text-left p-2 hover:bg-gray-100"
-                    >
-                      In Progress
-                    </button>
-                    <button
-                      onClick={() => handleStatusChange(item.id, "declined")}
-                      className="w-full text-left p-2 hover:bg-gray-100"
-                    >
-                      Declined
-                    </button>
-                    <button
-                      onClick={() => handleStatusChange(item.id, "pending")}
-                      className="w-full text-left p-2 hover:bg-gray-100"
-                    >
-                      Pending
-                    </button>
-                  </div>
-                )}
-              </td>
-              <td className="p-2">
-                <button className="bg-blue-500 text-white px-3 py-1 rounded-full">
-                  See Details
+                <button
+                  className="bg-blue-600 text-white px-6 py-3 text-lg rounded-lg shadow-md hover:bg-blue-700 transition ml-4"
+                  onClick={handleSubmit}
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? "Saving..." : "Save"}
                 </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div> */}
- 
-    {/* Pagination */}
-    {/* <div className="flex flex-col sm:flex-row justify-between items-center mt-4 space-y-2 sm:space-y-0">
-      <div>Page {currentPage} of {totalPages}</div>
-      <div className="flex space-x-2">
-        {[...Array(totalPages)].map((_, pageIndex) => (
-          <button
-            key={pageIndex}
-            onClick={() => handlePageChange(pageIndex + 1)}
-            className={`px-3 py-1 rounded ${
-              currentPage === pageIndex + 1
-                ? "bg-blue-500 text-white"
-                : "bg-gray-200 text-gray-700"
-            }`}
-          >
-            {pageIndex + 1}
-          </button>
-        ))}
-      </div>
-    </div> */}
-  </div>
-</div>
-</div>
- 
+              </div>
+              <div className="pt-5">
+                <div className="p-6 ">
+                  <h2 className="text-lg font-semibold text-indigo-900 mb-6"></h2>
+
+                  <div className="flex items-center gap-2 justify-end"></div>
+
+                  <br />
+                </div>
+              </div>
+              <div>
+                <div className="space-y-8 p-4">
+                  <div className="bg-white rounded-xl shadow-md p-4 overflow-x-auto"></div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -918,5 +701,5 @@ useEffect(() => {
     </div>
   );
 };
- 
+
 export default AddnewClients;

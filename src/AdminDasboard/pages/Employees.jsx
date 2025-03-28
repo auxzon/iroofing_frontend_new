@@ -3,7 +3,10 @@ import Sidebar from "../components/SideNav";
 import Header from "../components/Header";
 import { useNavigate } from "react-router-dom";
 import newemployee from "../assets/icons/newemploye.png";
-import { deleteEmploye, getEmployee } from "../../api/admin/employee/getEmployee";
+import {
+  deleteEmploye,
+  getEmployee,
+} from "../../api/admin/employee/getEmployee";
 
 function Employees() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -17,7 +20,6 @@ function Employees() {
 
   const [employees, setEmployees] = useState([]);
   const [selectedEmployees, setSelectedEmployees] = useState([]);
-
 
   const navigate = useNavigate();
 
@@ -56,8 +58,6 @@ function Employees() {
 
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
 
-
-
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
@@ -70,7 +70,6 @@ function Employees() {
   const toggleSidebar = () => {
     setIsSidebarOpen((prev) => !prev);
   };
-
 
   const handleCheckboxChange = (employeeId) => {
     setSelectedEmployees((prevSelected) =>
@@ -88,15 +87,13 @@ function Employees() {
 
     try {
       console.log(selectedEmployees);
-      
-      const response = await deleteEmploye({ employeIds: selectedEmployees })
-console.log(response);
 
-    
-        alert(response.message);
-        setSelectedEmployees([]); // Clear selection
-        fetchEmployees(); // Refresh list
-    
+      const response = await deleteEmploye({ employeIds: selectedEmployees });
+      console.log(response);
+
+      alert(response.message);
+      setSelectedEmployees([]); // Clear selection
+      fetchEmployees(); // Refresh list
     } catch (error) {
       console.error("Error deleting employees:", error);
       alert("Failed to delete employees.");
@@ -110,37 +107,6 @@ console.log(response);
   const filteredEmployees = employees.filter((emp) =>
     emp.name.toLowerCase().includes(search.toLowerCase())
   );
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   if (error) {
     return (
@@ -181,106 +147,122 @@ console.log(response);
           </div>
 
           <div className="space-y-8">
-      <div className="bg-white rounded-xl shadow-md p-4">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold text-[#3e37bc]">Employee Details</h2>
-          <div className="flex space-x-2">
-            <input
-              type="text"
-              placeholder="Search by name..."
-              value={search}
-              onChange={handleSearchEmployee}
-              className="border border-gray-300 rounded px-2 py-1"
-            />
-            {selectedEmployees.length > 0 && (
-              <button
-                onClick={handleDeleteMultiple}
-                className="bg-red-500 text-white px-3 py-1 rounded"
-              >
-                Delete Selected
-              </button>
-            )}
-          </div>
-        </div>
-
-        {loading ? (
-          <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
-          </div>
-        ) : (
-          <>
-            <div className="overflow-x-auto">
-              <table className="w-full border-collapse border-t border-b border-gray-300 text-left">
-                <thead>
-                  <tr>
-                    <th className="p-2 border-b border-gray-300"></th>
-                    <th className="p-2 border-b border-gray-300">SL No</th>
-                    <th className="p-2 border-b border-gray-300">Name</th>
-                    <th className="p-2 border-b border-gray-300">Email</th>
-                    <th className="p-2 border-b border-gray-300">Phone</th>
-                    <th className="p-2 border-b border-gray-300">Location</th>
-                    <th className="p-2 border-b border-gray-300">Role</th>
-                    <th className="p-2 border-b border-gray-300">Status</th>
-                    <th className="p-2 border-b border-gray-300">Last Updated</th>
-                    <th className="p-2 border-b border-gray-300">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {paginatedData.map((item, index) => (
-                    <tr key={item._id} className="border-b border-gray-300">
-                      <td className="p-2">
-                        <input
-                          type="checkbox"
-                          checked={selectedEmployees.includes(item._id)}
-                          onChange={() => handleCheckboxChange(item._id)}
-                        />
-                      </td>
-                      <td className="p-2">{(currentPage - 1) * itemsPerPage + index + 1}</td>
-                      <td className="p-2">{item.name}</td>
-                      <td className="p-2">{item.mailId}</td>
-                      <td className="p-2">{item.mobileNumber}</td>
-                      <td className="p-2">{item.location}</td>
-                      <td className="p-2">
-                        {Array.isArray(item.designations)
-                          ? item.designations.join(", ")
-                          : item.designations || "N/A"}
-                      </td>
-                      <td className={`p-2 ${item.isActive ? "text-green-500" : "text-yellow-500"}`}>
-                        {item.isActive ? "Active" : "Inactive"}
-                      </td>
-                      <td className="p-2">{new Date(item.updatedAt).toLocaleDateString()}</td>
-                      <td className="p-2">
-                        <button className="bg-blue-500 text-white px-3 py-1 rounded">
-                          See Details
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            <div className="flex justify-between items-center mt-4">
-              <div>Page {currentPage} of {totalPages}</div>
-              <div className="flex space-x-2">
-                {[...Array(totalPages)].map((_, pageIndex) => (
-                  <button
-                    key={pageIndex}
-                    onClick={() => setCurrentPage(pageIndex + 1)}
-                    className={`px-3 py-1 rounded ${currentPage === pageIndex + 1
-                      ? "bg-blue-500 text-white"
-                      : "bg-gray-200 text-gray-700"
-                      }`}
-                  >
-                    {pageIndex + 1}
-                  </button>
-                ))}
+            <div className="bg-white rounded-xl shadow-md p-4">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-bold text-[#3e37bc]">
+                  Employee Details
+                </h2>
+                <div className="flex space-x-2">
+                  <input
+                    type="text"
+                    placeholder="Search by name..."
+                    value={search}
+                    onChange={handleSearchEmployee}
+                    className="border border-gray-300 rounded px-2 py-1"
+                  />
+                  {selectedEmployees.length > 0 && (
+                    <button
+                      onClick={handleDeleteMultiple}
+                      className="bg-red-500 text-white px-3 py-1 rounded"
+                    >
+                      Delete Selected
+                    </button>
+                  )}
+                </div>
               </div>
+
+              {loading ? (
+                <div className="flex justify-center items-center h-64">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+                </div>
+              ) : (
+                <>
+                  <div className="overflow-x-auto">
+                    <table className="w-full border-collapse border-t border-b border-gray-300 text-left">
+                      <thead>
+                        <tr>
+                          <th className="p-2 border-b border-gray-300"></th>
+                          <th className="p-2 border-b border-gray-300">
+                            SL No
+                          </th>
+                          <th className="p-2 border-b border-gray-300">Name</th>
+                          <th className="p-2 border-b border-gray-300">
+                            Email
+                          </th>
+                          <th className="p-2 border-b border-gray-300">
+                            Phone
+                          </th>
+                          <th className="p-2 border-b border-gray-300">
+                            Location
+                          </th>
+                          <th className="p-2 border-b border-gray-300">Role</th>
+
+                          <th className="p-2 border-b border-gray-300">
+                            Last Updated
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {paginatedData.map((item, index) => (
+                          <tr
+                            key={item._id}
+                            className="border-b border-gray-300"
+                          >
+                            <td className="p-2">
+                              <input
+                                type="checkbox"
+                                checked={selectedEmployees.includes(item._id)}
+                                onChange={() => handleCheckboxChange(item._id)}
+                              />
+                            </td>
+                            <td className="p-2">
+                              {(currentPage - 1) * itemsPerPage + index + 1}
+                            </td>
+                            <td className="p-2">{item.name}</td>
+                            <td className="p-2">{item.mailId}</td>
+                            <td className="p-2">{item.mobileNumber}</td>
+                            <td className="p-2">{item.location}</td>
+                            <td className="p-2">
+                              {Array.isArray(item.designations)
+                                ? item.designations.join(", ")
+                                : item.designations || "N/A"}
+                            </td>
+                            {/* <td className={`p-2 ${item.isActive ? "text-green-500" : "text-yellow-500"}`}>
+                        {item.isActive ? "Active" : "Inactive"}
+                      </td> */}
+                            <td className="p-2">
+                              {new Date(item.updatedAt).toLocaleDateString()}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <div className="flex justify-between items-center mt-4">
+                    <div>
+                      Page {currentPage} of {totalPages}
+                    </div>
+                    <div className="flex space-x-2">
+                      {[...Array(totalPages)].map((_, pageIndex) => (
+                        <button
+                          key={pageIndex}
+                          onClick={() => setCurrentPage(pageIndex + 1)}
+                          className={`px-3 py-1 rounded ${
+                            currentPage === pageIndex + 1
+                              ? "bg-blue-500 text-white"
+                              : "bg-gray-200 text-gray-700"
+                          }`}
+                        >
+                          {pageIndex + 1}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
-          </>
-        )}
-      </div>
-    </div>
+          </div>
         </div>
       </div>
     </div>

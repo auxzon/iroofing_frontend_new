@@ -5,27 +5,41 @@ import addclients from "../assets/icons/addclients.png";
 import addestimate from "../assets/icons/addestimate.png";
 import SideNav from "../components/SideNav";
 import { useNavigate } from "react-router-dom";
-import { deleteEstimate, getEmployee } from "../../api/admin/employee/getEmployee";
+import {
+  deleteEstimate,
+  getEmployee,
+} from "../../api/admin/employee/getEmployee";
 import { getProjectStatus } from "../../api/admin/projects/projectstatus";
 
 const AdminDashboard = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [selectedItems, setSelectedItems] = useState([]);
 
-
   const toggleSidebar = () => {
     setIsSidebarOpen((prev) => !prev);
   };
 
+  const [selectedStatus, setSelectedStatus] = useState("Filter");
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [filteredProjects, setFilteredProjects] = useState([]); // ✅ Store filtered projects
+  const [filteredData, setFilteredData] = useState([]); // ✅ Store filtered data
+
+  const statusOptions = [
+    { label: "Site Visit", textColor: "text-blue-700" },
+    { label: "Start to Build", textColor: "text-green-500" },
+    { label: "Project Evaluation in Progress", textColor: "text-green-500" },
+    { label: "Quotation Provided", textColor: "text-green-500" },
+    { label: "Awaiting Client Response", textColor: "text-orange-500" },
+    { label: "Call Back", textColor: "text-orange-500" },
+    { label: "No Response from Client", textColor: "text-orange-500" },
+    { label: "Project Rejected by Client", textColor: "text-red-500" },
+  ];
 
   const [ongoingProjects, setongoingProjects] = useState([]);
   const [completedProjects, setCompletedProjects] = useState([]);
 
   console.log("ongoingProjects", ongoingProjects);
   console.log("completedProjects", completedProjects);
-
-
-
 
   const [selectedProjects, setSelectedProjects] = useState([]);
 
@@ -47,16 +61,16 @@ const AdminDashboard = () => {
       const response = await deleteEstimate({ ids: selectedProjects });
       console.log(response);
 
-
       alert("Deleted successfully!");
       window.location.reload();
-      setSelectedProjects([]); // Clear selection after deletion
-      // Refresh or fetch updated project list
+      setSelectedProjects([]);
     } catch (error) {
       console.error("Error deleting projects:", error);
       alert("Failed to delete projects.");
     }
   };
+
+  // --------------------------------------------------
 
   useEffect(() => {
     fetchProjectStatus();
@@ -66,12 +80,12 @@ const AdminDashboard = () => {
     console.log("Updated Ongoing Projects:", ongoingProjects);
   }, [ongoingProjects]);
 
-
   const fetchProjectStatus = async () => {
     try {
       setLoading(true);
       const response = await getProjectStatus();
-      if (!response || !response.data) throw new Error("Invalid response format");
+      if (!response || !response.data)
+        throw new Error("Invalid response format");
 
       console.log("Project Data:", response.data);
       const projects = response.data || [];
@@ -96,8 +110,9 @@ const AdminDashboard = () => {
 
   const [isExpanded, setIsExpanded] = useState(false);
   // Limit displayed projects if not expanded
-  const displayedProjects = isExpanded ? filteredOngoing : filteredOngoing.slice(0, 2);
-
+  const displayedProjects = isExpanded
+    ? filteredOngoing
+    : filteredOngoing.slice(0, 2);
 
   // ------------------------------------------------------
 
@@ -136,9 +151,6 @@ const AdminDashboard = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
   // --------------------------
-  const filteredData = data.filter((item) =>
-    item.name.toLowerCase().includes(searchOngoing.toLowerCase())
-  );
 
   const paginatedData = filteredData.slice(
     (currentPage - 1) * itemsPerPage,
@@ -168,8 +180,6 @@ const AdminDashboard = () => {
 
   const navigate = useNavigate();
 
-
-
   const handleDelete2 = (id) => {
     setData2(data.filter((item) => item.id !== id));
   };
@@ -178,24 +188,9 @@ const AdminDashboard = () => {
     setSelectedItems([]);
   };
 
-
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
   const totalPages2 = Math.ceil(filteredData2.length / itemsPerPage);
   const totalPages3 = Math.ceil(filteredData3.length / itemsPerPage);
-
-  // const handleCheckboxChange = (id) => {
-  //   setSelectedItems((prevSelected) => {
-  //     console.log("Current Selected Items:", prevSelected);
-  //     console.log("Toggled Item ID:", id);
-  //     return prevSelected.includes(id)
-  //       ? prevSelected.filter((item) => item !== id)
-  //       : [...prevSelected, id];
-  //   });
-  // };
-
-
-
-
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
@@ -216,7 +211,6 @@ const AdminDashboard = () => {
     setIsExpanded3(!isExpanded3);
   };
 
-
   useEffect(() => {
     // Initially, show all projects
     setFilteredProjects(ongoingProjects);
@@ -233,12 +227,12 @@ const AdminDashboard = () => {
     setFilteredProjects(filtered);
   };
 
-
   const [searchCompleted, setSearchCompleted] = useState("");
-  const [filteredCompletedProjects, setFilteredCompletedProjects] = useState([]);
+  const [filteredCompletedProjects, setFilteredCompletedProjects] = useState(
+    []
+  );
 
   useEffect(() => {
-    // Show all projects initially
     setFilteredCompletedProjects(completedProjects);
   }, [completedProjects]);
 
@@ -246,53 +240,49 @@ const AdminDashboard = () => {
     const searchTerm = e.target.value;
     setSearchCompleted(searchTerm);
 
-    const filtered = completedProjects.filter((p) =>
-      p.name?.toLowerCase().includes(searchTerm.toLowerCase())
+    // ✅ Filter completedProjects using clientId.name
+    const filtered = completedProjects.filter(
+      (p) =>
+        p.clientId &&
+        p.clientId.name &&
+        p.clientId.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     setFilteredCompletedProjects(filtered);
   };
 
-// ----------------------------------------------------------------------------
+  const handleSelectStatus = (status) => {
+    setSelectedStatus(status.label);
+    setDropdownOpen(false);
 
-const [filteredProjects, setFilteredProjects] = useState([]);
-const [selectedOngoingItems, setSelectedOngoingItems] = useState([]);
-  // Track checkbox selection
-  const handleCheckboxChangeOngoing = (id) => {
-    selectedOngoingItems((prev) =>
-      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+    // ✅ Filter ongoingProjects based on selected status
+    const filtered = ongoingProjects.filter(
+      (item) =>
+        item.status?.toLowerCase().replace(/\s+/g, "") ===
+        status.label.toLowerCase().replace(/\s+/g, "")
     );
+
+    setFilteredProjects(filtered); // ✅ Set filtered projects
   };
-
-  // Handle deletion
-  const handleDeleteongoing = () => {
-    const updatedProjects = filteredProjects.filter((p) => !selectedOngoingItems.includes(p._id));
-    setFilteredProjects(updatedProjects);
-    setSelectedOngoingItems([]);
-  };
-
-
-
-
 
   return (
-    <div className="flex h-screen bg-gray-100 ">
+    <div className="h-screen flex bg-gray-100  ">
       {/* Sidebar */}
       <SideNav isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
 
       {/* Main Content */}
-      <div className="flex flex-col flex-1 ">
+      <div className="flex-1 flex flex-col  ">
         <Header toggleSidebar={toggleSidebar} />
 
         {/* Dashboard Content */}
-        <div className="p-5 space-y-8 overflow-auto bg-gray-100 ">
+        <div className=" space-y-8 bg-gray-100 p-5 overflow-auto">
           {/* Dashboard Header */}
           <h1 className="text-3xl font-bold text-[#4c48a5]">Dashboard</h1>
 
           {/* Action Cards */}
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-3 ">
-            <div className="flex items-center p-4 py-5 space-x-4 bg-white shadow-md rounded-2xl">
-              <div className="text-3xl text-blue-500">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 ">
+            <div className="p-4 bg-white rounded-2xl shadow-md flex items-center space-x-4 py-5">
+              <div className="text-blue-500 text-3xl">
                 <img src={addnew} alt="" />
               </div>
               <div
@@ -303,8 +293,8 @@ const [selectedOngoingItems, setSelectedOngoingItems] = useState([]);
                 <p className="text-gray-600">To register new clients</p>
               </div>
             </div>
-            <div className="flex items-center p-4 py-5 space-x-4 bg-white shadow-md rounded-2xl">
-              <div className="text-3xl text-green-500">
+            <div className="p-4 bg-white rounded-2xl shadow-md flex items-center space-x-4 py-5">
+              <div className="text-green-500 text-3xl">
                 <img src={addclients} alt="" />
               </div>
               <div onClick={() => navigate("/admin/customers")}>
@@ -312,8 +302,8 @@ const [selectedOngoingItems, setSelectedOngoingItems] = useState([]);
                 <p className="text-gray-600">View existing clients</p>
               </div>
             </div>
-            <div className="flex items-center p-4 py-5 space-x-4 bg-white shadow-md rounded-2xl">
-              <div className="text-3xl text-orange-500">
+            <div className="p-4 bg-white rounded-2xl shadow-md flex items-center space-x-4 py-5">
+              <div className="text-orange-500 text-3xl">
                 <img src={addestimate} alt="" />
               </div>
               <div
@@ -329,26 +319,52 @@ const [selectedOngoingItems, setSelectedOngoingItems] = useState([]);
           {/* Tables */}
           <div className="space-y-8">
             {/* Ongoing Projects */}
-
-            <div className="p-4 mb-6 bg-white shadow-md rounded-xl">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-bold text-[#4c48a5]">Ongoing Projects</h2>
+            <div className="bg-white rounded-xl shadow-md p-4 mb-6">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-bold text-[#4c48a5]">
+                  Ongoing Projects
+                </h2>
                 <div className="flex space-x-2">
-
                   <input
                     type="text"
                     placeholder="Search..."
                     value={searchOngoing}
                     onChange={handleSearchOngoing}
-                    className="px-2 py-1 border border-gray-300 rounded"
+                    className="border border-gray-300 rounded px-2 py-1"
                   />
-                  <button onClick={handleDelete} className="px-3 py-1 text-white bg-red-500 rounded">
+
+                  <button
+                    className="bg-gray-200 text-gray-700 px-3 me-1 py-1 rounded relative"
+                    onClick={() => setDropdownOpen(!dropdownOpen)}
+                  >
+                    {selectedStatus || "Filter by Status"}
+                  </button>
+
+                  {/* Dropdown Menu */}
+                  {dropdownOpen && (
+                    <div className="absolute w-48 mt-1 bg-white shadow-md rounded-lg z-50 border border-gray-200">
+                      {statusOptions.map((status, index) => (
+                        <button
+                          key={index}
+                          onClick={() => handleSelectStatus(status)}
+                          className={`w-full text-left px-2 m-1 hover:bg-gray-100 rounded-md focus:outline-none ${status.textColor}`}
+                        >
+                          {status.label}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+
+                  <button
+                    onClick={handleDelete}
+                    className="bg-red-500 text-white px-3 py-1 rounded"
+                  >
                     Delete
                   </button>
                 </div>
               </div>
 
-              <table className="w-full text-left border border-collapse">
+              <table className="w-full border-collapse border text-left">
                 <thead className="bg-gray-100">
                   <tr>
                     <th className="p-2 border"></th> {/* Checkbox header */}
@@ -356,7 +372,6 @@ const [selectedOngoingItems, setSelectedOngoingItems] = useState([]);
                     <th className="p-2 border">Client Name</th>
                     <th className="p-2 border">Phone</th>
                     <th className="p-2 border">Location</th>
-
                     <th className="p-2 border">Status</th>
                   </tr>
                 </thead>
@@ -372,31 +387,39 @@ const [selectedOngoingItems, setSelectedOngoingItems] = useState([]);
                           />
                         </td>
                         <td className="p-2 border">{index + 1}</td>
-                        <td className="p-2 border">{p.clientId?.name || "N/A"}</td>
-                        <td className="p-2 border">{p.clientId?.phoneNo || "N/A"}</td>
-                        <td className="p-2 border">{p.clientId?.district || "N/A"}</td>
-
-                        <td className={`p-2 border ${p.status === "Pending" ? "text-yellow-500" : "text-green-500"}`}>
+                        <td className="p-2 border">
+                          {p.clientId?.name || "N/A"}
+                        </td>
+                        <td className="p-2 border">
+                          {p.clientId?.phoneNo || "N/A"}
+                        </td>
+                        <td className="p-2 border">
+                          {p.clientId?.district || "N/A"}
+                        </td>
+                        <td
+                          className={`p-2 border ${
+                            p.status === "Pending"
+                              ? "text-yellow-500"
+                              : "text-green-500"
+                          }`}
+                        >
                           {p.status || "Pending"}
                         </td>
                       </tr>
                     ))
                   ) : (
                     <tr>
-                      <td colSpan="7" className="p-2 text-center">No projects found</td>
+                      <td colSpan="7" className="p-2 text-center">
+                        No projects found
+                      </td>
                     </tr>
                   )}
                 </tbody>
               </table>
             </div>
 
-
-
-            {/* -------------------------------------------------- */}
-            {/* Completed Projects */}
-            {/* Completed Projects */}
-            {/* <div className="p-4 bg-white shadow-md rounded-xl">
-              <div className="flex items-center justify-between mb-4">
+            <div className="bg-white rounded-xl shadow-md p-4 mb-6">
+              <div className="flex justify-between items-center mb-4">
                 <h2 className="text-xl font-bold text-[#4c48a5]">
                   Completed Projects
                 </h2>
@@ -406,122 +429,18 @@ const [selectedOngoingItems, setSelectedOngoingItems] = useState([]);
                     placeholder="Search..."
                     value={searchCompleted}
                     onChange={handleSearchCompleted}
-                    className="px-2 py-1 border border-gray-300 rounded"
+                    className="border border-gray-300 rounded px-2 py-1"
                   />
                   <button
-                    onClick={() => handleDelete2(item.id)}
-                    className="px-3 py-1 mr-2 text-white bg-red-500 rounded"
+                    onClick={handleDelete}
+                    className="bg-red-500 text-white px-3 py-1 rounded"
                   >
                     Delete
                   </button>
-                  <button className="px-3 py-1 text-gray-700 bg-gray-200 rounded">
-                    Filter
-                  </button>
-                  <button className="px-3 py-1 text-gray-700 bg-gray-200 rounded">
-                    Export
-                  </button>
-                </div>
-              </div>
-              <table className="w-full text-left border-t border-b border-collapse border-gray-300">
-              
-              <thead>
-  <tr>
-    <th className="p-2 border-b border-gray-300"></th>
-    <th className="p-2 border-b border-gray-300">SL No</th>
-    <th className="p-2 border-b border-gray-300">Client Name</th>
-    <th className="p-2 border-b border-gray-300">Date</th>
-    <th className="p-2 border-b border-gray-300">Location</th>
-    <th className="p-2 border-b border-gray-300">Work Type</th>
-    <th className="p-2 border-b border-gray-300">Amount</th>
-    <th className="p-2 border-b border-gray-300">Payment</th>
-    <th className="p-2 border-b border-gray-300">Actions</th>
-  </tr>
-</thead>
-<tbody>
-  {filteredCompletedProjects.length > 0 ? (
-    filteredCompletedProjects.map((p, index) => (
-      <tr key={p._id} className="border hover:bg-gray-50">
-        <td className="p-2">
-          <input
-            type="checkbox"
-           
-          />
-        </td>
-        <td className="p-2">{index + 1 + (currentPage - 1) * itemsPerPage}</td>
-        <td className="p-2">{p.clientId?.name }</td>
-        <td className="p-2">{p.date}</td>
-        <td className="p-2">{p.location}</td>
-        <td className="p-2">{p.roof}</td>
-        <td className="p-2">{p.amount}</td>
-        <td className={`p-2 ${p.payment === "paid" ? "text-green-500" : "text-yellow-500"}`}>
-          {p.payment}
-        </td>
-        <td className="p-2">
-          <button className="px-3 py-1 text-white bg-blue-500 rounded-full">See Details</button>
-          <button
-            onClick={() => handleDelete(p._id)}
-            className="px-3 py-1 ml-2 text-white bg-red-500 rounded-full"
-          >
-            Delete
-          </button>
-        </td>
-      </tr>
-    ))
-  ) : (
-    <tr>
-      <td colSpan="9" className="p-2 text-center">No completed projects found</td>
-    </tr>
-  )}
-</tbody>
-
-
-              </table>
-              <button
-                onClick={handleToggleExpand2}
-                className="mt-2 text-blue-500 underline"
-              >
-                {isExpanded2 ? "Show Less" : "Show More"}
-              </button>
-              <div className="flex items-center justify-between mt-4">
-                <div>
-                  Page {currentPage} of {totalPages2}
-                </div>
-                <div className="flex space-x-2">
-                  {[...Array(totalPages2)].map((_, pageIndex) => (
-                    <button
-                      key={pageIndex}
-                      onClick={() => handlePageChange(pageIndex + 1)}
-                      className={`px-3 py-1 rounded ${
-                        currentPage === pageIndex + 1
-                          ? "bg-blue-500 text-white"
-                          : "bg-gray-200 text-gray-700"
-                      }`}
-                    >
-                      {pageIndex + 1}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div> */}
-
-            <div className="p-4 mb-6 bg-white shadow-md rounded-xl">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-bold text-[#4c48a5]">Completed Projects</h2>
-                <div className="flex space-x-2">
-                  <input
-                    type="text"
-                    placeholder="Search..."
-                    value={searchCompleted}
-                    onChange={handleSearchCompleted}
-                    className="px-2 py-1 border border-gray-300 rounded"
-                  />
-                  <button onClick={handleDelete} className="px-3 py-1 text-white bg-red-500 rounded">
-                    Delete
-                  </button>
                 </div>
               </div>
 
-              <table className="w-full text-left border border-collapse">
+              <table className="w-full border-collapse border text-left">
                 <thead className="bg-gray-100">
                   <tr>
                     <th className="p-2 border"></th> {/* Checkbox header */}
@@ -529,7 +448,6 @@ const [selectedOngoingItems, setSelectedOngoingItems] = useState([]);
                     <th className="p-2 border">Client Name</th>
                     <th className="p-2 border">Phone</th>
                     <th className="p-2 border">Location</th>
-
                     <th className="p-2 border">Status</th>
                   </tr>
                 </thead>
@@ -545,58 +463,52 @@ const [selectedOngoingItems, setSelectedOngoingItems] = useState([]);
                           />
                         </td>
                         <td className="p-2 border">{index + 1}</td>
-                        <td className="p-2 border">{p.clientId?.name || "N/A"}</td>
-                        <td className="p-2 border">{p.clientId?.phoneNo || "N/A"}</td>
-                        <td className="p-2 border">{p.clientId?.district || "N/A"}</td>
+                        <td className="p-2 border">
+                          {p.clientId?.name || "N/A"}
+                        </td>
+                        <td className="p-2 border">
+                          {p.clientId?.phoneNo || "N/A"}
+                        </td>
+                        <td className="p-2 border">
+                          {p.clientId?.district || "N/A"}
+                        </td>
 
-                        <td className={`p-2 border ${p.status === "Pending" ? "text-yellow-500" : "text-green-500"}`}>
+                        <td
+                          className={`p-2 border ${
+                            p.status === "Pending"
+                              ? "text-yellow-500"
+                              : "text-green-500"
+                          }`}
+                        >
                           {p.status || "Pending"}
                         </td>
                       </tr>
                     ))
                   ) : (
                     <tr>
-                      <td colSpan="7" className="p-2 text-center">No projects found</td>
+                      <td colSpan="7" className="p-2 text-center">
+                        No projects found
+                      </td>
                     </tr>
                   )}
                 </tbody>
               </table>
             </div>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
             {/* ---------------------------Employee Details------------------------------- */}
-            <div className="p-4 bg-white shadow-md rounded-xl">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-bold text-[#4c48a5]">Employee Details</h2>
+            <div className="bg-white rounded-xl shadow-md p-4">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-bold text-[#4c48a5]">
+                  Employee Details
+                </h2>
                 <div className="flex space-x-2">
                   <input
                     type="text"
                     placeholder="Search..."
                     value={searchEmployee}
                     onChange={handleSearchEmployee}
-                    className="px-2 py-1 border border-gray-300 rounded"
+                    className="border border-gray-300 rounded px-2 py-1"
                   />
-
-                  <button className="px-3 py-1 text-gray-700 bg-gray-200 rounded">
-                    Filter
-                  </button>
-                  <button className="px-3 py-1 text-gray-700 bg-gray-200 rounded">
-                    Export
-                  </button>
                 </div>
               </div>
 
@@ -606,49 +518,54 @@ const [selectedOngoingItems, setSelectedOngoingItems] = useState([]);
                 <p className="text-red-500">{error}</p>
               ) : (
                 <>
-                  <table className="w-full text-left border-t border-b border-collapse border-gray-300">
+                  <table className="w-full border-collapse border-t border-b border-gray-300 text-left">
                     <thead>
                       <tr>
                         <th className="p-2 border-b border-gray-300"></th>
                         <th className="p-2 border-b border-gray-300">SL No</th>
-                        <th className="p-2 border-b border-gray-300">Employee ID</th>
+                        <th className="p-2 border-b border-gray-300">
+                          Employee ID
+                        </th>
                         <th className="p-2 border-b border-gray-300">Name</th>
-                        <th className="p-2 border-b border-gray-300">Phone No</th>
+                        <th className="p-2 border-b border-gray-300">
+                          Phone No
+                        </th>
                         <th className="p-2 border-b border-gray-300">Role</th>
-                        <th className="p-2 border-b border-gray-300">Status</th>
-                        <th className="p-2 border-b border-gray-300">Actions</th>
+
+                        {/* <th className="p-2 border-b border-gray-300">Actions</th> */}
                       </tr>
                     </thead>
                     <tbody>
-                      {(isExpanded3 ? paginatedData3 : paginatedData3.slice(0, 2)).map((item, index) => (
-                        <tr key={item.id || `row-${index}`} className="border-b border-gray-300">
-
+                      {(isExpanded3
+                        ? paginatedData3
+                        : paginatedData3.slice(0, 2)
+                      ).map((item, index) => (
+                        <tr
+                          key={item.id || `row-${index}`}
+                          className="border-b border-gray-300"
+                        >
                           <td className="p-2">
-                            <input
-                              type="checkbox"
-
-                            />
+                            <input type="checkbox" />
                           </td>
 
-                          <td className="p-2">{(currentPage - 1) * itemsPerPage + index + 1}</td>
+                          <td className="p-2">
+                            {(currentPage - 1) * itemsPerPage + index + 1}
+                          </td>
                           <td className="p-2">{item.mailId}</td>
                           <td className="p-2">{item.name}</td>
                           <td className="p-2">{item.mobileNumber}</td>
                           <td className="p-2">
-                            {Array.isArray(item.designations) ? item.designations.join(", ") : item.designations || "N/A"}
+                            {Array.isArray(item.designations)
+                              ? item.designations.join(", ")
+                              : item.designations || "N/A"}
                           </td>
-                          <td className={`p-2 ${item.isActive ? "text-green-500" : "text-yellow-500"}`}>
-                            {item.isActive ? "Active" : "Inactive"}
-                          </td>
-                          <td className="p-2">
-                            <button className="px-3 py-1 text-white bg-blue-500 rounded-full">See Details</button>
-                          </td>
+
+                          {/* <td className="p-2">
+        <button className="bg-blue-500 text-white px-3 py-1 rounded-full">See Details</button>
+      </td> */}
                         </tr>
                       ))}
                     </tbody>
-
-
-
                   </table>
 
                   <button
@@ -658,17 +575,20 @@ const [selectedOngoingItems, setSelectedOngoingItems] = useState([]);
                     {isExpanded3 ? "Show Less" : "Show More"}
                   </button>
 
-                  <div className="flex items-center justify-between mt-4">
-                    <div>Page {currentPage} of {totalPages3}</div>
+                  <div className="flex justify-between items-center mt-4">
+                    <div>
+                      Page {currentPage} of {totalPages3}
+                    </div>
                     <div className="flex space-x-2">
                       {[...Array(totalPages3)].map((_, pageIndex) => (
                         <button
                           key={pageIndex}
                           onClick={() => handlePageChange(pageIndex + 1)}
-                          className={`px-3 py-1 rounded ${pageIndex + 1 === currentPage
+                          className={`px-3 py-1 rounded ${
+                            pageIndex + 1 === currentPage
                               ? "bg-blue-500 text-white"
                               : "bg-gray-200 text-gray-700"
-                            }`}
+                          }`}
                         >
                           {pageIndex + 1}
                         </button>

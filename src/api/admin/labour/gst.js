@@ -13,3 +13,14 @@ export const product = async (values) => {
 };
  
  
+export const addGst = async (values) => {
+    try {
+       
+        const response = await Api.post("/admin/gst", values);
+        return response;
+    } catch (err) {
+        console.error("Error updating labour gst:", err);
+        throw err;
+    }
+};
+ 

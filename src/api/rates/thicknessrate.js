@@ -1,21 +1,4 @@
 
-// import axios from "axios";
-
-// export const addThickness = async (thickness, price) => {
-//   try {
-//     const response = await axios.post("/addThickness", { thickness, price }, {
-//       headers: {
-//         "Content-Type": "application/json",
-//       },
-//     });
-//     return response.data; // Return the response data
-//   } catch (error) {
-//     // Throw the error for the caller to handle
-//     throw error.response?.data?.message || "An error occurred while adding thickness.";
-//   }
-// };
-
-
 
 import axios from "axios";
 import Api from "../axiosConfig";
@@ -38,5 +21,16 @@ export const getAllThicknessPricing = async () => {
     return response.data; // Return response data
   } catch (error) {
     throw error.response?.data?.message || "An error occurred while fetching thickness pricing.";
+  }
+};
+
+
+export const deleteThickness = async (ids) => {
+  try {
+      const response = await Api.post('/rates/deletethickness',ids);
+      return response.data;
+  } catch (error) {
+      console.error("Error fetching user:", error?.response?.data || error.message);
+      throw error;
   }
 };

@@ -181,7 +181,7 @@ try {
                       Rate Per Meter
                     </label>
                     <input
-          type="text"
+          type="number"
           name="ratePerKg"
           className="flex-1 p-2 border border-gray-300 rounded-md w-80"
           placeholder="1"
@@ -194,7 +194,7 @@ try {
                       Including Tax
                     </label>
                     <input
-          type="text"
+          type="number"
           name="includingTax"
           className="flex-1 p-2 border border-gray-300 rounded-md w-80"
           placeholder="1"
@@ -222,7 +222,7 @@ try {
                       Bending Cost For C Channel Per Meter
                     </label>
                     <input
-          type="text"
+          type="number"
           name="bendingCostschannelPerMeter"
           className="flex-1 p-2 border border-gray-300 rounded-md w-[480px] mt-3"
           value={materialForm.bendingCostschannelPerMeter}
@@ -236,7 +236,7 @@ try {
                       Bending Cost For Gutter Per Meter
                     </label>
                     <input
-          type="text"
+          type="number"
           name="bendingCostsgutterPerMeter"
           className="flex-1 p-2 border border-gray-300 rounded-md w-[480px]"
           value={materialForm.bendingCostsgutterPerMeter}

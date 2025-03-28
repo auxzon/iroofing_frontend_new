@@ -11,6 +11,9 @@ import { useNavigate } from "react-router-dom";
  import { addMaterial } from "../../api/admin/materials/addmaterials";
  import { getAllMaterials } from "../../api/admin/materials/additem";
  import { itemAdding } from "../../api/admin/materials/additem";
+import { deleteThickness } from "../../api/rates/thicknessrate";
+import { Link } from "react-router-dom";
+
  
 const Rates = () => {
   const [activeTab, setActiveTab] = useState("Materials");
@@ -159,6 +162,7 @@ const itemhandleSubmit = async (e) => {
            console.log(data);
          
            setResponseMessage(data.message || "Thickness rate added successfully!");
+           fetchThicknessPricing()
          } catch (error) {
            setResponseMessage(error.message || "An error occurred.");
          }
@@ -167,21 +171,21 @@ const itemhandleSubmit = async (e) => {
    
        // -----------------------------------------
        useEffect(() => {
-         const fetchThicknessPricing = async () => {
-           try {
-             const data = await getAllThicknessPricing();
-             console.log(data);
-           
-             setThicknessData(data.data);
-           } catch (error) {
-             console.error("Error fetching thickness pricing:", error);
-           }
-         
-         };
+        
    
          fetchThicknessPricing();
        }, []);
-   
+       const fetchThicknessPricing = async () => {
+        try {
+          const data = await getAllThicknessPricing();
+          console.log(data);
+        
+          setThicknessData(data.data);
+        } catch (error) {
+          console.error("Error fetching thickness pricing:", error);
+        }
+      
+      };
      
    
  
@@ -206,6 +210,26 @@ const itemhandleSubmit = async (e) => {
        };
      
   const navigate = useNavigate ()
+
+
+
+  useEffect(() => {
+           
+     
+    fetchTransportation();
+  }, []);
+  const fetchTransportation = async () => {
+   try {
+     const data = await getAllTransportation();
+     console.log(data);
+   
+     setShowTransportation(data);
+   } catch (error) {
+     console.error("Error fetching thickness pricing:", error);
+   }
+ 
+ };
+
 
        const handleSubmit = async (e) => {
          e.preventDefault();
@@ -234,6 +258,7 @@ const itemhandleSubmit = async (e) => {
              perKm: "",
              petrolCharge: "",
            });
+           fetchTransportation()
          } catch (error) {
            setErrorMessage(
              error || "An error occurred while adding transportation rates."
@@ -243,21 +268,61 @@ const itemhandleSubmit = async (e) => {
          }
        };
      
-      useEffect(() => {
-           const fetchTransportation = async () => {
-             try {
-               const data = await getAllTransportation();
-               console.log(data);
-             
-               setShowTransportation(data);
-             } catch (error) {
-               console.error("Error fetching thickness pricing:", error);
-             }
-           
-           };
+      
+// ---------------------------------------------------------------
+
+const [selectedThickness, setSelectedThickness] = useState([]);
+ 
+  // Handle checkbox selection
+  const handleCheckboxChange = (id) => {
+    setSelectedThickness((prevSelected) =>
+      prevSelected.includes(id)
+        ? prevSelected.filter((selectedId) => selectedId !== id) // Remove if already selected
+        : [...prevSelected, id] // Add if not selected
+    );
+  };
+ 
+  // Delete selected thicknesses
+  const handleDeleteSelected = async () => {
+    if (selectedThickness.length === 0) {
+      alert("Please select at least one thickness to delete.");
+      return;
+    }
+ 
+    try {
+     const response= await deleteThickness({ids: selectedThickness})
+     console.log(response);
      
-           fetchTransportation();
-         }, []);
+ 
+      alert("Selected thicknesses deleted successfully.");
+      setSelectedThickness([]); // Clear selection
+      fetchThicknessPricing(); // Refresh table data
+    } catch (error) {
+      console.error("Error deleting thickness:", error);
+      alert("Failed to delete selected thicknesses.");
+    }
+  };
+ 
+ 
+ 
+ 
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
      
  
     return (
@@ -565,48 +630,52 @@ const itemhandleSubmit = async (e) => {
  
        {activeTab === "Thickness Rate" && (
               <div className="bg-white rounded-xl shadow-md p-4 md:m-5 m-4">
-                {/* Table */}
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm text-left border-collapse border border-gray-300">
-                    <thead className="bg-gray-200">
-                      <tr>
-                        <th className="px-4 py-2 border border-gray-300">
-                          Thickness
-                        </th>
-                        <th className="px-4 py-2 border border-gray-300">
-                          Base Rate Per Weight
-                        </th>
-                        <th className="px-4 py-2 border border-gray-300">
-                          18% Tax
-                        </th>
-                        <th className="px-4 py-2 border border-gray-300">
-                          Transportation
-                        </th>
-                        <th className="px-4 py-2 border border-gray-300">
-                          Loading & Unloading
-                        </th>
-                        <th className="px-4 py-2 border border-gray-300">
-                          Final Rate Per Kg
-                        </th>
-                        <th className="px-4 py-2 border border-gray-300">
-                          Rate Per Sq.ft
-                        </th>
-                        <th className="px-4 py-2 border border-gray-300">
-                          Round Off
-                        </th>
-                        <th className="px-4 py-2 border border-gray-300">
-                          Selling Price
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                     
-                    {thicknessData.length > 0 ? (
+              {/* Tab Content */}
+              <div>  <button onClick={handleDeleteSelected} className="bg-red-500 text-white px-3 py-1 rounded">
+                Delete
+              </button>
+             
+                  {/* Table */}  <div className="flex justify-center mt-4">
+         
+         
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm text-left border-collapse border border-gray-300">
+              <thead className="bg-gray-200">
+                <tr>
+                  <th className="px-4 py-2 border border-gray-300">Select</th>
+                  <th className="px-4 py-2 border border-gray-300">Thickness</th>
+                  <th className="px-4 py-2 border border-gray-300">
+                    Base Rate Per Weight
+                  </th>
+                  <th className="px-4 py-2 border border-gray-300"> Tax</th>
+                  <th className="px-4 py-2 border border-gray-300">Transportation</th>
+                  <th className="px-4 py-2 border border-gray-300">
+                    Loading & Unloading
+                  </th>
+                  <th className="px-4 py-2 border border-gray-300">
+                    Final Rate Per Kg
+                  </th>
+                  <th className="px-4 py-2 border border-gray-300">Rate Per Sq.ft</th>
+                  <th className="px-4 py-2 border border-gray-300">Round Off</th>
+                  <th className="px-4 py-2 border border-gray-300">Selling Price</th>
+                </tr>
+              </thead>
+     
+              <tbody>
+                {thicknessData.length > 0 ? (
                   thicknessData.map((item, index) => (
-                    <tr key={index} className="text-center">
+                    <tr key={item._id} className="text-center">
+                      <td className="px-4 py-2 border border-gray-300">
+                        <input
+                          type="checkbox"
+                          checked={selectedThickness.includes(item._id)}
+                          onChange={() => handleCheckboxChange(item._id)}
+                        />
+                      </td>
                       <td className="px-4 py-2 border border-gray-300">{item.thickness}</td>
                       <td className="px-4 py-2 border border-gray-300">{item.baseRatePerWt}</td>
-                      <td className="px-4 py-2 border border-gray-300">{item.tax}</td>
+                      <td className="px-4 py-2 border border-gray-300">{item.taxRate}</td>
                       <td className="px-4 py-2 border border-gray-300">{item.transportation}</td>
                       <td className="px-4 py-2 border border-gray-300">{item.loadingUnloading}</td>
                       <td className="px-4 py-2 border border-gray-300">{item.finalRatePerKg}</td>
@@ -617,142 +686,141 @@ const itemhandleSubmit = async (e) => {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="9" className="text-center py-4">No data available</td>
+                    <td colSpan="10" className="text-center py-4">
+                      No data available
+                    </td>
                   </tr>
                 )}
-                    </tbody>
-                  </table>
-                </div>
- 
-                {/* Add Rates Section */}
-                <div className="mt-6">
-                  <h2 className="text-2xl font-normal text-[#2A2493]">
-                    Add Rates
-                  </h2>
-                  <form onSubmit={handleAddThickness} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
-                 
-                    <div>
-                      <label className="text-sm font-medium text-gray-700">
-                        Thickness
-                      </label>
-                      {/* <select
-                  value={thickness}
-                  onChange={(e) => setThicknessRate(e.target.value)}
-                  className="w-full p-2 border border-gray-300 rounded-md"
+              </tbody>
+            </table>
+          </div>
+     
+          
+     
+                  {/* Add Rates Section */}
+                  <div className="mt-6">
+                    <h2 className="text-2xl font-normal text-[#2A2493]">
+                      Add Rates
+                    </h2>
+                     <form
+                  onSubmit={handleAddThickness}
+                  className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4"
                 >
-                  <option value="">Select</option>
-                  <option>0.5</option>
-                  <option>0.6</option>
-                  <option>0.7</option>
-                </select> */}
- 
-<input type="number"  value={thickness}   onChange={(e) => setThicknessRate(e.target.value)}   className="w-full p-2 border border-gray-300 rounded-md" />
- 
-                    </div>
-                    {/* <div className="">
-                      <label className="text-sm font-medium text-gray-700 ">
-                        18% Tax
-                      </label>
-                      <input
-                  type="text"
-                  value={tax}
-                  onChange={(e) => setTax(e.target.value)}
-                  className="w-full p-2 border border-gray-300 rounded-md"
-                  placeholder="1.5"
-                />
-                    </div> */}
-                    <div>
-                      <label className="text-sm font-medium text-gray-700">
-                        Margin
-                      </label>
-                      <input
-                  type="number"
-                  value={margin}
-                  onChange={(e) => setMargin(e.target.value)}
-                  className="w-full p-2 border border-gray-300 rounded-md"
-                  placeholder="00"
-                />
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium text-gray-700">
-                        Base Rate Per Weight
-                      </label>
-                      <input
-                  type="number"
-                  value={baseRatePerWt}
-                  onChange={(e) => setBaseRatePerWt(e.target.value)}
-                  className="w-full p-2 border border-gray-300 rounded-md"
-                  placeholder="00"
-                />
-                    </div>
-                    {/* <div>
-                      <label className="text-sm font-medium text-gray-700">
-                        Final Rate Per Kg
-                      </label>
-                      <input
-                  type="text"
-                  value={finalRatePerKg}
-                  onChange={(e) => setFinalRatePerKg(e.target.value)}
-                  className="w-full p-2 border border-gray-300 rounded-md"
-                  placeholder="00"
-                />
-                    </div> */}
-                    <div>
-                      <label className="text-sm font-medium text-gray-700">
-                        Transportation
-                      </label>
-                      <input
-                  type="number"
-                  value={transportation}
-                  onChange={(e) => setTransportation(e.target.value)}
-                  className="w-full p-2 border border-gray-300 rounded-md"
-                  placeholder="1.5"
-                />
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium text-gray-700">
-                        Loading & Unloading
-                      </label>
-                      <input
-                  type="number"
-                  value={loadingUnloading}
-                  onChange={(e) => setLoadingUnloading(e.target.value)}
-                  className="w-full p-2 border border-gray-300 rounded-md"
-                  placeholder="8.5"
-                />
-                    </div>
-                    
+                  <div>
+                    <label className="text-sm font-medium text-gray-700">
+                      Thickness
+                    </label>
+                    {/* <select
+                      value={thickness}
+                      onChange={(e) => setThicknessRate(e.target.value)}
+                      className="w-full p-2 border border-gray-300 rounded-md"
+                    >
+                      <option value="">Select</option>
+                      <option>0.5</option>
+                      <option>0.6</option>
+                      <option>0.7</option>
+                    </select> */}
+                    <input type="number"  value={thickness}   onChange={(e) => setThicknessRate(e.target.value)}   className="w-full p-2 border border-gray-300 rounded-md" />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-700">
+                      Base Rate Per Weight
+                    </label>
+                    <input
+                      type="number"
+                      value={baseRatePerWt}
+                      onChange={(e) => setBaseRatePerWt(e.target.value)}
+                      className="w-full p-2 border border-gray-300 rounded-md"
+                      placeholder="00"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-700">
+                      Transportation
+                    </label>
+                    <input
+                      type="number"
+                      value={transportation}
+                      onChange={(e) => setTransportation(e.target.value)}
+                      className="w-full p-2 border border-gray-300 rounded-md"
+                      placeholder="1.5"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-700">
+                      Loading & Unloading
+                    </label>
+                    <input
+                      type="number"
+                      value={loadingUnloading}
+                      onChange={(e) => setLoadingUnloading(e.target.value)}
+                      className="w-full p-2 border border-gray-300 rounded-md"
+                      placeholder="8.5"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-700">
+                      Margin
+                    </label>
+                    <input
+                      type="number"
+                      value={margin}
+                      onChange={(e) => setMargin(e.target.value)}
+                      className="w-full p-2 border border-gray-300 rounded-md"
+                      placeholder="00"
+                    />
+                  </div>
+                 
+                 
+                 
+                 
                  
                   <div className="flex gap-4 mt-4 justify-center">
-                    <button className="bg-blue-600 text-white px-4 py-2 rounded-md">
+                    <button
+                      type="submit"
+                      className="bg-blue-600 text-white px-4 py-2 rounded-md"
+                    >
                       Add
                     </button>
                     <button
-                  type="button"
-                  onClick={() => {
-                    // Clear the form
-                    setThicknessRate("");
-                    setBaseRatePerWt("");
-                    setTransportation("");
-                    setLoadingUnloading("");
-                    setMargin("");
-                    setFinalRatePerKg("");
-                    setTax("");
-                    setRoundOff("");
-                    setSellingPrice("");
-                    setRatePerSqFt("");
-                  }}
-                  className="bg-red-600 text-white px-4 py-2 rounded-md"
-                >
-                  Cancel
-                </button>
+                      type="button"
+                      onClick={() => {
+                        // Clear the form
+                        setThicknessRate("");
+                        setBaseRatePerWt("");
+                        setTransportation("");
+                        setLoadingUnloading("");
+                        setMargin("");
+                        setFinalRatePerKg("");
+                        setTax("");
+                        setRoundOff("");
+                        setSellingPrice("");
+                        setRatePerSqFt("");
+                      }}
+                      className="bg-red-600 text-white px-4 py-2 rounded-md"
+                    >
+                      Cancel
+                    </button>
                   </div>
-                  </form>
-                  {responseMessage && (
-              <div className="text-green-500 mt-4">{responseMessage}</div>
-            )}
-                </div>
+                </form>
+                {responseMessage && (
+                  <div className="text-green-500 mt-4">{responseMessage}</div>
+                )}
+           
+     
+                    <div className="flex justify-start md:pr-36">
+                      <p className="text-black">
+                        Click Here{" "}
+                        <Link to="/editthicknessrate">
+                          {" "}
+                          <span className="text-[#0070FF]">To Edit</span>{" "}
+                        </Link>
+                      </p>
+                    </div>
+                  </div>
+             
               </div>
+            </div>
             )}
  
 {activeTab === "Transportation" && (
@@ -762,9 +830,12 @@ const itemhandleSubmit = async (e) => {
                   <table className="w-full text-sm text-left border-collapse border border-gray-300">
                     <thead className="bg-gray-200">
                       <tr>
+                      <th className="px-4 py-2 border border-gray-300">
+                          vehicleType
+                        </th>
                         <th
                           className="px-4 py-2 border border-gray-300"
-                          colSpan="2"
+                       
                         >
                           Minimum Charge
                         </th>
@@ -774,6 +845,9 @@ const itemhandleSubmit = async (e) => {
                         <th className="px-4 py-2 border border-gray-300">
                           Per Km
                         </th>
+                        <th className="px-4 py-2 border border-gray-300">
+                          Petrol charge
+                        </th>
                       </tr>
                     </thead>
                     <tbody>
@@ -781,10 +855,12 @@ const itemhandleSubmit = async (e) => {
                     showTransportation.map((item, index) => (
                       <React.Fragment key={index}>
                         <tr className="text-center">
+                        <td className="px-4 py-2 border border-gray-300">{item.vehicleType}</td>
                           <td className="px-4 py-2 border border-gray-300">{item.minCharge}</td>
-                          <td className="px-4 py-2 border border-gray-300">{item.vehicleType}</td>
+                         
                           <td className="px-4 py-2 border border-gray-300">{item.minKmCovered}</td>
                           <td className="px-4 py-2 border border-gray-300">{item.perKmCharge}</td>
+                          <td className="px-4 py-2 border border-gray-300">{item.petrolCharge}</td>
                         </tr>
                       </React.Fragment>
                     ))
@@ -797,19 +873,7 @@ const itemhandleSubmit = async (e) => {
                   )}
              
                   {/* Petrol Charge Row */}
-                  <tr>
-                    <td colSpan="4" className="px-4 py-2 border border-gray-300 text-center">
-                      <div className="mt-6 flex items-center gap-10 justify-left">
-                        <h2 className="text-lg font-bold text-gray-800">Petrol Charge</h2>
-                        <input
-                          type="text"
-                          className="mt-2 w-64 p-2 border border-gray-300 rounded-md"
-                          value={showTransportation.length > 0 ? showTransportation[0].petrolCharge : ""}
-                       
-                        />
-                      </div>
-                    </td>
-                  </tr>
+                 
     </tbody>
   </table>
 </div>

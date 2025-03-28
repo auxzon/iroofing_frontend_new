@@ -34,6 +34,7 @@ function AddNewEmployee() {
     
     if (!formData.mobileNumber.trim()) {
       newErrors.mobileNumber = "Mobile number is required";
+      
     } else if (!/^\d{10}$/.test(formData.mobileNumber)) {
       newErrors.mobileNumber = "Invalid mobile number";
     }
@@ -118,6 +119,11 @@ function AddNewEmployee() {
     setErrors({});
   };
 
+
+
+
+
+  
   const renderInput = (id, label, type = "text") => (
     <div className="relative w-full">
       <input

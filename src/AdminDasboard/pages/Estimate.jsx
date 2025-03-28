@@ -485,7 +485,7 @@ const Estimate = () => {
                     <label className="block mb-2 text-sm font-medium text-gray-700">
                       Project Type
                     </label>
-                    <select
+                    <select className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500"
                       value={area.projectType}
                       onChange={(e) =>
                         handleAreaChange(area.id, "projectType", e.target.value)
@@ -553,7 +553,7 @@ const Estimate = () => {
                       Span
                     </label>
                     <input
-                      type="text"
+                      type="number"
                       className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500"
                       placeholder="Enter span"
                       value={area.span}
@@ -568,7 +568,7 @@ const Estimate = () => {
                       Length
                     </label>
                     <input
-                      type="text"
+                      type="number"
                       className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500"
                       placeholder="Enter length"
                       value={area.length}
@@ -583,7 +583,7 @@ const Estimate = () => {
                       Height
                     </label>
                     <input
-                      type="text"
+                      type="number"
                       className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500"
                       placeholder="Enter height"
                       value={area.height}
@@ -621,7 +621,7 @@ const Estimate = () => {
                               Quantity
                             </label>
                             <input
-                              type="text"
+                              type="number"
                               className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500"
                               placeholder="Enter quantity"
                               value={material.unit || ""}
@@ -647,7 +647,7 @@ const Estimate = () => {
                       Area Sq. Ft
                     </label>
                     <input
-                      type="text"
+                      type="number"
                       className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500"
                       placeholder="Total area"
                       value={area.totalArea}
@@ -666,7 +666,7 @@ const Estimate = () => {
                       Sheet Rate
                     </label>
                     <input
-                      type="text"
+                      type="number"
                       className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500"
                       placeholder="Rate per sq ft"
                       value={area.sheetRate}
@@ -720,7 +720,7 @@ const Estimate = () => {
                     Total Square Feet
                   </label>
                   <input
-                    type="text"
+                    type="number"
                     value={formData.totalSqFt}
                     readOnly
                     className="w-full p-3 font-semibold text-gray-800 bg-gray-100 border border-gray-300 rounded-md"
@@ -732,7 +732,7 @@ const Estimate = () => {
                     Total Cost
                   </label>
                   <input
-                    type="text"
+                    type="number"
                     value={`₹${formData.totalCost}/-`}
                     readOnly
                     className="w-full p-3 font-semibold text-gray-800 bg-gray-100 border border-gray-300 rounded-md"

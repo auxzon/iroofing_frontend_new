@@ -230,11 +230,10 @@ const handleFindClick = () => {
              Add Category
             </h2>
            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-  <div className="flex flex-col gap-2">
-    <label className="text-sm font-medium text-[#15164A]">
-      Project Type
-    </label>
+            <div className="flex gap-4">
+  {/* Project Type */}
+  <div className="flex flex-col gap-2 w-1/2">
+    <label className="text-sm font-medium text-[#15164A]">Project Type</label>
     <select
       name="roofType"
       value={categoryForm.roofType}
@@ -249,23 +248,24 @@ const handleFindClick = () => {
       ))}
     </select>
   </div>
-  <div className="flex flex-col gap-2">
-    <label className="text-sm font-medium text-[#15164A]">
-      Roof Model
-    </label>
+
+  {/* Roof Model */}
+  <div className="flex flex-col gap-2 w-1/2">
+    <label className="text-sm font-medium text-[#15164A]">Roof Model</label>
     <input
       type="text"
       name="roofModel"
-      value={categoryForm.roofModel}  // Ensure the input reflects state
+      value={categoryForm.roofModel}
       onChange={(e) =>
         setCategoryForm({ ...categoryForm, roofModel: e.target.value })
       }
       placeholder="Enter Roof Model"
-      className="p-2 border border-gray-300 rounded-md mt-2"
+      className="p-2 border border-gray-300 rounded-md"
     />
   </div>
 </div>
-  <div className="flex flex-col gap-2">
+
+  <div className="flex flex-col gap-2 pt-3">
   <label className="text-sm font-medium text-[#15164A]">Upload Image</label>
   <input type="file" className="p-2 border border-gray-300 rounded-md" onChange={handleImageChange} />
 </div>
@@ -384,7 +384,7 @@ const handleFindClick = () => {
     <div className="flex flex-col gap-2">
       <label className="text-sm font-medium text-[#15164A]">Quantity</label>
       <input
-        type="text"
+        type="number"
         className="p-2 border border-gray-300 rounded-md"
         placeholder="Meter"
         value={item.quantity}
@@ -423,7 +423,7 @@ const handleFindClick = () => {
                     Span
                   </label>
                   <input
-                    type="text"
+                    type="number"
                     className="p-2 border border-gray-300 rounded-md"
                     placeholder="200m"
                     value={itemForm.span}
@@ -434,7 +434,7 @@ const handleFindClick = () => {
                     Length
                   </label>
                   <input
-                    type="text"
+                    type="number"
                     className="p-2 border border-gray-300 rounded-md"
                     placeholder="250m"
                     value={itemForm.length}
@@ -445,7 +445,7 @@ const handleFindClick = () => {
                     Height
                   </label>
                   <input
-                    type="text"
+                    type="number"
                     className="p-2 border border-gray-300 rounded-md"
                     placeholder="300m"
                     value={itemForm.height}
@@ -460,7 +460,7 @@ const handleFindClick = () => {
                     Type of Panel
                   </label>
                   <input
-                    type="text"
+                    type="number"
                     className="p-2 border border-gray-300 rounded-md"
                     placeholder="00"
                     value={itemForm.typeOfPanel}
@@ -471,7 +471,7 @@ const handleFindClick = () => {
                    Sheet Thickness
                   </label>
                   <input
-                    type="text"
+                    type="number"
                     className="p-2 border border-gray-300 rounded-md"
                     placeholder="00"
                     value={itemForm.sheetThickness}
@@ -482,7 +482,7 @@ const handleFindClick = () => {
                    No of Panel
                   </label>
                   <input
-                    type="text"
+                    type="number"
                     className="p-2 border border-gray-300 rounded-md"
                     placeholder="00"
                     value={itemForm. numberOfPanels}
@@ -496,7 +496,7 @@ const handleFindClick = () => {
                    New Length
                   </label>
                   <input
-                    type="text"
+                    type="number"
                     className="p-2 border border-gray-300 rounded-md"
                     placeholder="00"
                     value={itemForm.newLength}
@@ -507,7 +507,7 @@ const handleFindClick = () => {
                 Center Height
                   </label>
                   <input
-                    type="text"
+                    type="number"
                     className="p-2 border border-gray-300 rounded-md"
                     placeholder="00"
                     value={itemForm.centerHeight}
@@ -518,7 +518,7 @@ const handleFindClick = () => {
                    Final Cutting Length
                   </label>
                   <input
-                    type="text"
+                    type="number"
                     className="p-2 border border-gray-300 rounded-md"
                     placeholder="300m"
                     value={itemForm.finalCuttingLength}
@@ -533,7 +533,7 @@ const handleFindClick = () => {
                     Total Area
                   </label>
                   <input
-                    type="text"
+                    type="number"
                     className="p-2 border border-gray-300 rounded-md bg-[#EEEEEE]"
                     placeholder="00"
                     value={itemForm.totalArea}
@@ -544,7 +544,7 @@ const handleFindClick = () => {
                     Sheet Rate
                   </label>
                   <input
-                    type="text"
+                    type="number"
                     className="p-2 border border-gray-300 rounded-md bg-[#EEEEEE]"
                     placeholder="00"
                     value={itemForm.sheetRate}

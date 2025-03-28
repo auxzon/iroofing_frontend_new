@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff } from "lucide-react";
 import logo from "../assets/images/logo.png";
 import { message } from "antd";
 import { setUserInfo } from "../redux/slices/authSlice";
@@ -73,7 +73,9 @@ const Login = () => {
 
       <div className="w-full max-w-md p-8 bg-white rounded-lg shadow-lg">
         <h1 className="text-2xl font-semibold text-blue-900">Login</h1>
-        <p className="mt-2 text-gray-600">Welcome back! Please login to your account.</p>
+        <p className="mt-2 text-gray-600">
+          Welcome back! Please login to your account.
+        </p>
 
         <form onSubmit={handleSubmit} className="mt-6 space-y-4">
           <div>
@@ -93,7 +95,10 @@ const Login = () => {
           </div>
 
           <div className="relative">
-            <label htmlFor="password" className="block font-medium text-gray-700">
+            <label
+              htmlFor="password"
+              className="block font-medium text-gray-700"
+            >
               Password
             </label>
             <input
@@ -124,14 +129,15 @@ const Login = () => {
           </button>
         </form>
 
-        <div className="flex items-center justify-center mt-4 text-center">
-          <Link to="/forgot-password" className="pr-3 text-blue-500 hover:underline">
+        <div className="mt-4 text-center flex justify-center items-center">
+          <span className="text-gray-400">|</span>
+          <Link
+            to="/forgot-password"
+            className="text-blue-500 hover:underline pr-3 pl-3"
+          >
             Forgot Password?
           </Link>
           <span className="text-gray-400">|</span>
-          <Link to="/reset-password" className="pl-3 text-blue-500 hover:underline">
-            Reset Password
-          </Link>
         </div>
       </div>
     </div>
