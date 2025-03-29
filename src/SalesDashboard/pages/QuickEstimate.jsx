@@ -392,7 +392,7 @@ const QuickEstimate = () => {
         const errorMsg =
           response.data?.message ||
           "Failed to create estimate. Please try again.";
-        alert(errorMsg);
+        message.error(errorMsg);
       }
     } catch (error) {
       console.error("Error creating estimate:", error);
@@ -400,7 +400,7 @@ const QuickEstimate = () => {
         error.message ||
         (typeof error === "object" ? JSON.stringify(error) : error) ||
         "Unknown error";
-      alert(`Failed to create estimate: ${errorMessage}`);
+      message.error(`Failed to create estimate: ${errorMessage}`);
     }
   };
 

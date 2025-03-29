@@ -16,7 +16,6 @@ const FinalEstimatePage = () => {
   
   // Client and project data state
   const [selectedClient, setSelectedClient] = useState(null);
-<<<<<<< Updated upstream
   
   // Estimate data state
   const [estimateData, setEstimateData] = useState({
@@ -29,53 +28,11 @@ const FinalEstimatePage = () => {
       enquiryExpense: 0,
       foodAndAccommodation: 0
     },
-=======
-  const [projectDetails, setProjectDetails] = useState({
-    projectNumber: '',
-    place: '',
-    district: '',
-    projectName: '',
-    quotationNumber: '',
-    sheetThickness: '',
-    sheetProfile: '',
-    color: '',
-    notes: ''
-  });
-  
-  // Cost and details state
-  const [laborCosts, setLaborCosts] = useState({
-    sheetingLabour: {
-      localWorkers: 0,
-      siteWorkers: 0,
-      totalCost: 0
-    },
-    weldingLabour: {
-      localWorkers: 0,
-      siteWorkers: 0,
-      totalCost: 0,
-      consumables: 0
-    },
-    transportationLabour: 0,
-    enquiryExpense: 0,
-    foodAndAccommodation: 0
-  });
-  
-  const [transportationDetails, setTransportationDetails] = useState({
-    vehicleType: '',
-    totalKilometer: 0,
-    numberOfTrips: 0,
-    price: 0,
->>>>>>> Stashed changes
     cranePrice: 0,
     otherExpenses: 0,
     sellingRate: 0
   });
-  
-<<<<<<< Updated upstream
-=======
-  const [marginOverhead, setMarginOverhead] = useState(0);
-  
->>>>>>> Stashed changes
+
   // PDF preview state
   const [showPdfPreview, setShowPdfPreview] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -84,49 +41,6 @@ const FinalEstimatePage = () => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setSearchParams(prev => ({ ...prev, [name]: value }));
-<<<<<<< Updated upstream
-=======
-  };
-
-  const handleProjectDetailsChange = (e) => {
-    const { name, value } = e.target;
-    setProjectDetails(prev => ({ ...prev, [name]: value }));
-  };
-
-  const handleLaborCostChange = (category, field, value) => {
-    setLaborCosts(prev => {
-      // Create a deep copy to avoid modifying nested objects directly
-      const updatedCosts = JSON.parse(JSON.stringify(prev));
-      
-      if (field) {
-        // For nested fields (e.g., weldingLabour.localWorkers)
-        updatedCosts[category][field] = parseFloat(value) || 0;
-        
-        // Calculate totals for worker costs
-        if (category === 'weldingLabour' && (field === 'localWorkers' || field === 'siteWorkers')) {
-          updatedCosts.weldingLabour.totalCost = 
-            (updatedCosts.weldingLabour.localWorkers * 1000) + 
-            (updatedCosts.weldingLabour.siteWorkers * 1200);
-        } else if (category === 'sheetingLabour' && (field === 'localWorkers' || field === 'siteWorkers')) {
-          updatedCosts.sheetingLabour.totalCost = 
-            (updatedCosts.sheetingLabour.localWorkers * 800) + 
-            (updatedCosts.sheetingLabour.siteWorkers * 1000);
-        }
-      } else {
-        // For direct properties
-        updatedCosts[category] = parseFloat(value) || 0;
-      }
-      
-      return updatedCosts;
-    });
-  };
-
-  const handleTransportationChange = (field, value) => {
-    setTransportationDetails(prev => ({
-      ...prev,
-      [field]: field === 'vehicleType' ? value : parseFloat(value) || 0
-    }));
->>>>>>> Stashed changes
   };
 
   // Search and client selection
@@ -144,7 +58,6 @@ const FinalEstimatePage = () => {
   };
 
   const selectClient = (client) => {
-<<<<<<< Updated upstream
     // Set selected client
     setSelectedClient(client);
 
@@ -177,30 +90,6 @@ const FinalEstimatePage = () => {
         numberOfTrips: transport.numberOfTrips
       })) || [],
       labourData: {
-=======
-    // Clear previous client data completely
-    resetForm();
-    
-    // Set new client data
-    setSelectedClient(client);
-
-    // Populate project details from client data
-    setProjectDetails({
-      projectNumber: client.clientId?._id?.slice(-10) || '',
-      place: client.clientId?.place || '',
-      district: client.clientId?.district || '',
-      projectName: client.sheetingPrice?.[0]?.projectType?.projectType || '',
-      quotationNumber: '',
-      sheetThickness: client.sheetingPrice?.[0]?.sheetThickness || '',
-      sheetProfile: client.sheetingPrice?.[0]?.finalNewlength ? `${client.sheetingPrice[0].finalNewlength}mm` : '',
-      color: '',
-      notes: client.clientId?.comments || ''
-    });
-
-    // Populate labor costs if available
-    if (client.labourCharge) {
-      setLaborCosts({
->>>>>>> Stashed changes
         sheetingLabour: {
           localWorkers: client.labourCharge?.sheetingLabour?.localWork || 0,
           siteWorkers: client.labourCharge?.sheetingLabour?.siteWork || 0
@@ -209,7 +98,6 @@ const FinalEstimatePage = () => {
           localWorkers: client.labourCharge?.weldingLabour?.localWork || 0,
           siteWorkers: client.labourCharge?.weldingLabour?.siteWork || 0
         },
-<<<<<<< Updated upstream
         transportationLabour: client.labourCharge?.transportationLabour || 0,
         enquiryExpense: client.labourCharge?.enquiryExpense || 0,
         foodAndAccommodation: client.labourCharge?.foodAndAccommodation || 0
@@ -218,107 +106,10 @@ const FinalEstimatePage = () => {
       otherExpenses: client.transportations[0]?.otherExpenses || 0,
       sellingRate: client.sellingRate || 0
     });
-=======
-        transportationLabour: client.labourCharge.transportationLabour || 0,
-        enquiryExpense: client.labourCharge.enquiryExpense || 0,
-        foodAndAccommodation: client.labourCharge.foodAndAccommodation || 0
-      });
-    }
-
-    // Populate transportation details if available
-    if (client.transportations && client.transportations.length > 0) {
-      setTransportationDetails({
-        vehicleType: client.transportations[0].vehicleType || '',
-        totalKilometer: client.transportations[0].totalKilometer || 0,
-        numberOfTrips: client.transportations[0].numberOfTrips || 0,
-        price: client.transportations[0].price || 0,
-        cranePrice: client.transportations[0].cranePrice || 0,
-        otherExpenses: client.transportations[0].otherExpenses || 0
-      });
-    }
-
-    // Set margin overhead if available
-    setMarginOverhead(client.marginAmount || 0);
->>>>>>> Stashed changes
 
     // Clear search results
     setClients([]);
   };
-
-<<<<<<< Updated upstream
-=======
-  // Reset form to clear previous client data
-  const resetForm = () => {
-    setSelectedClient(null);
-    setProjectDetails({
-      projectNumber: '',
-      place: '',
-      district: '',
-      projectName: '',
-      quotationNumber: '',
-      sheetThickness: '',
-      sheetProfile: '',
-      color: '',
-      notes: ''
-    });
-    setLaborCosts({
-      sheetingLabour: { localWorkers: 0, siteWorkers: 0, totalCost: 0 },
-      weldingLabour: { localWorkers: 0, siteWorkers: 0, totalCost: 0, consumables: 0 },
-      transportationLabour: 0,
-      enquiryExpense: 0,
-      foodAndAccommodation: 0
-    });
-    setTransportationDetails({
-      vehicleType: '',
-      totalKilometer: 0,
-      numberOfTrips: 0,
-      price: 0,
-      cranePrice: 0,
-      otherExpenses: 0
-    });
-    setMarginOverhead(0);
-  };
-
-  // Calculate totals
-  const calculateTotalLabor = () => {
-    if (!selectedClient) return 0;
-    
-    const weldingLabor = laborCosts.weldingLabour.totalCost || 0;
-    const sheetingLabor = laborCosts.sheetingLabour.totalCost || 0;
-    const transportationLabor = laborCosts.transportationLabour || 0;
-    const enquiryExpense = laborCosts.enquiryExpense || 0;
-    const foodAndAccommodation = laborCosts.foodAndAccommodation || 0;
-
-    return weldingLabor + sheetingLabor + transportationLabor + enquiryExpense + foodAndAccommodation;
-  };
-
-  const calculateTotalTransportation = () => {
-    return (
-      transportationDetails.price + 
-      transportationDetails.cranePrice + 
-      transportationDetails.otherExpenses
-    );
-  };
-
-  // PDF preview handlers
-  const handleShowPdfPreview = () => {
-    setShowPdfPreview(true);
-  };
-
-  const handleClosePdfPreview = (wasDownloaded = false) => {
-    setShowPdfPreview(false);
-    if (wasDownloaded) {
-      console.log('PDF was downloaded successfully');
-    }
-  };
-
-  // For viewing quotation - implement as needed
-  const handleViewQuotation = () => {
-    console.log("View quotation clicked");
-    // Implement quotation view functionality
-  };
-
->>>>>>> Stashed changes
   // Submit final estimate
   const handleSubmitEstimate = async () => {
     if (!selectedClient) {
@@ -336,7 +127,6 @@ const FinalEstimatePage = () => {
       alert("Error submitting estimate. Please try again.");
     } finally {
       setIsSubmitting(false);
-<<<<<<< Updated upstream
     }
   };
 
@@ -349,10 +139,31 @@ const FinalEstimatePage = () => {
     setShowPdfPreview(false);
     if (wasDownloaded) {
       console.log('PDF was downloaded successfully');
-=======
->>>>>>> Stashed changes
     }
   };
+
+  // Add this function to your component
+const resetForm = () => {
+  setSelectedClient(null);
+  setEstimateData({
+    areas: [],
+    transportations: [],
+    labourData: {
+      sheetingLabour: { localWorkers: 0, siteWorkers: 0 },
+      weldingLabour: { localWorkers: 0, siteWorkers: 0 },
+      transportationLabour: 0,
+      enquiryExpense: 0,
+      foodAndAccommodation: 0
+    },
+    cranePrice: 0,
+    otherExpenses: 0,
+    sellingRate: 0
+  });
+  setSearchParams({
+    clientName: '',
+    clientPhone: ''
+  });
+};
 
   return (
     <div className="flex h-screen bg-gray-100">
@@ -467,11 +278,8 @@ const FinalEstimatePage = () => {
           {/* Form Content - Only show when client is selected */}
           {selectedClient && (
             <>
-<<<<<<< Updated upstream
-              {/* Project Details Section */}
-=======
+
               {/* Project Details */}
->>>>>>> Stashed changes
               <div className="p-4 mb-6 bg-white rounded shadow-sm">
                 <h2 className="mb-4 text-lg font-medium">Project Details</h2>
                 <div className="grid grid-cols-2 gap-4 mb-4">
@@ -495,102 +303,19 @@ const FinalEstimatePage = () => {
                   </div>
                 </div>
 
-<<<<<<< Updated upstream
                 {/* Areas Section */}
                 <div className="p-4 mt-4 rounded bg-gray-50">
                   <h3 className="mb-4 font-medium">Project Areas</h3>
                   {selectedClient.sheetingPrice.map((area, index) => (
                     <div key={index} className="p-3 mb-3 bg-white border rounded">
                       <div className="grid grid-cols-3 gap-4">
-=======
-                <div className="grid grid-cols-2 gap-4 mb-4">
-                  <div>
-                    <label className="block mb-1 text-sm">Project Name</label>
-                    <input
-                      type="text"
-                      className="w-full p-2 border rounded"
-                      name="projectName"
-                      value={projectDetails.projectName}
-                      onChange={handleProjectDetailsChange}
-                    />
-                  </div>
-                  <div>
-                    <label className="block mb-1 text-sm">Quotation Number</label>
-                    <input
-                      type="text"
-                      className="w-full p-2 border rounded"
-                      name="quotationNumber"
-                      value={projectDetails.quotationNumber}
-                      onChange={handleProjectDetailsChange}
-                    />
-                  </div>
-                </div>
 
-                <div className="grid grid-cols-3 gap-4 mb-4">
-                  <div>
-                    <label className="block mb-1 text-sm">Thickness</label>
-                    <input
-                      type="text"
-                      className="w-full p-2 border rounded"
-                      name="sheetThickness"
-                      value={projectDetails.sheetThickness}
-                      onChange={handleProjectDetailsChange}
-                    />
-                  </div>
-                  <div>
-                    <label className="block mb-1 text-sm">Sheet Profile</label>
-                    <input
-                      type="text"
-                      className="w-full p-2 border rounded"
-                      name="sheetProfile"
-                      value={projectDetails.sheetProfile}
-                      onChange={handleProjectDetailsChange}
-                    />
-                  </div>
-                  <div>
-                    <label className="block mb-1 text-sm">Color</label>
-                    <input
-                      type="text"
-                      className="w-full p-2 border rounded"
-                      name="color"
-                      value={projectDetails.color}
-                      onChange={handleProjectDetailsChange}
-                    />
-                  </div>
-                </div>
-
-                <div className="mb-4">
-                  <label className="block mb-1 text-sm">Notes</label>
-                  <textarea
-                    className="w-full p-2 border rounded"
-                    rows="3"
-                    name="notes"
-                    value={projectDetails.notes}
-                    onChange={handleProjectDetailsChange}
-                  ></textarea>
-                </div>
-              </div>
-
-              {/* Areas Section */}
-              {selectedClient?.sheetingPrice && selectedClient.sheetingPrice.length > 0 && (
-                <div className="p-4 mb-6 bg-white rounded shadow-sm">
-                  <h3 className="mb-4 font-medium">Areas</h3>
-
-                  {selectedClient.sheetingPrice.map((area, index) => (
-                    <div key={index} className="p-3 mb-4 border rounded bg-gray-50">
-                      <h4 className="mb-2 font-medium">Area {index + 1}</h4>
-                      <div className="grid grid-cols-3 gap-4 mb-2">
->>>>>>> Stashed changes
                         <div>
                           <label className="block mb-1 text-sm">Span</label>
                           <input
                             type="text"
                             className="w-full p-2 bg-gray-100 border rounded"
-<<<<<<< Updated upstream
                             value={`${area.span || 0} m`}
-=======
-                            value={area.span ? `${area.span}m` : "0m"}
->>>>>>> Stashed changes
                             readOnly
                           />
                         </div>
@@ -599,11 +324,8 @@ const FinalEstimatePage = () => {
                           <input
                             type="text"
                             className="w-full p-2 bg-gray-100 border rounded"
-<<<<<<< Updated upstream
                             value={`${area.length || 0} m`}
-=======
-                            value={area.length ? `${area.length}m` : "0m"}
->>>>>>> Stashed changes
+
                             readOnly
                           />
                         </div>
@@ -612,35 +334,17 @@ const FinalEstimatePage = () => {
                           <input
                             type="text"
                             className="w-full p-2 bg-gray-100 border rounded"
-<<<<<<< Updated upstream
                             value={`${area.height || 0} m`}
-=======
-                            value={area.height ? `${area.height}m` : "0m"}
->>>>>>> Stashed changes
                             readOnly
                           />
                         </div>
                       </div>
-<<<<<<< Updated upstream
                       <div className="grid grid-cols-3 gap-4 mt-3">
-=======
-                      <div className="grid grid-cols-3 gap-4">
-                        <div>
-                          <label className="block mb-1 text-sm">Roof Type</label>
-                          <input
-                            type="text"
-                            className="w-full p-2 bg-gray-100 border rounded"
-                            value={area.roofModel?.roofModel || ""}
-                            readOnly
-                          />
-                        </div>
->>>>>>> Stashed changes
                         <div>
                           <label className="block mb-1 text-sm">Project Type</label>
                           <input
                             type="text"
                             className="w-full p-2 bg-gray-100 border rounded"
-<<<<<<< Updated upstream
                             value={area.projectType?.projectType || "-"}
                             readOnly
                           />
@@ -651,9 +355,6 @@ const FinalEstimatePage = () => {
                             type="text"
                             className="w-full p-2 bg-gray-100 border rounded"
                             value={area.roofModel?.roofModel || "-"}
-=======
-                            value={area.projectType?.projectType || ""}
->>>>>>> Stashed changes
                             readOnly
                           />
                         </div>
@@ -662,22 +363,14 @@ const FinalEstimatePage = () => {
                           <input
                             type="text"
                             className="w-full p-2 bg-gray-100 border rounded"
-<<<<<<< Updated upstream
                             value={`${area.sheetThickness || 0} mm`}
-=======
-                            value={area.sheetThickness || "0"}
->>>>>>> Stashed changes
                             readOnly
                           />
                         </div>
                       </div>
                     </div>
                   ))}
-<<<<<<< Updated upstream
                   
-=======
-
->>>>>>> Stashed changes
                   <div className="grid grid-cols-3 gap-4 p-3 mt-3 bg-gray-200 rounded">
                     <div>
                       <label className="block mb-1 text-sm font-medium">Total Area (sqft)</label>
@@ -693,11 +386,7 @@ const FinalEstimatePage = () => {
                       <input
                         type="text"
                         className="w-full p-2 bg-white border rounded"
-<<<<<<< Updated upstream
                         value={`₹${(selectedClient?.totalSheetingCost || 0).toFixed(2)}`}
-=======
-                        value={selectedClient?.totalSheetingCost ? `₹${selectedClient.totalSheetingCost.toFixed(2)}` : "₹0.00"}
->>>>>>> Stashed changes
                         readOnly
                       />
                     </div>
@@ -706,7 +395,6 @@ const FinalEstimatePage = () => {
                       <input
                         type="text"
                         className="w-full p-2 bg-white border rounded"
-<<<<<<< Updated upstream
                         value={`₹${(selectedClient?.totalmaterialCharge || 0).toFixed(2)}`}
                         readOnly
                       />
@@ -770,114 +458,17 @@ const FinalEstimatePage = () => {
                       value={`₹${(selectedClient.transportations[0]?.otherExpenses || 0).toFixed(2)}`}
                       readOnly
                     />
-=======
-                        value={selectedClient?.totalmaterialCharge ? `₹${selectedClient.totalmaterialCharge.toFixed(2)}` : "₹0.00"}
-                        readOnly
-                      />
-                    </div>
                   </div>
-                </div>
-              )}
-
-              {/* Labour Cost Section */}
-              <div className="p-4 mb-6 bg-white rounded shadow-sm">
-                <h3 className="mb-4 font-medium">Labour Cost</h3>
-
-                {/* Welding Labour */}
-                <div className="p-3 mb-4 border rounded bg-gray-50">
-                  <h4 className="mb-2 text-sm font-medium">Welding Labour</h4>
-                  <div className="grid grid-cols-2 gap-4 mb-3">
-                    <div>
-                      <label className="block mb-1 text-sm">Local Workers</label>
-                      <input
-                        type="number"
-                        className="w-full p-2 border rounded"
-                        placeholder="0"
-                        value={laborCosts.weldingLabour.localWorkers}
-                        onChange={(e) => handleLaborCostChange('weldingLabour', 'localWorkers', e.target.value)}
-                      />
-                    </div>
-                    <div>
-                      <label className="block mb-1 text-sm">Site Workers</label>
-                      <input
-                        type="number"
-                        className="w-full p-2 border rounded"
-                        placeholder="0"
-                        value={laborCosts.weldingLabour.siteWorkers}
-                        onChange={(e) => handleLaborCostChange('weldingLabour', 'siteWorkers', e.target.value)}
-                      />
-                    </div>
-                  </div>
-                  
-                  <div className="grid grid-cols-3 gap-4">
-                    <div>
-                      <label className="block mb-1 text-sm">Consumables</label>
-                      <input
-                        type="number"
-                        className="w-full p-2 border rounded"
-                        placeholder="0"
-                        value={laborCosts.weldingLabour.consumables}
-                        onChange={(e) => handleLaborCostChange('weldingLabour', 'consumables', e.target.value)}
-                      />
-                    </div>
-                    <div className="col-span-2">
-                      <label className="block mb-1 text-sm">Total Welding Cost</label>
-                      <input
-                        type="text"
-                        className="w-full p-2 bg-gray-100 border rounded"
-                        value={`₹${laborCosts.weldingLabour.totalCost.toFixed(2)}`}
-                        readOnly
-                      />
-                    </div>
->>>>>>> Stashed changes
-                  </div>
-                </div>
-
-                {/* Sheeting Labour */}
-                <div className="p-3 mb-4 border rounded bg-gray-50">
-                  <h4 className="mb-2 text-sm font-medium">Sheeting Labour</h4>
-                  <div className="grid grid-cols-2 gap-4 mb-3">
-                    <div>
-                      <label className="block mb-1 text-sm">Local Workers</label>
-                      <input
-                        type="number"
-                        className="w-full p-2 border rounded"
-                        placeholder="0"
-                        value={laborCosts.sheetingLabour.localWorkers}
-                        onChange={(e) => handleLaborCostChange('sheetingLabour', 'localWorkers', e.target.value)}
-                      />
-                    </div>
-                    <div>
-                      <label className="block mb-1 text-sm">Site Workers</label>
-                      <input
-                        type="number"
-                        className="w-full p-2 border rounded"
-                        placeholder="0"
-                        value={laborCosts.sheetingLabour.siteWorkers}
-                        onChange={(e) => handleLaborCostChange('sheetingLabour', 'siteWorkers', e.target.value)}
-                      />
-                    </div>
-                  </div>
-                  
                   <div>
-<<<<<<< Updated upstream
                     <label className="block mb-1 text-sm font-medium">Total Transportation</label>
                     <input
                       type="text"
                       className="w-full p-2 bg-white border rounded"
                       value={`₹${(selectedClient.transportations[0]?.totalTransporation || 0).toFixed(2)}`}
-=======
-                    <label className="block mb-1 text-sm">Total Sheeting Cost</label>
-                    <input
-                      type="text"
-                      className="w-full p-2 bg-gray-100 border rounded"
-                      value={`₹${laborCosts.sheetingLabour.totalCost.toFixed(2)}`}
->>>>>>> Stashed changes
                       readOnly
                     />
                   </div>
                 </div>
-<<<<<<< Updated upstream
               </div>
 
               {/* Labour Details */}
@@ -960,59 +551,10 @@ const FinalEstimatePage = () => {
                       value={`₹${(selectedClient.labourCharge?.foodAndAccommodation || 0).toFixed(2)}`}
                       readOnly
                     />
-=======
-
-                {/* Other Labour Costs */}
-                <div className="p-3 mb-4 border rounded bg-gray-50">
-                  <h4 className="mb-2 text-sm font-medium">Other Labour Costs</h4>
-                  <div className="grid grid-cols-3 gap-4">
-                    <div>
-                      <label className="block mb-1 text-sm">Transportation Labour</label>
-                      <input
-                        type="number"
-                        className="w-full p-2 border rounded"
-                        placeholder="₹0.00"
-                        value={laborCosts.transportationLabour}
-                        onChange={(e) => handleLaborCostChange('transportationLabour', null, e.target.value)}
-                      />
-                    </div>
-                    <div>
-                      <label className="block mb-1 text-sm">Food & Accommodation</label>
-                      <input
-                        type="number"
-                        className="w-full p-2 border rounded"
-                        placeholder="₹0.00"
-                        value={laborCosts.foodAndAccommodation}
-                        onChange={(e) => handleLaborCostChange('foodAndAccommodation', null, e.target.value)}
-                      />
-                    </div>
-                    <div>
-                      <label className="block mb-1 text-sm">Enquiry Expense</label>
-                      <input
-                        type="number"
-                        className="w-full p-2 border rounded"
-                        placeholder="₹0.00"
-                        value={laborCosts.enquiryExpense}
-                        onChange={(e) => handleLaborCostChange('enquiryExpense', null, e.target.value)}
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Total Labour Cost */}
-                <div className="p-3 border border-blue-200 rounded bg-blue-50">
-                  <div className="flex items-center justify-between">
-                    <label className="text-sm font-medium text-blue-800">Total Labour Cost</label>
-<div className="p-3 border border-blue-200 rounded bg-blue-50">
-                  <div className="flex items-center justify-between">
-                    <label className="text-sm font-medium text-blue-800">Total Labour Cost</label>
-                    <span className="text-lg font-bold text-blue-800">₹{calculateTotalLabor().toFixed(2)}</span>
->>>>>>> Stashed changes
                   </div>
                 </div>
               </div>
 
-<<<<<<< Updated upstream
               {/* Final Summary */}
               <div className="p-4 mb-6 bg-white rounded shadow-sm">
                 <h3 className="mb-4 font-medium">Final Summary</h3>
@@ -1052,164 +594,12 @@ const FinalEstimatePage = () => {
                       ₹{(selectedClient?.totalBudget || 0).toFixed(2)}
                     </span>
                   </div>
-=======
-              {/* Transportation Section */}
-              <div className="p-4 mb-6 bg-white rounded shadow-sm">
-                <h3 className="mb-4 font-medium">Transportation Details</h3>
-                <div className="grid grid-cols-3 gap-4 mb-4">
-                  <div>
-                    <label className="block mb-1 text-sm">Vehicle Type</label>
-                    <select
-                      className="w-full p-2 border rounded"
-                      value={transportationDetails.vehicleType}
-                      onChange={(e) => handleTransportationChange('vehicleType', e.target.value)}
-                    >
-                      <option value="">Select Vehicle Type</option>
-                      <option value="Small Truck">Small Truck</option>
-                      <option value="Medium Truck">Medium Truck</option>
-                      <option value="Large Truck">Large Truck</option>
-                      <option value="Tempo">Tempo</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block mb-1 text-sm">Total Kilometer</label>
-                    <input
-                      type="number"
-                      className="w-full p-2 border rounded"
-                      placeholder="0"
-                      value={transportationDetails.totalKilometer}
-                      onChange={(e) => handleTransportationChange('totalKilometer', e.target.value)}
-                    />
-                  </div>
-                  <div>
-                    <label className="block mb-1 text-sm">Number of Trips</label>
-                    <input
-                      type="number"
-                      className="w-full p-2 border rounded"
-                      placeholder="0"
-                      value={transportationDetails.numberOfTrips}
-                      onChange={(e) => handleTransportationChange('numberOfTrips', e.target.value)}
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-3 gap-4 mb-4">
-                  <div>
-                    <label className="block mb-1 text-sm">Transportation Price</label>
-                    <input
-                      type="number"
-                      className="w-full p-2 border rounded"
-                      placeholder="₹0.00"
-                      value={transportationDetails.price}
-                      onChange={(e) => handleTransportationChange('price', e.target.value)}
-                    />
-                  </div>
-                  <div>
-                    <label className="block mb-1 text-sm">Crane Price</label>
-                    <input
-                      type="number"
-                      className="w-full p-2 border rounded"
-                      placeholder="₹0.00"
-                      value={transportationDetails.cranePrice}
-                      onChange={(e) => handleTransportationChange('cranePrice', e.target.value)}
-                    />
-                  </div>
-                  <div>
-                    <label className="block mb-1 text-sm">Other Expenses</label>
-                    <input
-                      type="number"
-                      className="w-full p-2 border rounded"
-                      placeholder="₹0.00"
-                      value={transportationDetails.otherExpenses}
-                      onChange={(e) => handleTransportationChange('otherExpenses', e.target.value)}
-                    />
-                  </div>
-                </div>
-
-                <div className="p-3 border border-green-200 rounded bg-green-50">
-                  <div className="flex items-center justify-between">
-                    <label className="text-sm font-medium text-green-800">Total Transportation Cost</label>
-                    <span className="text-lg font-bold text-green-800">₹{calculateTotalTransportation().toFixed(2)}</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Profit Margin & Overhead */}
-              <div className="p-4 mb-6 bg-white rounded shadow-sm">
-                <h3 className="mb-4 font-medium">Profit Margin & Overhead</h3>
-                <div className="mb-4">
-                  <label className="block mb-1 text-sm">Margin Amount</label>
-                  <input
-                    type="number"
-                    className="w-full p-2 border rounded"
-                    placeholder="₹0.00"
-                    value={marginOverhead}
-                    onChange={(e) => setMarginOverhead(parseFloat(e.target.value) || 0)}
-                  />
-                </div>
-                <div className="p-3 border border-purple-200 rounded bg-purple-50">
-                  <div className="flex items-center justify-between">
-                    <label className="text-sm font-medium text-purple-800">Margin & Overhead</label>
-                    <span className="text-lg font-bold text-purple-800">₹{marginOverhead.toFixed(2)}</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Final Summary */}
-              <div className="p-4 mb-6 bg-white rounded shadow-sm">
-                <h3 className="mb-4 font-medium">Final Summary</h3>
-                <div className="grid grid-cols-2 gap-4 mb-4">
-                  <div className="p-3 border rounded bg-gray-50">
-                    <div className="flex items-center justify-between">
-                      <label className="text-sm">Material Cost</label>
-                      <span className="font-medium">₹{(selectedClient?.totalmaterialCharge || 0).toFixed(2)}</span>
-                    </div>
-                  </div>
-                  <div className="p-3 border rounded bg-gray-50">
-                    <div className="flex items-center justify-between">
-                      <label className="text-sm">Labour Cost</label>
-                      <span className="font-medium">₹{calculateTotalLabor().toFixed(2)}</span>
-                    </div>
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-4 mb-4">
-                  <div className="p-3 border rounded bg-gray-50">
-                    <div className="flex items-center justify-between">
-                      <label className="text-sm">Transportation Cost</label>
-                      <span className="font-medium">₹{calculateTotalTransportation().toFixed(2)}</span>
-                    </div>
-                  </div>
-                  <div className="p-3 border rounded bg-gray-50">
-                    <div className="flex items-center justify-between">
-                      <label className="text-sm">Margin & Overhead</label>
-                      <span className="font-medium">₹{marginOverhead.toFixed(2)}</span>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="p-4 mt-4 border border-yellow-300 rounded bg-yellow-50">
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-base font-bold text-yellow-800">Total Estimate</h3>
-                    <span className="text-xl font-bold text-yellow-800">
-                      ₹{((selectedClient?.totalmaterialCharge || 0) + calculateTotalLabor() + calculateTotalTransportation() + marginOverhead).toFixed(2)}
-                    </span>
-                  </div>
->>>>>>> Stashed changes
                 </div>
               </div>
 
               {/* Action Buttons */}
               <div className="flex justify-end gap-3 mb-6">
                 <button
-<<<<<<< Updated upstream
-=======
-                  className="px-5 py-2 text-white transition duration-200 bg-gray-600 rounded hover:bg-gray-700"
-                  onClick={handleViewQuotation}
-                >
-                  View Quotation
-                </button>
-                <button
->>>>>>> Stashed changes
                   className="px-5 py-2 text-white transition duration-200 bg-blue-600 rounded hover:bg-blue-700"
                   onClick={handleShowPdfPreview}
                 >
@@ -1223,13 +613,8 @@ const FinalEstimatePage = () => {
                   {isSubmitting ? "Submitting..." : "Submit Final Estimate"}
                 </button>
               </div>
-<<<<<<< Updated upstream
             </>
           )}
-=======
-          )}
-            </>
->>>>>>> Stashed changes
         </div>
       </div>
 
@@ -1237,20 +622,6 @@ const FinalEstimatePage = () => {
       {showPdfPreview && selectedClient && (
         <EstimatePdfGenerator
           client={selectedClient}
-<<<<<<< Updated upstream
-=======
-          projectDetails={projectDetails}
-          laborCosts={{
-            ...laborCosts,
-            totalLaborCost: calculateTotalLabor()
-          }}
-          transportationDetails={{
-            ...transportationDetails,
-            totalTransportationCost: calculateTotalTransportation()
-          }}
-          marginOverhead={marginOverhead}
-          totalEstimate={(selectedClient?.totalmaterialCharge || 0) + calculateTotalLabor() + calculateTotalTransportation() + marginOverhead}
->>>>>>> Stashed changes
           onClose={handleClosePdfPreview}
         />
       )}
