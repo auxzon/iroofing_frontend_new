@@ -80,4 +80,9 @@ const Header = () => {
   );
 };
  
+<<<<<<< Updated upstream
 export default Header;
+=======
+export default Header;
+ 
+>>>>>>> Stashed changes

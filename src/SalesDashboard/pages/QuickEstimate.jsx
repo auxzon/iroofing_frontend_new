@@ -10,6 +10,7 @@ import {
 import { getFilteredProducts } from "../../api/admin/product/updateProduct";
 import { getClient } from "../../api/admin/client/getClient";
 import { finalEstimate } from "../../api/admin/estimate/createEstimate";
+import { message } from "antd";
 
 const QuickEstimate = () => {
   const navigate = useNavigate();
@@ -385,7 +386,7 @@ const QuickEstimate = () => {
       console.log("API Response:", response);
   
       if (response.data && response.data.success) {
-        alert("Estimate created successfully!");
+        message.success("Estimate created successfully!");
         navigate("/estimates");
       } else {
         const errorMsg =
