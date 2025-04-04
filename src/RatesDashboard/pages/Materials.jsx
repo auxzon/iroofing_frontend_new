@@ -137,7 +137,7 @@ try {
  
   return (
     <>
-      <div className="flex min-h-screen  bg-gray-100">
+      <div className="flex h-screen  bg-gray-100">
         {/* Sidebar */}
         <Sidebar
           isOpen={isSidebarOpen}
@@ -145,7 +145,7 @@ try {
         />
  
         {/* Main Content */}
-        <div className="flex-1 flex flex-col   bg-gray-100">
+        <div className="flex-1 overflow-y-auto">
           {/* Header */}
           <Header toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
           <div className="px-5 mt-3">

@@ -126,7 +126,7 @@ function SettingsRate() {
     <div className="flex h-screen bg-gray-100">
       <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
  
-      <div className="flex flex-col flex-1 bg-gray-100">
+      <div className="flex-1 overflow-y-auto">
         <Header toggleSidebar={toggleSidebar} />
  
         <div className="p-6 space-y-8 overflow-auto bg-gray-100">
